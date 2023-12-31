@@ -10,6 +10,7 @@ use App\Models\Health;
 use App\Models\Prisoner;
 use App\Models\PrisonersPrisonerTypes;
 use App\Models\PrisonerType;
+use App\Models\Town;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
@@ -42,6 +43,7 @@ class PrisonerImport implements
         }
 
         $City = City::query()->where('city_name', $row['city_id'])->pluck('id')->first() ?? null;
+        $Town = Town::query()->where('town_name', $row['town_id'])->pluck('id')->first() ?? null;
         $Belong = Belong::query()->where('belong_name', $row['belong_id'])->pluck('id')->first() ?? null;
 
         $Prisoner = Prisoner::query()->create([
@@ -51,10 +53,11 @@ class PrisonerImport implements
             'second_name' => $row['second_name'] ?? null,
             'third_name' => $row['third_name'] ?? null,
             'last_name' => $row['last_name'] ?? null,
-            'mother_name' => $row['last_name'] ?? null,
+            'mother_name' => $row['mother_name'] ?? null,
             'date_of_birth' => !empty($row['date_of_birth']) ? Date::excelToDateTimeObject($row['date_of_birth']) : null,
             'gender' => $row['gender'] ?? null,
             'city_id' => $City ?? null,
+            'town_id' => $Town ?? null,
             'notes' => $row['notes'] ?? null,
 
         ]);
@@ -72,8 +75,7 @@ class PrisonerImport implements
             'wife_type' => $row['wife_type'] ?? null,
             'number_of_children' => $row['number_of_children'] ?? null,
             'education_level' => $row['education_level'] ?? null,
-            'specialization_name' => $row['specialization_name'] ?? null,
-            'university_name' => $row['university_name'] ?? null,
+            'health_note' => $row['university_name'] ?? null,
             'father_arrested' => $row['father_arrested'] ?? null,
             'mother_arrested' => $row['mother_arrested'] ?? null,
             'husband_arrested' => $row['husband_arrested'] ?? null,
@@ -88,20 +90,6 @@ class PrisonerImport implements
             'second_phone_number' => $row['second_phone_number'] ?? null,
             'email' => $row['email'] ?? null,
         ]);
-
-        if (!empty($row['health'])) {
-            $healths = explode(',', $row['health']);
-            foreach ($healths as $health) {
-                $health_id = Health::query()->where('health_name', $health)->pluck('id')->first() ?? null;
-                if (isset($health_id)) {
-                    ArrestsHealths::query()->create([
-                        'health_id' => $health_id,
-                        'arrest_id' => $Arrest->id,
-                    ]);
-                }
-            }
-
-        }
 
         if (!empty($row['prisoner_type'])) {
             $prisoner_types = explode(',', $row['prisoner_type']);
@@ -156,9 +144,9 @@ class PrisonerImport implements
             'date_of_birth' => 'nullable',
             'gender' => 'nullable',
             'city_id' => 'nullable',
+            'town_id' => 'nullable',
             'notes' => 'nullable',
             'prisoner_type' => 'nullable',
-            'health' => 'nullable',
             'arrest_start_date' => 'nullable',
             'arrest_type' => 'nullable',
             'judgment_in_lifetime' => 'nullable',
@@ -170,8 +158,7 @@ class PrisonerImport implements
             'wife_type' => 'nullable',
             'number_of_children' => 'nullable',
             'education_level' => 'nullable',
-            'specialization_name' => 'nullable',
-            'university_name' => 'nullable',
+            'health_note' => 'nullable',
             'father_arrested' => 'nullable',
             'mother_arrested' => 'nullable',
             'husband_arrested' => 'nullable',

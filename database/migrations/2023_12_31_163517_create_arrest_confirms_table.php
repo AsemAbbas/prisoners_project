@@ -4,15 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('arrests', function (Blueprint $table) {
+        Schema::create('arrest_confirms', function (Blueprint $table) {
             $table->id();
+            $table->string('confirm_status')->index()->nullable();//enum
             $table->foreignId('prisoner_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('prisoner_confirm_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('arrest_start_date')->index()->nullable();
             $table->string('arrest_type')->index()->nullable();//enum
             $table->string('judgment_in_lifetime')->index()->nullable();//الحكم بالمؤبدات
@@ -50,6 +53,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('arrests');
+        Schema::dropIfExists('arrest_confirms');
     }
 };

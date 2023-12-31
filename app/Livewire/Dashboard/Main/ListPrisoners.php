@@ -124,11 +124,11 @@ class ListPrisoners extends Component
     public function getPrisonersProperty()
     {
 
-        if (isset($this->Search)) {
-            $this->Search = $this->replaceHamza($this->Search);
-            $this->Search = $this->replaceTaMarbuta($this->Search);
-            $this->Search = $this->removeDiacritics($this->Search);
-        }
+//        if (isset($this->Search)) {
+//            $this->Search = $this->replaceHamza($this->Search);
+//            $this->Search = $this->replaceTaMarbuta($this->Search);
+//            $this->Search = $this->removeDiacritics($this->Search);
+//        }
 
         return Prisoner::query()
             ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner'])
@@ -155,14 +155,10 @@ class ListPrisoners extends Component
                     })
                     ->orWhereHas('Arrest', function ($q) {
                         $q->where('arrest_type', 'LIKE', '%' . $this->Search . '%');
+                        $q->orWhere('social_type', 'LIKE', '%' . $this->Search . '%');
+                        $q->orWhere('wife_type', 'LIKE', '%' . $this->Search . '%');
                     })
-                    ->orWhereHas('Arrest', function ($q) {
-                        $q->where('social_type', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Arrest', function ($q) {
-                        $q->where('wife_type', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->whereHas('Arrest.Belong', function ($q) {
+                    ->orWhereHas('Arrest.Belong', function ($q) {
                         $q->where('belong_name', 'LIKE', '%' . $this->Search . '%');
                     });
             })
@@ -192,8 +188,10 @@ class ListPrisoners extends Component
                 });
                 $query->when(!empty($this->AdvanceSearch['prisoner_type']), function ($subQuery) {
                     $filteredPrisonerType = array_filter($this->AdvanceSearch['prisoner_type']);
-                    if (!empty($filteredPrisonerType)) {
-                        $subQuery->whereIn('prisoner_type_id', array_keys($filteredPrisonerType));
+                    if (!empty($filteredBelong)) {
+                        $subQuery->whereHas('PrisonerType', function ($q) use ($filteredPrisonerType) {
+                            $q->whereIn('prisoner_type_id', array_keys($filteredPrisonerType));
+                        });
                     }
                 });
                 $query->when(isset($this->AdvanceSearch['belong']), function ($subQuery) {

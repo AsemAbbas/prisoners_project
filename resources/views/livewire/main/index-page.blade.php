@@ -272,12 +272,8 @@
                                     @if($show)
                                         <ul class="nav nav-tabs nav-justified" dir="rtl">
                                             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab"
-                                                                    href="#tab-2-1" style=" font-size: 15px!important;">
+                                                                    href="#tab-2-1" style=" font-size: 18px!important;font-weight: bold;color:#ffffff;">
                                                     البيانات الأساسية </a></li>
-                                            {{--                                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab"--}}
-                                            {{--                                                                    href="#tab-2-3"--}}
-                                            {{--                                                                    style=" font-size: 15px!important;">--}}
-                                            {{--                                                    أقارب معتقلون </a></li>--}}
                                         </ul>
                                         <div class="tab-content" dir="rtl">
                                             <div class="tab-pane show active" id="tab-2-1">
@@ -292,7 +288,7 @@
                                                                     class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
-                                                                    <tr class="text-center">
+                                                                    <tr class="text-center" style="font-weight: bold">
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0 rounded-start">
                                                                             اسم
@@ -316,11 +312,11 @@
                                                                     <!-- Table item -->
                                                                     <tr class="text-center">
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->full_name ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             @php
                                                                                 $firstTwo = substr($prisoner->identification_number, 0, 2);
                                                                                 $lastTwo = substr($prisoner->identification_number, -2);
@@ -330,11 +326,11 @@
                                                                             {{$identification_number ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->date_of_birth ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->City->city_name ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
@@ -362,32 +358,23 @@
                                                                             class="border-0">
                                                                             الحكم
                                                                         </th>
-                                                                        <th style="width: 180px;" scope="col"
-                                                                            class="border-0 rounded-end">
-                                                                            الحالة الصحية
-                                                                        </th>
                                                                     </tr>
                                                                     </thead>
-
                                                                     <!-- Table body START -->
                                                                     <tbody class="border-top-0">
                                                                     <!-- Table item -->
                                                                     <tr class="text-center">
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->Arrest->arrest_start_date ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->Arrest->arrest_type ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
+                                                                        <td style="font-size: 18px!important;font-weight: bold;color:#000;">
                                                                             {{$prisoner->Arrest->judgment ?? 'لا يوجد'}}
-                                                                        </td>
-                                                                        <!-- Table data -->
-                                                                        <td style="font-size: 15px!important;">
-                                                                            {{$prisoner->Arrest->Health ? implode(',',$prisoner->Arrest->Health->pluck('health_name')->toArray()) : 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
                                                                     </tr>

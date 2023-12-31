@@ -89,7 +89,7 @@
             src: url('{{ asset('main/font/Changa-VariableFont_wght.ttf') }}'),
             url('{{ asset('main/font/Changa-VariableFont_wght.ttf') }}');
             /* Add additional font formats if available */
-            font-weight: 400; /* Adjust the font weight as needed */
+            font-weight: 500; /* Adjust the font weight as needed */
             font-style: normal; /* Adjust the font style as needed */
         }
 

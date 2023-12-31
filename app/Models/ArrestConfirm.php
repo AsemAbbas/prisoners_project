@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ArrestSuggestion extends Model
+class ArrestConfirm extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -37,11 +36,10 @@ class ArrestSuggestion extends Model
         }
     }
 
-    public function PrisonerSuggestion(): BelongsTo
+    public function PrisonerConfirm(): BelongsTo
     {
-        return $this->belongsTo(PrisonerSuggestion::class);
+        return $this->belongsTo(PrisonerConfirm::class);
     }
-
 
     public function Belong(): BelongsTo
     {

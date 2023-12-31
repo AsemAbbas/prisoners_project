@@ -89,17 +89,20 @@
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
                     @auth
-                        <a class="btn btn-primary mb-2" href="{{route('dashboard.prisoners.create')}}">
-                            إضافة أسير
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                 class="feather feather-plus-circle">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="16"></line>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                        </a>
+                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                            <a class="btn btn-primary mb-2" href="{{route('dashboard.prisoners.create')}}">
+                                إضافة أسير
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="feather feather-plus-circle">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </a>
+                        @endif
                     @endauth
                     @guest
                         <a class="btn btn-primary mb-2" href="{{route('dashboard.suggestions.create')}}">
@@ -116,7 +119,7 @@
                     @endguest
                 </div>
                 <div>
-                    <input wire:model.blur="Search" type="search" id="Search"
+                    <input wire:model.live="Search" type="search" id="Search"
                            placeholder="البحث في قائمة الأسرى...">
                     <label class="btn btn-info" for="Search">
                         البحث
@@ -129,29 +132,33 @@
                         </svg>
                     </label>
                     @auth
-                        <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
-                            البحث المتقدم
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                 class="feather feather-search">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                        </a>
-                        <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">
-                            الإستيراد والتصدير
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                 class="feather feather-file-text">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </a>
+                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                            <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
+                                البحث المتقدم
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="feather feather-search">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </a>
+                            <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">
+                                الإستيراد والتصدير
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="feather feather-file-text">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </a>
+                        @endif
                     @endauth
                 </div>
             </div>
@@ -166,7 +173,9 @@
                         <th style="min-width: 180px;font-weight: bold">الجنس</th>
                         <th style="min-width: 180px;font-weight: bold">المحافظة</th>
                         @auth
-                            <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>
+                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                                <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>
+                            @endif
                         @endauth
                         <th style="min-width: 180px;font-weight: bold">الخيارات</th>
                     </tr>
@@ -195,19 +204,28 @@
                                 {{--                                        @endif--}}
                                 {{--                                    </a>--}}
                                 {{--                                </td>--}}
-                                <td>
-                                    <a href="{{route('dashboard.relatives_prisoners',$row)}}" class="btn btn-dark-soft"
-                                       data-toggle="tooltip" data-placement="top" title="show">
-                                        @if(count($row->RelativesPrisoner) > 0)
-                                            أقارب معتقلون ({{count($row->RelativesPrisoner)}})
-                                        @else
-                                            أضف قريب
-                                        @endif
-                                    </a>
-                                </td>
+                                @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                                    <td>
+                                        <a href="{{route('dashboard.relatives_prisoners',$row)}}"
+                                           class="btn btn-dark-soft"
+                                           data-toggle="tooltip" data-placement="top" title="show">
+                                            @if(count($row->RelativesPrisoner) > 0)
+                                                أقارب معتقلون ({{count($row->RelativesPrisoner)}})
+                                            @else
+                                                أضف قريب
+                                            @endif
+                                        </a>
+                                    </td>
+                                @else
+                                    <td>
+                                        <a wire:click="show({{$row}})" class="btn btn-info">
+                                            عرض المزيد
+                                        </a>
+                                    </td>
+                                @endif
                             @endauth
-                            <td>
-                                @guest
+                            @guest
+                                <td>
                                     <a wire:click="show({{$row}})" class="btn btn-info">
                                         عرض المزيد
                                     </a>
@@ -215,20 +233,26 @@
                                        data-toggle="tooltip" data-placement="top" title="update">
                                         إقتراح تعديل
                                     </a>
-                                @endguest
-                                @auth
-                                    <a href="{{route('dashboard.prisoners.update',$row)}}" class="btn btn-warning"
-                                       data-toggle="tooltip" data-placement="top" title="Edit">
-                                        تعديل
-                                    </a>
-                                    @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                </td>
+                            @endguest
+                            @auth
+                                @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                                    <td>
+                                        <a href="{{route('dashboard.prisoners.update',$row)}}" class="btn btn-warning"
+                                           data-toggle="tooltip" data-placement="top" title="Edit">
+                                            تعديل
+                                        </a>
+                                    </td>
+                                @endif
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                    <td>
                                         <a wire:click="delete({{$row}})" class="btn btn-danger"
                                            title="Delete">
                                             حذف
                                         </a>
-                                    @endif
-                                @endauth
-                            </td>
+                                    </td>
+                                @endif
+                            @endauth
                         </tr>
                     @endforeach
                     </tbody>
@@ -789,7 +813,7 @@
                                      data-bs-parent="#toggleImport">
                                     <div class="card-body">
                                         <div
-                                                class="d-flex flex-column flex-wrap justify-content-around align-items-start">
+                                            class="d-flex flex-column flex-wrap justify-content-around align-items-start">
                                             <div class="mb-3">
                                                 <label>إضافة ملف</label>
                                                 <input type="file" wire:model="ImportFile" class="form-control">
@@ -824,9 +848,9 @@
                                         <div class="card-header bg-danger" id="headingOne3">
                                             <section class="mb-0 mt-0">
                                                 <div
-                                                        role="menu" class="collapsed" data-bs-toggle="collapse"
-                                                        data-bs-target="#iconAccordionOne" aria-expanded="false"
-                                                        aria-controls="iconAccordionOne">
+                                                    role="menu" class="collapsed" data-bs-toggle="collapse"
+                                                    data-bs-target="#iconAccordionOne" aria-expanded="false"
+                                                    aria-controls="iconAccordionOne">
                                                     <div class="accordion-icon text-white">
                                                         الأخطاء
                                                     </div>
@@ -945,7 +969,7 @@
                                                                     @foreach(\App\Enums\Gender::cases() as $row)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.gender.{{$row->value}}"
                                                                                        type="checkbox"
@@ -996,7 +1020,7 @@
                                                                     @foreach($Cities as $city)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.city.{{$city->id}}"
                                                                                        type="checkbox"
@@ -1048,7 +1072,7 @@
                                                                     @foreach($Belongs as $belong)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.belong.{{$belong->id}}"
                                                                                        type="checkbox"
@@ -1101,7 +1125,7 @@
                                                                     @foreach($PrisonerTypes as $prisoner_type)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.prisoner_type.{{$prisoner_type->id}}"
                                                                                        type="checkbox"
@@ -1154,7 +1178,7 @@
                                                                     @foreach(\App\Enums\SocialType::cases() as $row)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.social_type.{{$row->value}}"
                                                                                        type="checkbox"
@@ -1214,7 +1238,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4 mb-4">
                                                                         <div
-                                                                                class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="SelectAllPrisoner"
                                                                                    type="checkbox"
@@ -1228,7 +1252,7 @@
                                                                     @foreach($PrisonerColumn as $key => $row)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.selectPrisoner.{{$key}}"
                                                                                        type="checkbox"
@@ -1280,7 +1304,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4 mb-4">
                                                                         <div
-                                                                                class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="SelectAllArrest"
                                                                                    type="checkbox"
@@ -1294,7 +1318,7 @@
                                                                     @foreach($ArrestColumn as $key => $row)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
-                                                                                    class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="ExportData.selectArrest.{{$key}}"
                                                                                        type="checkbox"
@@ -1362,7 +1386,7 @@
                              class="feather feather-trash-2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path
-                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                         </svg>

@@ -249,6 +249,10 @@ class CreateUpdatePrisoners extends Component
             $this->state['daughter_arrested'] = null;
         }
 
+        if (isset($this->state['special_case']) && !in_array('مريض', array_filter(array_keys($this->state['special_case'])))) {
+            $this->state['health_note'] = null;
+        }
+
         if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
             $this->state['special_case']['حامل'] = false;
         }

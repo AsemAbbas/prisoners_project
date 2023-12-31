@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Dashboard\Main\ListPrisonerConfirms;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard\Auth\Login;
 use App\Livewire\Dashboard\Main\CreateUpdateNews;
@@ -13,15 +14,12 @@ use App\Livewire\Dashboard\NotFound;
 use App\Livewire\Dashboard\Sub\ListArrests;
 use App\Livewire\Dashboard\Sub\ListBelongs;
 use App\Livewire\Dashboard\Sub\ListCities;
-use App\Livewire\Dashboard\Sub\ListHealths;
 use App\Livewire\Dashboard\Sub\ListNewsTypes;
 use App\Livewire\Dashboard\Sub\ListPrisonerTypes;
 use App\Livewire\Dashboard\Sub\ListRelationships;
 use App\Livewire\Dashboard\Sub\ListRelativesPrisoners;
-use App\Livewire\Dashboard\Sub\ListRulings;
 use App\Livewire\Dashboard\Sub\ListSocialMedia;
 use App\Livewire\Dashboard\Sub\ListStatistics;
-use App\Livewire\Main\AboutUsPage;
 use App\Livewire\Main\IndexPage;
 use App\Livewire\Main\NewsPage;
 use App\Livewire\Main\NewsShowPage;
@@ -46,8 +44,6 @@ Route::get("/news_show/{url}", NewsShowPage::class)->name("news_show.index");
 
 Route::get('/page404', NotFound::class)->name('page404.index');
 
-Route::get('/about_us', AboutUsPage::class)->name('about_us.index');
-
 Route::prefix('dashboard')->group(function () {
 
     Route::get('/admin/login', Login::class)->name('dashboard.admin.login');
@@ -63,15 +59,14 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/prisoners/update/{prisoner}', CreateUpdatePrisoners::class)->name('dashboard.prisoners.update')->middleware('auth', 'editor');
     Route::get('/arrests/{prisoner_id?}', ListArrests::class)->name('dashboard.arrests');
 
+    Route::get('/confirms', ListPrisonerConfirms::class)->name('dashboard.confirms')->middleware('auth', 'editor');
     Route::get('/suggestions', ListPrisonerSuggestions::class)->name('dashboard.suggestions')->middleware('auth', 'reviewer');
     Route::get('/suggestions/create', CreateUpdateSuggestions::class)->name('dashboard.suggestions.create');
     Route::get('/suggestions/update/{suggestion}', CreateUpdateSuggestions::class)->name('dashboard.suggestions.update');
 
     Route::get('/relatives_prisoners/{prisoner_id?}', ListRelativesPrisoners::class)->name('dashboard.relatives_prisoners');
     Route::get('/cities', ListCities::class)->name('dashboard.cities')->middleware('auth', 'editor');
-    Route::get('/healths', ListHealths::class)->name('dashboard.healths')->middleware('auth', 'editor');
     Route::get('/belongs', ListBelongs::class)->name('dashboard.belongs')->middleware('auth', 'editor');
-    Route::get('/rulings', ListRulings::class)->name('dashboard.rulings')->middleware('auth', 'editor');
     Route::get('/prisoner_types', ListPrisonerTypes::class)->name('dashboard.prisoner_types')->middleware('auth', 'editor');
     Route::get('/news_types', ListNewsTypes::class)->name('dashboard.news_types')->middleware('auth', 'editor');
     Route::get('/relationships', ListRelationships::class)->name('dashboard.relationships')->middleware('auth', 'editor');

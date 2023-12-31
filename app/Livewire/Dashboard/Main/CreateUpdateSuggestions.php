@@ -9,15 +9,14 @@ use App\Enums\Gender;
 use App\Enums\SocialType;
 use App\Enums\SpecialCase;
 use App\Enums\WifeType;
-use App\Models\ArrestSuggestionsHealths;
 use App\Models\Belong;
 use App\Models\City;
-use App\Models\Health;
 use App\Models\OldArrestSuggestion;
 use App\Models\Prisoner;
 use App\Models\PrisonerSuggestion;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
+use App\Models\Town;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
@@ -34,11 +33,10 @@ class CreateUpdateSuggestions extends Component
     public object $Prisoners_;
     public bool $showEdit = false;
 
-
     public function mount($suggestion = null): void
     {
         if ($suggestion) {
-            $loadedPrisoner = Prisoner::with('City', 'PrisonerType', 'OldArrest', 'Arrest.Health')->find($suggestion);
+            $loadedPrisoner = Prisoner::with('City', 'PrisonerType', 'OldArrest', 'Arrest')->find($suggestion);
             if ($loadedPrisoner) {
                 $this->edit($loadedPrisoner);
             }
@@ -66,6 +64,7 @@ class CreateUpdateSuggestions extends Component
                 "date_of_birth" => $data['date_of_birth'] ?? null,
                 "gender" => $data['gender'] ?? null,
                 "city_id" => $data['city_id'] ?? null,
+                "town_id" => $data['town_id'] ?? null,
                 "notes" => $data['notes'] ?? null,
 
                 "arrest_start_date" => $data['arrest']['arrest_start_date'] ?? null,
@@ -75,12 +74,11 @@ class CreateUpdateSuggestions extends Component
                 "judgment_in_months" => $data['arrest']['judgment_in_months'] ?? null,
                 "belong_id" => $data['arrest']['belong_id'] ?? null,
                 "special_case" => array_fill_keys(explode(' ?? null,' ?? null, $data['arrest']['special_case']) ?? null, true) ?? null,
+                "health_note" => $data['arrest']['health_note'] ?? null,
                 "social_type" => $data['arrest']['social_type'] ?? null,
                 "wife_type" => $data['arrest']['wife_type'] ?? null,
                 "number_of_children" => $data['arrest']['number_of_children'] ?? null,
                 "education_level" => $data['arrest']['education_level'] ?? null,
-                "specialization_name" => $data['arrest']['specialization_name'] ?? null,
-                "university_name" => $data['arrest']['university_name'] ?? null,
                 "father_arrested" => (bool)$data['arrest']['father_arrested'] ?? null,
                 "mother_arrested" => (bool)$data['arrest']['mother_arrested'] ?? null,
                 "husband_arrested" => (bool)$data['arrest']['husband_arrested'] ?? null,
@@ -94,7 +92,6 @@ class CreateUpdateSuggestions extends Component
                 "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
                 "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
                 "email" => $data['arrest']['email'] ?? null,
-                "health" => array_fill_keys(array_column($data['arrest']['health'], 'id'), true) ?? null,
             ];
 
             $this->old_arrests = $data['old_arrest'];
@@ -107,10 +104,11 @@ class CreateUpdateSuggestions extends Component
     {
         $Belongs = Belong::all();
         $Cities = City::all();
-        $Healths = Health::all();
+        $city = !empty($this->state['city_id']) ? $this->state['city_id'] : null;
+        $Towns = Town::query()->where('city_id', $city)->get();
         $PrisonerTypes = PrisonerType::all();
         $Relationships = Relationship::all();
-        return view('livewire.dashboard.main.create-update-suggestions', compact('Belongs', 'Healths', 'PrisonerTypes', 'Cities', 'Relationships'));
+        return view('livewire.dashboard.main.create-update-suggestions', compact('Belongs', 'PrisonerTypes', 'Cities', 'Towns', 'Relationships'));
 
     }
 
@@ -131,12 +129,10 @@ class CreateUpdateSuggestions extends Component
      */
     public function ReviewMassage(): void
     {
-        $this->validateData(); // Validate input data
+        $this->validateData();
 
-        // Perform conditional data manipulations
         $this->manipulateData();
 
-        // Dispatch action if validation passes
         $this->dispatchAction();
     }
 
@@ -145,12 +141,6 @@ class CreateUpdateSuggestions extends Component
      */
     private function validateData(): void
     {
-        if (isset($this->state['special_case']))
-            $this->state['special_case_'] = array_keys(array_filter($this->state['special_case'])) ?? null;
-
-        if (isset($this->state['health']))
-            $this->state['health'] = array_filter($this->state['health']) ?? null;
-
         $rule = $this->showEdit
             ? "required|unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"
             : "required|unique:prisoners,identification_number,NULL,id,deleted_at,NULL";
@@ -170,21 +160,18 @@ class CreateUpdateSuggestions extends Component
             'mother_name' => "nullable",
             'date_of_birth' => "nullable",
             'gender' => "required|in:" . $this->subTables()['Gender'],
-            'city_id' => "nullable|in:" . $this->subTables()['Cities'],
-            'prisoner_type.*' => "nullable|in:" . $this->subTables()['PrisonerType'],
+            'city_id' => "nullable|in:" . $this->subTables()['City'],
+            'town_id' => "nullable|in:" . $this->subTables()['Town'],
+            'prisoner_type' => "nullable",
             'notes' => "nullable",
             //Arrest
             "arrest_start_date" => 'required',
             "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
-
             "judgment_in_lifetime" => 'nullable|integer',
             "judgment_in_years" => 'nullable|integer',
             "judgment_in_months" => 'nullable|integer',
-
             "education_level" => 'nullable|in:' . $this->subTables()['EducationLevel'],
-            "specialization_name" => 'nullable',
-            "university_name" => 'nullable',
-
+            "health_note" => 'nullable',
             "father_arrested" => 'nullable|boolean',
             "mother_arrested" => 'nullable|boolean',
             "husband_arrested" => 'nullable|boolean',
@@ -193,21 +180,15 @@ class CreateUpdateSuggestions extends Component
             "sister_arrested" => 'nullable|integer',
             "son_arrested" => 'nullable|integer',
             "daughter_arrested" => 'nullable|integer',
-
-
             'belong_id' => "nullable|in:" . $this->subTables()['Belongs'],
-            "health.*" => 'nullable|in:' . $this->subTables()['Health'],
-            "special_case_.*" => 'nullable',
-
+            "special_case" => 'nullable',
             'social_type' => "nullable|in:" . $this->subTables()['SocialType'],
             'wife_type' => "nullable|in:" . $this->subTables()['WifeType'],
             'number_of_children' => "nullable|integer",
-
             'first_phone_owner' => "required",
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-
             'email' => "nullable",
         ]);
 
@@ -226,12 +207,12 @@ class CreateUpdateSuggestions extends Component
     {
         return [
             'Relationship' => Relationship::query()->pluck('id')->implode(','),
-            'Health' => Health::query()->pluck('id')->implode(','),
             'ArrestType' => join(",", array_column(ArrestType::cases(), 'value')),
             'Belongs' => Belong::query()->pluck('id')->implode(','),
             'SocialType' => join(",", array_column(SocialType::cases(), 'value')),
             'WifeType' => join(",", array_column(WifeType::cases(), 'value')),
-            'Cities' => City::query()->pluck('id')->implode(','),
+            'City' => City::query()->pluck('id')->implode(','),
+            'Town' => Town::query()->pluck('id')->implode(','),
             'PrisonerType' => PrisonerType::query()->pluck('id')->implode(','),
             'Gender' => join(",", array_column(Gender::cases(), 'value')),
             'DefaultEnum' => join(",", array_column(DefaultEnum::cases(), 'value')),
@@ -248,10 +229,6 @@ class CreateUpdateSuggestions extends Component
         }
         if (isset($this->state['gender']) && $this->state['gender'] == "انثى") {
             $this->state['wife_type'] = null;
-        }
-        if (isset($this->state['education_level']) && $this->state['education_level'] == "ثانوية فما دون") {
-            $this->state['specialization_name'] = null;
-            $this->state['university_name'] = null;
         }
         if (isset($this->state['social_type']) && $this->state['social_type'] == "مطلق") {
             $this->state['wife_type'] = null;
@@ -271,8 +248,13 @@ class CreateUpdateSuggestions extends Component
             $this->state['son_arrested'] = null;
             $this->state['daughter_arrested'] = null;
         }
-        if (isset($this->state['special_case']) && !in_array('أمراض', array_filter(array_keys($this->state['special_case'])))) {
-            $this->state['health'] = [];
+
+        if (isset($this->state['special_case']) && !in_array('مريض', array_filter(array_keys($this->state['special_case'])))) {
+            $this->state['health_note'] = null;
+        }
+        
+        if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
+            $this->state['special_case']['حامل'] = false;
         }
 
         return $this->state;
@@ -296,11 +278,11 @@ class CreateUpdateSuggestions extends Component
                     }
                 }
             }
-            $this->createPrisoner(); // Create new prisoner data
+            $this->createPrisoner();
 
-            $this->Done(); // Notify completion
+            $this->Done();
         } catch (\Exception $e) {
-//            dd($e);
+            //dd($e);
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
     }
@@ -335,13 +317,14 @@ class CreateUpdateSuggestions extends Component
                 'date_of_birth' => $this->state['date_of_birth'] ?? null,
                 'gender' => $this->state['gender'] ?? null,
                 'city_id' => $this->state['city_id'] ?? null,
+                'town_id' => $this->state['town_id'] ?? null,
                 'notes' => $this->state['notes'] ?? null,
             ]);
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-//            dd($e);
+            //dd($e);
             abort(403, 'مشكلة في إضافة بيانات الأسير تواصل مع الدعم الفني');
         }
         DB::beginTransaction();
@@ -364,7 +347,7 @@ class CreateUpdateSuggestions extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-//            dd($e);
+            //dd($e);
             abort(403, 'مشكلة في إضافة إعتقالات سابقة للأسير تواصل مع الدعم الفني');
         }
         DB::beginTransaction();
@@ -380,15 +363,14 @@ class CreateUpdateSuggestions extends Component
                 'judgment_in_months' => $this->state['judgment_in_months'] ?? null,
 
                 'belong_id' => $this->state['belong_id'] ?? null,
-                'special_case' => $this->state['special_case'] ? implode(',', array_keys(array_filter($this->state['special_case']))) : null,
+                'special_case' => !empty($this->state['special_case']) ? implode(',', array_keys(array_filter($this->state['special_case']))) : null,
 
                 'social_type' => $this->state['social_type'] ?? null,
                 'wife_type' => $this->state['wife_type'] ?? null,
                 'number_of_children' => $this->state['number_of_children'] ?? null,
 
-                'specialization_name' => $this->state['specialization_name'] ?? null,
                 'education_level' => $this->state['education_level'] ?? null,
-                'university_name' => $this->state['university_name'] ?? null,
+                'health_note' => $this->state['health_note'] ?? null,
 
                 'father_arrested' => $this->state['father_arrested'] ?? null,
                 'mother_arrested' => $this->state['mother_arrested'] ?? null,
@@ -411,31 +393,9 @@ class CreateUpdateSuggestions extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-//            dd($e);
+            //dd($e);
             abort(403, 'مشكلة في إضافة بيانات الإعتقال للأسير تواصل مع الدعم الفني');
         }
-        DB::beginTransaction();
-        try {
-            $health = $this->state['health'] ? array_keys(array_filter($this->state['health'])) : null;
-            if (!empty($health)) {
-                foreach ($health as $type) {
-                    ArrestSuggestionsHealths::query()->create([
-                        'suggestion_status' => "يحتاج مراجعة",
-                        'prisoner_id' => $this->Prisoners_->id ?? null,
-                        'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
-                        'health_id' => $type,
-                        'arrest_suggestion_id' => $Arrest->id,
-                    ]);
-                }
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-//            dd($e);
-            abort(403, 'مشكلة في إضافة الحالة الصحية للأسير تواصل مع الدعم الفني');
-        }
-
-
     }
 
     public function Done(): void
