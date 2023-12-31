@@ -37,16 +37,11 @@ class ArrestSuggestion extends Model
         }
     }
 
-
     public function Prisoner(): BelongsTo
     {
         return $this->belongsTo(Prisoner::class);
     }
 
-    public function Health(): BelongsToMany
-    {
-        return $this->belongsToMany(Health::class, 'arrest_suggestions_healths', 'arrest_suggestion_id', 'health_id');
-    }
 
     public function Belong(): BelongsTo
     {

@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | {{$showEdit ? 'تعديل أسير' : 'إضافة أسير'}}
+    فجر الحرية | {{$showEdit ? 'تعديل أسير' : 'إضافة أسير'}}
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -198,7 +198,7 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="belong_id">الفصيل</label>
+                                    <label for="belong_id">الإنتماء</label>
                                     <select wire:model.live="state.belong_id"
                                             class="form-select @error('belong_id') is-invalid @enderror"
                                             id="belong_id">
@@ -654,11 +654,11 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="first_phone_owner">حامل رقم التواصل (واتس/تلجرام)</label>
+                                    <label for="first_phone_owner">اسم صاحب الرقم (واتس/تلجرام)</label>
                                     <input wire:model="state.first_phone_owner" type="text"
                                            class="form-control @error('first_phone_owner') is-invalid @enderror"
                                            id="first_phone_owner"
-                                           placeholder="اسم حامل الرقم">
+                                           placeholder="اسم صاحب الرقم">
                                     @error('first_phone_owner')
                                     <div class="error-message invalid-feedback"
                                          style="font-size: 15px">{{ $message }}</div>
@@ -676,11 +676,11 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="second_phone_owner">اسم حامل الرقم الإضافي</label>
+                                    <label for="second_phone_owner">اسم صاحب الرقم</label>
                                     <input wire:model="state.second_phone_owner" type="text"
                                            class="form-control @error('second_phone_owner') is-invalid @enderror"
                                            id="second_phone_owner"
-                                           placeholder="اسم حامل الرقم">
+                                           placeholder="اسم صاحب الرقم">
                                     @error('second_phone_owner')
                                     <div class="error-message invalid-feedback"
                                          style="font-size: 15px">{{ $message }}</div>
@@ -710,7 +710,7 @@
                                 </div>
                                 <div class="col-md-12 mb-3 text-center">
                                     <hr>
-                                    <h1>إعتقالات سابقة (إختياري)</h1>
+                                    <h1>إعتقالات سابقة (إن وجد)</h1>
                                     <hr>
                                 </div>
 

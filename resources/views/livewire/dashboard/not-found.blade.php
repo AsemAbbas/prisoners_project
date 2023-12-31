@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | الصفحة غير متوفرة!
+    فجر الحرية | الصفحة غير متوفرة!
 @endsection
 @section('style')
 @endsection

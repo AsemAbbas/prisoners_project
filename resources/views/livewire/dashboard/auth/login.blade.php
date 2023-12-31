@@ -1,5 +1,5 @@
 @section('title')
-    تسجيل دخول | بوابة الحرية
+    تسجيل دخول | فجر الحرية
 @endsection
 @section('style')
     <style>

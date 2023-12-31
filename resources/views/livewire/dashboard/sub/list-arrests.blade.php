@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة الإعتقاللات
+    فجر الحرية | قائمة الإعتقاللات
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -243,7 +243,7 @@
                                 </div>
                             @endif
                             <div class="form-group col-md-12 mb-4">
-                                <label for="belong_id">الفصيل</label>
+                                <label for="belong_id">الإنتماء</label>
                                 <select wire:model.live="state.belong_id"
                                         class="form-select @error('belong_id') is-invalid @enderror"
                                         id="belong_id">

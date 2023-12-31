@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة تصنيفات الأسرى
+    فجر الحرية | قائمة تصنيفات الأسرى
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

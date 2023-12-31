@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة تصنيفات الأخبار
+    فجر الحرية | قائمة تصنيفات الأخبار
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

@@ -16,16 +16,13 @@ class StatisticsSeeder extends Seeder
     {
         $belongs = [
             ['statistic_type' => 'الأسرى الإجمالي','statistic_number' => '100'],
-            ['statistic_type' => 'أسرى وفاء الأحرار','statistic_number' => '100'],
             ['statistic_type' => 'الأسيرات','statistic_number' => '100'],
+            ['statistic_type' => 'كبار السن (فوق 60 سنة)','statistic_number' => '100'],
             ['statistic_type' => 'الأسرى الأشبال','statistic_number' => '100'],
-            ['statistic_type' => 'الأسرى المرضى','statistic_number' => '100'],
             ['statistic_type' => 'الأسرى المؤبدات','statistic_number' => '100'],
+            ['statistic_type' => 'الأحكام العالية (فوق 10 سنوات)','statistic_number' => '100'],
             ['statistic_type' => 'الأسرى الإداريون','statistic_number' => '100'],
-            ['statistic_type' => 'أسرى 48','statistic_number' => '100'],
-            ['statistic_type' => 'أسرى القدس','statistic_number' => '100'],
-            ['statistic_type' => 'أسرى الدوريات','statistic_number' => '100'],
-            ['statistic_type' => 'عمداء الأسرى','statistic_number' => '100'],
+            ['statistic_type' => 'شهداء الحركة الأسيرة','statistic_number' => '100'],
         ];
         DB::table('statistics')->insert($belongs);
     }

@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة الفصائل
+    فجر الحرية | قائمة الفصائل
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -88,7 +88,7 @@
                     <thead>
                     <tr style="font-size: 16px">
                         <th>#</th>
-                        <th>اسم الفصيل</th>
+                        <th>اسم الإنتماء</th>
                         <th>الخيارات</th>
                     </tr>
                     </thead>
@@ -127,7 +127,7 @@
             <div class="modal-content bg-white">
                 <div class="modal-header {{$showEdit ? 'bg-warning': 'bg-primary'}}" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الفصيل':'إضافة فصيل'}}</h1>
+                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإنتماء':'إضافة فصيل'}}</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
@@ -135,11 +135,11 @@
                     <form wire:submit.prevent="{{$showEdit ? 'updateBelong':'createBelong'}}">
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <label for="belong_name">اسم الفصيل</label>
+                                <label for="belong_name">اسم الإنتماء</label>
                                 <input wire:model="state.belong_name" type="text"
                                        class="form-control @error('belong_name') is-invalid @enderror"
                                        id="belong_name"
-                                       placeholder="اسم الفصيل">
+                                       placeholder="اسم الإنتماء">
                                 @error('belong_name')
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
@@ -171,12 +171,12 @@
             <div class="modal-content bg-white">
                 <div class="modal-header bg-danger" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">حذف الفصيل</h1>
+                        id="staticBackdropLabel">حذف الإنتماء</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الفصيل؟</h5>
+                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الإنتماء؟</h5>
                     <span class="text-danger m-3">
                         * تنبية:
                         <span class="text-dark">
@@ -222,7 +222,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حذف بيانات الفصيل',
+                        text: 'تم حذف بيانات الإنتماء',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }
@@ -242,7 +242,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حفظ بيانات الفصيل',
+                        text: 'تم حفظ بيانات الإنتماء',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }

@@ -14,21 +14,6 @@ class Arrest extends Model
 
     protected $guarded = [];
 
-    public static function boot(): void
-    {
-        parent::boot();
-        self::deleting(function ($Arrest) {
-            ArrestsHealths::query()
-                ->where('arrest_id', $Arrest->id)
-                ->delete();
-        });
-    }
-
-    public function Health(): BelongsToMany
-    {
-        return $this->belongsToMany(Health::class, 'arrests_healths', 'arrest_id', 'health_id');
-    }
-
     public function getJudgmentAttribute(): ?string
     {
         $attributes = [];

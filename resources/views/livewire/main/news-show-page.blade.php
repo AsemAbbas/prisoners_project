@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | الأخبار
+    فجر الحرية | الأخبار
 @endsection
 @section('style')
 @endsection

@@ -18,8 +18,8 @@ class BelongsSeeder extends Seeder
             ['belong_name' => 'حماس'],
             ['belong_name' => 'فتح'],
             ['belong_name' => 'جهاد إسلامي'],
-            ['belong_name' => 'جبة شعبية'],
-            ['belong_name' => 'جبة ديمقراطية'],
+            ['belong_name' => 'جبهة شعبية'],
+            ['belong_name' => 'جبهة ديمقراطية'],
         ];
         DB::table('belongs')->insert($belongs);
     }

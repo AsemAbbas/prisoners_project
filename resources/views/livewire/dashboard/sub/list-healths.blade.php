@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة الحالة الصحية
+    فجر الحرية | قائمة الحالة الصحية
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

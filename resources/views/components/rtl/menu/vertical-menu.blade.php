@@ -188,9 +188,6 @@
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.cities' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.cities')}}">قائمة المحافظات</a>
                             </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.healths' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.healths')}}">قائمة الحالة الصحية</a>
-                            </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoner_types' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.prisoner_types')}}">قائمة تصنيفات الأسرى</a>
                             </li>

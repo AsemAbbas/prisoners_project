@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | الرئيسية
+    فجر الحرية | الرئيسية
 @endsection
 @section('style')
     <style>
@@ -9,48 +9,15 @@
             position: relative;
         }
 
-        .blurry-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            filter: blur(3px); /* Adjust the blur amount as needed */
-        }
-
-        .card-img-overlay {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            padding: 1.5rem; /* Adjust padding as needed */
-            z-index: 1; /* Ensures the text is above the background */
-        }
-
         .bg-gif {
-            /* Replace 'your_gif_url.gif' with the URL of your GIF */
-            background-image: url('{{asset('main/images/search_bg.gif')}}');
-            background-color: #117b5d;
-
-            {{--background-image: url('{{asset('main/images/search_bg_.gif')}}');--}}
-            {{--background-color: black;--}}
-
-               background-size: contain;
-            background-position: left;
-            background-repeat: no-repeat;
-            z-index: 0;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4); /* Adjust opacity by changing the last value (0.5) */
-            z-index: -1; /* Ensure it's above the content */
+            {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
+             background-color: #117b5d;
+            background-size: contain;
+            background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
+            background-repeat: no-repeat, no-repeat;
+            z-index: 2;
+            /*border-left: 8px solid black;*/
+            /*border-right: 8px solid black;*/
         }
 
         .text-input::placeholder {
@@ -70,7 +37,9 @@
                         <div class="row">
                             <div class="col-md-8 col-lg-6 mx-auto text-center py-5 position-relative"
                                  style="direction: rtl">
-                                <figure class="position-absolute translate-middle" style="bottom: 0;right: 20px">
+                                <figure class="position-absolute translate-middle"
+                                        @if(isset($error_ms)) style="bottom: 50px;right: 0"
+                                        @else style="bottom: 0;right: 0" @endif>
                                     <svg width="1848" height="481" viewBox="0 0 1848.9 481.8"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <path class="fill-success"
@@ -122,15 +91,15 @@
                                         </button>
                                     </div>
                                     @if(isset($error_ms))
-                                        <div class="col-sm-12 mt-3 text-white">
-                                            <span class="bg-danger p-2 rounded">
-                                                <span class="text-white p-0 m-0">{{$error_ms}}</span>
-                                                @if($error_ms === "لا يوجد بيانات مشابهة")
-                                                    <a href="{{route('dashboard.suggestions.create')}}"
-                                                       class="btn btn-link text-warning  p-0 m-0"
-                                                       style="font-size: 20px"> (إقتراح إضافة)</a>
-                                                @endif
+                                        <div class="col-6 mt-3 text-white mx-auto">
+                                            <span class="bg-dark p-2 rounded d-block" style="font-size: 17px">
+                                                {{$error_ms}}
                                             </span>
+                                            @if($error_ms === "لا يوجد بيانات مشابهة")
+                                                <a href="{{route('dashboard.suggestions.create')}}"
+                                                   class="btn btn-danger mt-2"
+                                                   style="font-size: 18px">إقتراح إضافة</a>
+                                            @endif
                                         </div>
                                     @endif
                                 </form>
@@ -141,6 +110,7 @@
             </div>
         </div>
     </section>
+
     <section class="pb-0 pt-3 mt-1 mb-3" dir="rtl">
         <div class="container">
             <div class="row">
@@ -148,11 +118,10 @@
                     <h4 class="mb-3 text-center"
                         style="font-family: 'Changa', sans-serif !important;font-size: 30px">الإحصائيات</h4>
                     <!-- Category item -->
-                    <div
-                            class="row">
+                    <div class="row">
                         @foreach($Statistics as $row)
                             <div
-                                    class="@if($row->statistic_type === "الأسرى الإجمالي") col-md-12 @endif col-md-4 mx-auto">
+                                class="@if($row->statistic_type === "الأسرى الإجمالي") col-md-12 @endif col-md-4 mx-auto">
                                 <div class="text-center mb-3 card-bg-scale position-relative overflow-hidden"
                                      style="border-radius: 10px!important;background-color:#117b5d;">
                                     <div class="p-3">
@@ -175,83 +144,87 @@
                                         </p>
                                         <p class="stretched-link btn-link fw-bold text-white counter"
                                            data-target="{{$row->statistic_number}}"
-                                           style="font-family: 'Changa', sans-serif !important;font-size: 25px;color: rgb(255,196,62)!important">
+                                           style="font-family: 'Changa', sans-serif !important;font-size: 25px;color: rgb(255,196,62)!important ;@if($row->statistic_type === "الأسرى الإجمالي") font-size: 35px ;color: rgb(255,255,255)!important @endif">
                                             {{$row->statistic_number}}
                                         </p>
                                     </div>
                                 </div>
+                                <div id="News"></div>
                             </div>
                         @endforeach
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
-    <section id="News" class="pt-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <!-- Card item START -->
-                    @php
 
-                            @endphp
-                    @foreach($News->where('on_slider')->take(2) as $row)
-                        <div class="card border rounded-3 up-hover p-4 mb-4" style="direction: rtl">
-                            <div class="row g-3">
-                                <div class="col-lg-5">
-                                    <!-- Categories -->
-                                    <a href="{{ route('news.index',$row->NewsType->news_type_name)}}"
-                                       class="badge text-bg-danger mb-2"
-                                       style="background-color:{{$row->NewsType->news_type_color}}!important;"><i
+    @if(count($News->where('on_slider')->take(2)) > 0)
+        <section class="pt-0">
+            <div class="container">
+                <div class="row">
+                    <h4 class="mb-3 text-center"
+                        style="font-family: 'Changa', sans-serif !important;font-size: 30px">الأخبار</h4>
+                    <!-- Category item -->
+                    <div class="col-12">
+                        <!-- Card item START -->
+                        @foreach($News->where('on_slider')->take(2) as $row)
+                            <div class="card border rounded-3 up-hover p-4 mb-4" style="direction: rtl">
+                                <div class="row g-3">
+                                    <div class="col-lg-5">
+                                        <!-- Categories -->
+                                        <a href="{{ route('news.index',$row->NewsType->news_type_name)}}"
+                                           class="badge text-bg-danger mb-2"
+                                           style="background-color:{{$row->NewsType->news_type_color}}!important;"><i
                                                 class="fas fa-circle me-2 small fw-bold"></i>{{$row->NewsType->news_type_name}}
-                                    </a>
-                                    <!-- Title -->
-                                    <h2 class="card-title"
-                                        style="font-family: 'Changa', sans-serif !important;font-size: 25px">
-                                        <a href="{{ route('news_show.index', ['url' => $row->news_url]) }}"
-                                           class="btn-link text-reset stretched-link">
-                                            {{$row->news_title}}
                                         </a>
-                                    </h2>
-                                    <!-- Author info -->
-                                    <div class="d-flex align-items-center position-relative mt-3">
-                                        <div>
-                                            <ul class="nav align-items-center small">
-                                                <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('M d, Y')}}</li>
-                                                <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('D')}}</li>
-                                            </ul>
+                                        <!-- Title -->
+                                        <h2 class="card-title"
+                                            style="font-family: 'Changa', sans-serif !important;font-size: 25px">
+                                            <a href="{{ route('news_show.index', ['url' => $row->news_url]) }}"
+                                               class="btn-link text-reset stretched-link">
+                                                {{$row->news_title}}
+                                            </a>
+                                        </h2>
+                                        <!-- Author info -->
+                                        <div class="d-flex align-items-center position-relative mt-3">
+                                            <div>
+                                                <ul class="nav align-items-center small">
+                                                    <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('M d, Y')}}</li>
+                                                    <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('D')}}</li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Detail -->
-                                @if(isset($row->news_short_description))
-                                    <div class="col-md-6 col-lg-4">
-                                        <p>
-                                            {{ strlen($row->news_short_description) > 500 ? substr($row->news_short_description, 0, 500) . '...' : $row->news_short_description}}
-                                        </p>
+                                    <!-- Detail -->
+                                    @if(isset($row->news_short_description))
+                                        <div class="col-md-6 col-lg-4">
+                                            <p>
+                                                {{ strlen($row->news_short_description) > 500 ? substr($row->news_short_description, 0, 500) . '...' : $row->news_short_description}}
+                                            </p>
+                                        </div>
+                                    @endif
+                                    <!-- Image -->
+                                    <div class="col-md-6 col-lg-3">
+                                        <img class="rounded-3" src="{{asset('storage/news_photo/'.$row->news_photo)}}"
+                                             alt="Card image">
                                     </div>
-                                @endif
-                                <!-- Image -->
-                                <div class="col-md-6 col-lg-3">
-                                    <img class="rounded-3" src="{{asset('storage/news_photo/'.$row->news_photo)}}"
-                                         alt="Card image">
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                    <!-- Card item END -->
+                        @endforeach
+                        <!-- Card item END -->
 
-                    <!-- Load more -->
-                    @if(count($News->where('on_slider')->take(2)) > 0)
+                        <!-- Load more -->
                         <a href="{{route('news.index')}}" style="font-size: 20px;background-color:#117b5d;color: white"
                            class="btn w-100 mt-4">
                             عرض جميع الأخبار
                         </a>
-                    @endif
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
     <div class="modal fade" dir="rtl" id="searchPrisonersModal" tabindex="-1" aria-hidden="false" wire:ignore.self>
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
@@ -316,7 +289,7 @@
                                                             <!-- Blog list table START -->
                                                             <div class="table-responsive border-0 mb-4">
                                                                 <table
-                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">
@@ -373,7 +346,7 @@
                                                             </div>
                                                             <div class="table-responsive border-0">
                                                                 <table
-                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">
@@ -453,10 +426,10 @@
             $('#searchPrisonersModal').modal('show');
         })
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             var counterStarted = false;
-            $(window).scroll(function() {
-                $('.counter').each(function() {
+            $(window).scroll(function () {
+                $('.counter').each(function () {
                     var target = $(this);
                     var targetPosition = target.offset().top;
                     var windowHeight = $(window).height();
@@ -475,7 +448,7 @@
                 var start = 0;
                 var increment = targetNumber / (duration / 10);
 
-                var timer = setInterval(function() {
+                var timer = setInterval(function () {
                     start += increment;
                     target.text(Math.floor(start));
 

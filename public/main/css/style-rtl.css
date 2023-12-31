@@ -3789,7 +3789,7 @@ textarea.form-control-lg {
   --bs-dropdown-divider-margin-y: 0.5rem;
   --bs-dropdown-box-shadow: 0px 20px 30px rgba(83, 88, 93, 0.05), 0px 0px 30px rgba(83, 88, 93, 0.1);
   --bs-dropdown-link-color: var(--bs-gray-600);
-  --bs-dropdown-link-hover-color: #2163e8;
+  --bs-dropdown-link-hover-color: #1a6b30;
   --bs-dropdown-link-hover-bg: transparent;
   --bs-dropdown-link-active-color: #2163e8;
   --bs-dropdown-link-active-bg: transparent;
@@ -4014,11 +4014,11 @@ textarea.form-control-lg {
   border-radius: var(--bs-dropdown-item-border-radius, 0);
 }
 .dropdown-item:hover, .dropdown-item:focus {
-  color: var(--bs-dropdown-link-hover-color);
+  color: #117b5d;
   background-color: var(--bs-dropdown-link-hover-bg);
 }
 .dropdown-item.active, .dropdown-item:active {
-  color: var(--bs-dropdown-link-active-color);
+    color: #117b5d;
   text-decoration: none;
   background-color: var(--bs-dropdown-link-active-bg);
 }
@@ -15026,13 +15026,13 @@ textarea.form-control-lg {
 }
 
 .dropdown-item.active {
-  color: var(--bs-primary);
+  color: #117b5d;
 }
 .dropdown-item.active:before {
   content: "";
   width: 7px;
   height: 7px;
-  background: var(--bs-primary);
+  background: #117b5d;
   display: inline-block;
   border-radius: 50%;
   margin-right: -12px;
@@ -16506,8 +16506,8 @@ html[data-theme=dark] .light-mode-item {
           transform: translateX(14%);
   height: 26px;
   width: 26px;
-  background: #d8831b;
-  border: 2px solid #d8831b;
+    background: #117b5d;
+    border: 2px solid #117b5d;
   border-radius: 50%;
   font-size: 14px;
   color: var(--bs-white);

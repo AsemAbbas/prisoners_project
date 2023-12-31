@@ -127,8 +127,8 @@ return [
         'prisoner_type_name' => 'اسم تصنيف الأسير',
         'news_type_color' => 'لون التصنيف',
         'news_type_name' => 'اسم التصنيف',
-        'belong_id' => 'الفصيل',
-        'belong_name' => 'اسم الفصيل',
+        'belong_id' => 'الإنتماء',
+        'belong_name' => 'اسم الإنتماء',
         'statistic_type' => 'نوع الإحصائية',
         'statistic_number' => 'مجموع الإحصائية',
         'social_name' => 'اسم الموقع',
@@ -140,9 +140,9 @@ return [
         'relationship_name' => 'اسم صلة القرابة',
         'social_type' => 'الحالة الإجتماعية',
         'first_phone_number' => 'رقم التواصل',
-        'first_phone_owner' => 'حامل رقم التواصل',
+        'first_phone_owner' => 'اسم صاحب الرقم',
         'second_phone_number' => 'رقم التواصل الإضافي',
-        'second_phone_owner' => 'حامل رقم التواصل الإضافي',
+        'second_phone_owner' => 'اسم صاحب الرقم الإضافي',
 
         'city_name' => 'اسم المحافظة',
 

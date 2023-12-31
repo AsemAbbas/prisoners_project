@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة المستخدمين
+    فجر الحرية | قائمة المستخدمين
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

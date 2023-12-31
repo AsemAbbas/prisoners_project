@@ -32,7 +32,6 @@ class IndexPage extends Component
     {
 
 
-
         // Replace 'أ' with 'ا' in Arabic names
         $this->search['first_name'] = $this->replaceHamza($this->search['first_name']);
         $this->search['second_name'] = $this->replaceHamza($this->search['second_name']);
@@ -60,6 +59,7 @@ class IndexPage extends Component
                         ->where('last_name', $this->search['last_name']);
                 })
                 ->get();
+
 
             if ($this->Prisoners->isEmpty()) {
                 $this->Prisoners = null;

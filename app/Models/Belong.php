@@ -17,8 +17,9 @@ class Belong extends Model
     {
         return $this->hasMany(Arrest::class);
     }
-    public function PrisonerSuggestion(): HasMany
+
+    public function ArrestSuggestion(): HasMany
     {
-        return $this->hasMany(PrisonerSuggestion::class);
+        return $this->hasMany(ArrestSuggestion::class);
     }
 }

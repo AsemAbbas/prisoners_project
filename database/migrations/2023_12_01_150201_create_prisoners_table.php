@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->date('date_of_birth')->nullable();
             $table->string('gender')->index()->nullable();//enum
             $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('town_id')->nullable()->constrained()->cascadeOnDelete();
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

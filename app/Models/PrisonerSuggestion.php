@@ -25,6 +25,11 @@ class PrisonerSuggestion extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function Town(): BelongsTo
+    {
+        return $this->belongsTo(Town::class);
+    }
+
     public function Relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class);

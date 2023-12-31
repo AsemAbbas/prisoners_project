@@ -21,4 +21,8 @@ class City extends Model
     {
         return $this->hasMany(PrisonerSuggestion::class);
     }
+    public function Town(): HasMany
+    {
+        return $this->hasMany(Town::class);
+    }
 }

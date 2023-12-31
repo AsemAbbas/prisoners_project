@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | قائمة الأقارب المعتقلون
+    فجر الحرية | قائمة الأقارب المعتقلون
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

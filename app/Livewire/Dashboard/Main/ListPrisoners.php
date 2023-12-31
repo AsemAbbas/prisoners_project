@@ -47,13 +47,12 @@ class ListPrisoners extends Component
     ];
     public array $ArrestColumn = [
         'arrest_start_date' => 'بداية الاعتقال',
-//        'arrest_end_date' => 'نهاية الاعتقال',
         'arrest_type' => 'نوع الاعتقال',
         'judgment_in_lifetime' => 'الحكم مؤبدات',
         'judgment_in_years' => 'الحكم سنوات',
         'judgment_in_months' => 'الحكم شهور',
         'belong_id' => 'الانتماء',
-        'health_id' => 'الحالة الصحية',
+        'health_note' => ',وصف المرض',
         'social_type' => 'الحالة الإجتماعية',
         'wife_type' => 'عدد الزوجات',
         'number_of_children' => 'عدد الأبناء',
@@ -93,7 +92,7 @@ class ListPrisoners extends Component
                 'judgment_in_years' => true,
                 'judgment_in_months' => true,
                 'belong_id' => true,
-                'health_id' => true,
+                'health_note' => true,
                 'social_type' => true,
                 'wife_type' => true,
                 'number_of_children' => true,
@@ -155,57 +154,16 @@ class ListPrisoners extends Component
                         $q->where('prisoner_type_name', 'LIKE', '%' . $this->Search . '%');
                     })
                     ->orWhereHas('Arrest', function ($q) {
-                        $q->where('arrest_start_date', function ($query) {
-                            $query->select('arrest_start_date')
-                                ->from('arrests')
-                                ->whereColumn('prisoner_id', 'prisoners.id') // Replace 'your_model_table.id' with the appropriate foreign key reference
-                                ->orderByDesc('arrest_start_date')
-                                ->limit(1);
-                        })->where('arrest_type', 'LIKE', '%' . $this->Search . '%');
+                        $q->where('arrest_type', 'LIKE', '%' . $this->Search . '%');
                     })
                     ->orWhereHas('Arrest', function ($q) {
-                        $q->where('social_type', function ($query) {
-                            $query->select('social_type')
-                                ->from('arrests')
-                                ->whereColumn('prisoner_id', 'prisoners.id') // Replace 'your_model_table.id' with the appropriate foreign key reference
-                                ->orderByDesc('arrest_start_date')
-                                ->limit(1);
-                        })->where('social_type', 'LIKE', '%' . $this->Search . '%');
+                        $q->where('social_type', 'LIKE', '%' . $this->Search . '%');
                     })
                     ->orWhereHas('Arrest', function ($q) {
-                        $q->where('wife_type', function ($query) {
-                            $query->select('wife_type')
-                                ->from('arrests')
-                                ->whereColumn('prisoner_id', 'prisoners.id') // Replace 'your_model_table.id' with the appropriate foreign key reference
-                                ->orderByDesc('arrest_start_date')
-                                ->limit(1);
-                        })->where('wife_type', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Arrest', function ($q) {
-                        $q->with('Belong') // Load the Belong relationship
-                        ->where('belong_id', function ($query) {
-                            $query->select('belong_id')
-                                ->from('arrests')
-                                ->whereColumn('prisoner_id', 'prisoners.id') // Replace 'prisoners.id' with the appropriate foreign key reference
-                                ->orderByDesc('arrest_start_date')
-                                ->limit(1);
-                        });
+                        $q->where('wife_type', 'LIKE', '%' . $this->Search . '%');
                     })
                     ->whereHas('Arrest.Belong', function ($q) {
                         $q->where('belong_name', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Arrest', function ($q) {
-                        $q->with('Health') // Load the Belong relationship
-                        ->where('health_id', function ($query) {
-                            $query->select('health_id')
-                                ->from('arrests')
-                                ->whereColumn('prisoner_id', 'prisoners.id') // Replace 'prisoners.id' with the appropriate foreign key reference
-                                ->orderByDesc('arrest_start_date')
-                                ->limit(1);
-                        });
-                    })
-                    ->whereHas('Arrest.Health', function ($q) {
-                        $q->where('health_name', 'LIKE', '%' . $this->Search . '%');
                     });
             })
             ->when(isset($this->AdvanceSearch), function ($query) {
@@ -238,18 +196,10 @@ class ListPrisoners extends Component
                         $subQuery->whereIn('prisoner_type_id', array_keys($filteredPrisonerType));
                     }
                 });
-                $query->when(isset($this->AdvanceSearch['health']), function ($subQuery) {
-                    $filteredHealth = array_filter($this->AdvanceSearch['health']);
-                    if (!empty($filteredHealth)) {
-                        $subQuery->whereHas('LastArrest', function ($q) use ($filteredHealth) {
-                            $q->whereIn('health_id', array_keys($filteredHealth));
-                        });
-                    }
-                });
                 $query->when(isset($this->AdvanceSearch['belong']), function ($subQuery) {
                     $filteredBelong = array_filter($this->AdvanceSearch['belong']);
                     if (!empty($filteredBelong)) {
-                        $subQuery->whereHas('LastArrest', function ($q) use ($filteredBelong) {
+                        $subQuery->whereHas('Arrest', function ($q) use ($filteredBelong) {
                             $q->whereIn('belong_id', array_keys($filteredBelong));
                         });
                     }
@@ -257,7 +207,7 @@ class ListPrisoners extends Component
                 $query->when(isset($this->AdvanceSearch['social_type']), function ($subQuery) {
                     $filteredSocialType = array_filter($this->AdvanceSearch['social_type']);
                     if (!empty($filteredSocialType)) {
-                        $subQuery->whereHas('LastArrest', function ($q) use ($filteredSocialType) {
+                        $subQuery->whereHas('Arrest', function ($q) use ($filteredSocialType) {
                             $q->whereIn('social_type', array_keys($filteredSocialType));
                         });
                     }
@@ -283,7 +233,6 @@ class ListPrisoners extends Component
 
         return str_replace($diacritics, '', $text);
     }
-
 
     public function updatedSearch(): void
     {
@@ -311,7 +260,6 @@ class ListPrisoners extends Component
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $Cities = City::all();
-        $Healths = Health::all();
         $Belongs = Belong::all();
         $PrisonerTypes = PrisonerType::all();
         $Prisoners = $this->getPrisonersProperty()->paginate(10);
@@ -326,7 +274,7 @@ class ListPrisoners extends Component
                 $this->SelectAllArrest = false;
             else $this->SelectAllArrest = true;
 
-        return view('livewire.dashboard.main.list-prisoners', compact('Prisoners', 'Healths', 'Belongs', 'PrisonerTypes', 'Cities'));
+        return view('livewire.dashboard.main.list-prisoners', compact('Prisoners', 'Belongs', 'PrisonerTypes', 'Cities'));
     }
 
     public function ImportExport(): void
@@ -371,7 +319,7 @@ class ListPrisoners extends Component
         }
 
         $Prisoner = Prisoner::query()
-            ->with('LastArrest', 'City', 'PrisonerType', 'RelativesPrisoner')
+            ->with('Arrest', 'City', 'PrisonerType', 'RelativesPrisoner')
             ->when(isset($this->ExportData), function ($query) use ($selectArrest, $selectPrisoner) {
                 $query->when(isset($this->ExportData['dob_from']) && isset($this->ExportData['dob_to']), function ($subQuery) {
                     $subQuery->whereBetween('date_of_birth', [$this->ExportData['dob_from'], $this->ExportData['dob_to']]);
@@ -400,14 +348,6 @@ class ListPrisoners extends Component
                     $filteredPrisonerType = array_filter($this->ExportData['prisoner_type']);
                     if (!empty($filteredPrisonerType)) {
                         $subQuery->whereIn('prisoner_type_id', array_keys($filteredPrisonerType));
-                    }
-                });
-                $query->when(isset($this->ExportData['health']), function ($subQuery) {
-                    $filteredHealth = array_filter($this->ExportData['health']);
-                    if (!empty($filteredHealth)) {
-                        $subQuery->whereHas('LastArrest', function ($q) use ($filteredHealth) {
-                            $q->whereIn('health_id', array_keys($filteredHealth));
-                        });
                     }
                 });
                 $query->when(isset($this->ExportData['belong']), function ($subQuery) {
@@ -443,11 +383,9 @@ class ListPrisoners extends Component
                 if (isset($selectArrest))
                     foreach ($selectArrest as $key) {
                         if ($key === 'belong_id') {
-                            $mappedData[$key] = $prisoner->LastArrest[0]->Belong->belong_name ?? null;
-                        } elseif ($key === 'health_id') {
-                            $mappedData[$key] = $prisoner->LastArrest[0]->Health->health_name ?? null;
+                            $mappedData[$key] = $prisoner->Arrest->Belong->belong_name ?? null;
                         } else {
-                            $mappedData[$key] = $prisoner->LastArrest[0]->$key ?? null;
+                            $mappedData[$key] = $prisoner->Arrest->$key ?? null;
                         }
                     }
 

@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | {{$showEdit ? 'تعديل خبر' : 'إضافة خبر'}}
+    فجر الحرية | {{$showEdit ? 'تعديل خبر' : 'إضافة خبر'}}
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">

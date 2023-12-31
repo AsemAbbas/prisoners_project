@@ -1,5 +1,5 @@
 @section('title')
-    بوابة الحرية | {{$showEdit ? 'تعديل أسير' : 'إضافة أسير'}}
+    فجر الحرية | {{$showEdit ? 'تعديل أسير' : 'إضافة أسير'}}
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -114,21 +114,6 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="city_id">المحافظة</label>
-                                    <select wire:model.live="state.city_id"
-                                            class="form-select @error('city_id') is-invalid @enderror"
-                                            id="city_id">
-                                        <option>إختر...</option>
-                                        @foreach($Cities as $city)
-                                            <option value="{{$city->id}}">{{$city->city_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('city_id')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-6 mb-4">
                                     <label for="gender">الجنس</label>
                                     <select wire:model.live="state.gender"
                                             class="form-select @error('gender') is-invalid @enderror"
@@ -144,7 +129,37 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="belong_id">الفصيل</label>
+                                    <label for="city_id">المحافظة</label>
+                                    <select wire:model.live="state.city_id"
+                                            class="form-select @error('city_id') is-invalid @enderror"
+                                            id="city_id">
+                                        <option>إختر...</option>
+                                        @foreach($Cities as $city)
+                                            <option value="{{$city->id}}">{{$city->city_name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('city_id')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6 mb-4">
+                                    <label for="town_id">البلدة</label>
+                                    <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled @endif
+                                            class="form-select @error('town_id') is-invalid @enderror"
+                                            id="town_id">
+                                        <option>إختر...</option>
+                                        @foreach($Towns as $town)
+                                            <option value="{{$town->id}}">{{$town->town_name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('town_id')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6 mb-4">
+                                    <label for="belong_id">الإنتماء</label>
                                     <select wire:model.live="state.belong_id"
                                             class="form-select @error('belong_id') is-invalid @enderror"
                                             id="belong_id">
@@ -244,7 +259,11 @@
                                 </div>
                                 @if(isset($state['arrest_type']) &&  in_array($state['arrest_type'],['محكوم','موقوف']))
                                     <div class="form-group col-md-4 mb-4">
-                                        <label for="judgment_in_lifetime">الحكم بالمؤبدات</label>
+                                        <label for="judgment_in_lifetime">
+                                            الحكم
+                                            {{$state['arrest_type'] == 'موقوف' ? 'المتوقع' : null}}
+                                            بالمؤبدات
+                                        </label>
                                         <input wire:model="state.judgment_in_lifetime"
                                                type="number"
                                                class="form-control @error('judgment_in_lifetime') is-invalid @enderror"
@@ -256,7 +275,11 @@
                                         @enderror
                                     </div>
                                     <div class="form-group col-md-4 mb-4">
-                                        <label for="judgment_in_years">الحكم بالسنوات</label>
+                                        <label for="judgment_in_years">
+                                            الحكم
+                                            {{$state['arrest_type'] == 'موقوف' ? 'المتوقع' : null}}
+                                            بالسنوات
+                                        </label>
                                         <input wire:model="state.judgment_in_years" type="number"
                                                class="form-control @error('judgment_in_years') is-invalid @enderror"
                                                placeholder="أرقام (اختياري)"
@@ -267,7 +290,11 @@
                                         @enderror
                                     </div>
                                     <div class="form-group col-md-4 mb-4">
-                                        <label for="judgment_in_months">الحكم بالأشهر</label>
+                                        <label for="judgment_in_months">
+                                            الحكم
+                                            {{$state['arrest_type'] == 'موقوف' ? 'المتوقع' : null}}
+                                            بالأشهر
+                                        </label>
                                         <input wire:model="state.judgment_in_months" type="number"
                                                class="form-control @error('judgment_in_months') is-invalid @enderror"
                                                placeholder="أرقام (اختياري)"
@@ -366,25 +393,46 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         @foreach(\App\Enums\SpecialCase::cases() as $index => $row)
-                                                            <div class="col-md-4 mb-4">
-                                                                <div
-                                                                    class="form-check form-check-dark form-check-inline">
-                                                                    <input class="form-check-input"
-                                                                           wire:model.live="state.special_case.{{$row->value}}"
-                                                                           type="checkbox"
-                                                                           id="form-check-dark">
-                                                                    <label class="form-check-label"
-                                                                           for="form-check-dark">
-                                                                        {{$row->value}}
-                                                                    </label>
+                                                            @if($row->value == 'حامل')
+                                                                @if(isset($state['gender']) && $state['gender'] == "انثى")
+                                                                    <div class="col-md-4 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.special_case.{{$row->value}}"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                {{$row->value}}
+                                                                            </label>
+                                                                        </div>
+                                                                        @error('state.special_case.' . $index)
+                                                                        <div class="error-message invalid-feedback"
+                                                                             style="font-size: 15px">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                @endif
+                                                            @else
+                                                                <div class="col-md-4 mb-4">
+                                                                    <div
+                                                                        class="form-check form-check-dark form-check-inline">
+                                                                        <input class="form-check-input"
+                                                                               wire:model.live="state.special_case.{{$row->value}}"
+                                                                               type="checkbox"
+                                                                               id="form-check-dark">
+                                                                        <label class="form-check-label"
+                                                                               for="form-check-dark">
+                                                                            {{$row->value}}
+                                                                        </label>
+                                                                    </div>
+                                                                    @error('state.special_case.' . $index)
+                                                                    <div class="error-message invalid-feedback"
+                                                                         style="font-size: 15px">{{ $message }}</div>
+                                                                    @enderror
                                                                 </div>
-                                                                @error('state.special_case.' . $index)
-                                                                <div class="error-message invalid-feedback"
-                                                                     style="font-size: 15px">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
+                                                            @endif
                                                         @endforeach
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -395,58 +443,17 @@
                                     @php
                                         $data = array_filter($state['special_case']);
                                     @endphp
-                                    @if(in_array("أمراض",array_filter(array_keys($data))))
+                                    @if(in_array("مريض",array_filter(array_keys($data))))
                                         <div class="form-group col-md-12 mb-4">
-                                            <label for="Health">الحالة الصحية</label>
-                                            <div id="toggleHealth" class="Health">
-                                                <div class="card">
-                                                    <div class="card-header" id="headingHealth" wire:ignore.self>
-                                                        <section class="mb-0 mt-0">
-                                                            <div role="menu"
-                                                                 class="collapsed d-flex justify-content-between"
-                                                                 data-bs-toggle="collapse"
-                                                                 data-bs-target="#defaultHealth"
-                                                                 aria-expanded="false"
-                                                                 aria-controls="defaultHealth">
-                                                                <p class="p-0 m-0">إختر...</p>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                     height="24"
-                                                                     viewBox="0 0 24 24" fill="none"
-                                                                     stroke="currentColor"
-                                                                     stroke-width="2" stroke-linecap="round"
-                                                                     stroke-linejoin="round"
-                                                                     class="feather feather-chevron-down">
-                                                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                                                </svg>
-                                                            </div>
-                                                        </section>
-                                                    </div>
-                                                    <div id="defaultHealth" class="collapse"
-                                                         aria-labelledby="headingHealth"
-                                                         wire:ignore.self
-                                                         data-bs-parent="#toggleHealth">
-                                                        <div class="card-body">
-                                                            <div class="row">
-                                                                @foreach($Healths as $row)
-                                                                    <div class="col-md-6 mb-4">
-                                                                        <div
-                                                                            class="form-check form-check-dark form-check-inline">
-                                                                            <input class="form-check-input"
-                                                                                   wire:model.live="state.health.{{$row->id}}"
-                                                                                   type="checkbox"
-                                                                                   id="form-check-dark">
-                                                                            <label class="form-check-label"
-                                                                                   for="form-check-dark">
-                                                                                {{$row->health_name}}
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <label for="health_note">وصف المرض</label>
+                                            <textarea id="health_note" rows="3"
+                                                      class="form-control @error('health_note') is-invalid @enderror"
+                                                      placeholder="إكتب وصف المرض..."
+                                                      wire:model="state.health_note"></textarea>
+                                            @error('health_note')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     @endif
                                     @if(in_array("أقارب معتقلين",array_filter(array_keys($data))))
@@ -609,31 +616,6 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                @if(isset($state['education_level']) && $state['education_level'] !== "ثانوية فما دون")
-                                    <div class="form-group col-md-6 mb-4">
-                                        <label for="specialization_name">التخصص</label>
-                                        <input wire:model="state.specialization_name" type="text"
-                                               class="form-control @error('specialization_name') is-invalid @enderror"
-                                               id="specialization_name"
-                                               placeholder="التخصص">
-                                        @error('specialization_name')
-                                        <div class="error-message invalid-feedback"
-                                             style="font-size: 15px">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="form-group col-md-6 mb-4">
-                                        <label for="university_name">الجامعة</label>
-                                        <input wire:model="state.university_name" type="text"
-                                               class="form-control @error('university_name') is-invalid @enderror"
-                                               id="university_name"
-                                               placeholder="الجامعة">
-                                        @error('university_name')
-                                        <div class="error-message invalid-feedback"
-                                             style="font-size: 15px">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                @endif
                                 <div class="form-group col-md-6 mb-4">
                                     <label for="first_phone_number">رقم التواصل (واتس/تلجرام)</label>
                                     <input wire:model="state.first_phone_number" type="text"
@@ -646,11 +628,11 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="first_phone_owner">حامل رقم التواصل (واتس/تلجرام)</label>
+                                    <label for="first_phone_owner">اسم صاحب الرقم (واتس/تلجرام)</label>
                                     <input wire:model="state.first_phone_owner" type="text"
                                            class="form-control @error('first_phone_owner') is-invalid @enderror"
                                            id="first_phone_owner"
-                                           placeholder="اسم حامل الرقم">
+                                           placeholder="اسم صاحب الرقم">
                                     @error('first_phone_owner')
                                     <div class="error-message invalid-feedback"
                                          style="font-size: 15px">{{ $message }}</div>
@@ -668,11 +650,11 @@
                                     @enderror
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
-                                    <label for="second_phone_owner">اسم حامل الرقم الإضافي</label>
+                                    <label for="second_phone_owner">اسم صاحب الرقم</label>
                                     <input wire:model="state.second_phone_owner" type="text"
                                            class="form-control @error('second_phone_owner') is-invalid @enderror"
                                            id="second_phone_owner"
-                                           placeholder="اسم حامل الرقم">
+                                           placeholder="اسم صاحب الرقم">
                                     @error('second_phone_owner')
                                     <div class="error-message invalid-feedback"
                                          style="font-size: 15px">{{ $message }}</div>
@@ -702,7 +684,7 @@
                                 </div>
                                 <div class="col-md-12 mb-3 text-center">
                                     <hr>
-                                    <h1>إعتقالات سابقة (إختياري)</h1>
+                                    <h1>إعتقالات سابقة (إن وجد)</h1>
                                     <hr>
                                 </div>
 
@@ -783,17 +765,18 @@
                     <div class="modal-body">
                         <h5 class="text-dark m-3">هل أنت متأكد من المعلومات؟</h5>
                         <span class="text-danger m-3">
-                        * تنبية:
-                            <span class="text-dark">
-                                    سيتم
-                                    {{$showEdit ? 'تعديل' : 'إضافة'}}
-                                    بيانات الأسير
-                                    {{$state['first_name'] . ' '. $state['last_name'] ?? null}}
-                            </span>
-                        </span>
+* تنبية:
+<span class="text-dark">
+    سيتم
+    {{$showEdit ? 'تعديل' : 'إضافة'}}
+    بيانات الأسير
+    {{!empty($state['first_name']) ? $state['first_name'] : null}} {{!empty($state['last_name']) ? $state['last_name'] : null}}
+</span>
+</span>
                     </div>
                     <div class="modal-footer d-flex justify-content-start align-items-start">
-                        <button type="submit" wire:click="ConfirmMassage" class="btn {{$showEdit ? 'bg-warning' : 'bg-success'}}">
+                        <button type="submit" wire:click="ConfirmMassage"
+                                class="btn {{$showEdit ? 'bg-warning' : 'bg-success'}}">
                             تأكيد
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

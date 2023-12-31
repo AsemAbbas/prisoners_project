@@ -1,14 +1,24 @@
-<header class="navbar-light navbar-sticky header-static">
+<header class="navbar-light navbar-sticky header-static mb-4 p-2">
     <!-- Logo Nav START -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <!-- Logo START -->
-            <a class="navbar-brand" href="{{route('main.index')}}">
-                <img class="navbar-brand-item light-mode-item" style="width: 135px!important; height: 100%!important;"
-                     src="{{asset('assets/images/logo.png')}}" alt="logo">
-                <img class="navbar-brand-item dark-mode-item" style="width: 135px!important; height: 100%!important;"
-                     src="{{asset('assets/images/light-logo.png')}}" alt="logo">
-            </a>
+            <div class="text-center mt-2">
+                <a class="navbar-brand p-0 m-0 d-block" href="{{route('main.index')}}">
+                    <img class="navbar-brand-item light-mode-item" style="width: 110px!important; height: 100%!important;"
+                         src="{{asset('assets/images/logo.png')}}" alt="logo">
+                    <img class="navbar-brand-item dark-mode-item" style="width: 110px!important; height: 100%!important;"
+                         src="{{asset('assets/images/light-logo.png')}}" alt="logo">
+                </a>
+                <div style="background-color:#11567b" class="p-1 text-center rounded">
+                    <a href="https://web.telegram.org/a/" class="text-white" style="font-weight: bold" target="_blank">
+                        <img width="25" src="{{asset('main/images/telegram.gif')}}" alt="تلجرام">
+                        تواصل معنا
+                    </a>
+                </div>
+                {{--                <div style="position: relative; background-image: linear-gradient(to right, #D52B1E, #D52B1E 25%, #FFFFFF 25%, #FFFFFF 50%, #00A651 50%, #00A651 75%, #000000 75%);" class="py-1 text-center rounded"></div>--}}
+            </div>
+
             <!-- Logo END -->
 
             <!-- Responsive navbar toggler -->
@@ -29,16 +39,24 @@
                                             href="{{route('main.index')}}">الرئيسية</a>
                     </li>
                     <li class="nav-item"><a style="font-weight: bold;font-size: 17px" class="nav-link"
-                                            href="/#Search">الإستعلام</a>
+                                            href="#Search">الإستعلام</a>
                     </li>
                     <li class="nav-item"><a style="font-weight: bold;font-size: 17px" class="nav-link"
-                                            href="/#Statistics">إحصائيات</a></li>
+                                            href="#Statistics">إحصائيات</a></li>
 
                     <li class="nav-item"><a style="font-weight: bold;font-size: 17px" class="nav-link"
-                                            href="/#News">أخبار</a>
+                                            href="#News">أخبار</a>
                     </li>
                     <li class="nav-item"><a style="font-weight: bold;font-size: 17px" class="nav-link"
-                                            href="{{route('about_us.index')}}">من نحن</a></li>
+                                            href="#footer">من نحن</a></li>
+                    {{--                    <li class="nav-item">--}}
+                    {{--                        <div class="nav-link">--}}
+                    {{--                            <a style="background-color:#11567b" href="https://web.telegram.org/a/" class="p-2 text-white rounded">--}}
+                    {{--                                <img width="25" src="{{asset('main/images/telegram.gif')}}" alt="تلجرام">--}}
+                    {{--                                تواصل معنا--}}
+                    {{--                            </a>--}}
+                    {{--                        </div>--}}
+                    {{--                    </li>--}}
 
                 </ul>
 
@@ -56,7 +74,9 @@
             </div>
             <!-- Main navbar END -->
             <!-- Dark mode options START -->
-            <div class="nav-item dropdown ms-4">
+            <div style="width: 80px;height: 80px;background-image:url('{{asset('main/images/palestine_flag.gif')}}');background-size: 100px;background-position: center;background-repeat: no-repeat;z-index: 2">
+            </div>
+            <div class="nav-item dropdown ms-3">
                 <!-- Switch button -->
                 <button class="modeswitch" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
                         data-bs-display="static">

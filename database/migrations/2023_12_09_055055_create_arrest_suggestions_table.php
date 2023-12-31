@@ -24,6 +24,7 @@ return new class extends Migration {
 
             $table->foreignId('belong_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('special_case')->index()->nullable();//enum
+            $table->text('health_note')->nullable();
             $table->string('social_type')->index()->nullable();//enum
             $table->string('wife_type')->index()->nullable();//enum
             $table->string('number_of_children')->index()->nullable();
