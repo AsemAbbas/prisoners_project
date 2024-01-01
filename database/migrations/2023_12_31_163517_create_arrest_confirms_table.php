@@ -28,8 +28,6 @@ return new class extends Migration
             $table->string('wife_type')->index()->nullable();//enum
             $table->string('number_of_children')->index()->nullable();
             $table->string('education_level')->index()->nullable();//enum
-            $table->string('specialization_name')->nullable();
-            $table->string('university_name')->nullable();
             $table->string('father_arrested')->nullable();//enum
             $table->string('mother_arrested')->nullable();//enum
             $table->string('husband_arrested')->nullable();//enum

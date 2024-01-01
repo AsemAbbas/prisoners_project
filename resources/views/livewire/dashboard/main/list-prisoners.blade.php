@@ -317,6 +317,44 @@
                                 <hr>
                             </div>
                             <div class="form-group col-md-12 mb-4 text-center">
+                                <h3>الحكم مؤبدات<span class="text-secondary" style="font-size: 18px">(إختياري)</span>
+                                </h3>
+                            </div>
+                            <div class="form-group col-md-6 mb-4">
+                                <label for="judgment_in_lifetime_from">من</label>
+                                <input wire:model="AdvanceSearch.judgment_in_lifetime_from" type="number"
+                                       class="form-control"
+                                       id="judgment_in_lifetime_from">
+                            </div>
+                            <div class="form-group col-md-6 mb-4">
+                                <label for="judgment_in_lifetime_to">إلى</label>
+                                <input wire:model="AdvanceSearch.judgment_in_lifetime_to" type="number"
+                                       class="form-control"
+                                       id="judgment_in_lifetime_to">
+                            </div>
+                            <div class="form-group col-md-12 mb-4 text-center">
+                                <hr>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 text-center">
+                                <h3>الحكم سنوات<span class="text-secondary" style="font-size: 18px">(إختياري)</span>
+                                </h3>
+                            </div>
+                            <div class="form-group col-md-6 mb-4">
+                                <label for="judgment_in_years_from">من</label>
+                                <input wire:model="AdvanceSearch.judgment_in_years_from" type="number"
+                                       class="form-control"
+                                       id="judgment_in_years_from">
+                            </div>
+                            <div class="form-group col-md-6 mb-4">
+                                <label for="judgment_in_years_to">إلى</label>
+                                <input wire:model="AdvanceSearch.judgment_in_years_to" type="number"
+                                       class="form-control"
+                                       id="judgment_in_years_to">
+                            </div>
+                            <div class="form-group col-md-12 mb-4 text-center">
+                                <hr>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 text-center">
                                 <h3>بيانات اخرى <span class="text-secondary" style="font-size: 18px">(إختياري)</span>
                                 </h3>
                             </div>
@@ -460,6 +498,63 @@
                             </div>
 
                             <div class="form-group col-md-12 mb-4">
+                                <label for="Town">البلدة</label>
+                                <div id="toggleTown" class="Town">
+                                    <div class="card">
+                                        <div class="card-header" id="headingTown" wire:ignore.self>
+                                            <section class="mb-0 mt-0">
+                                                <div role="menu"
+                                                     class="collapsed d-flex justify-content-between"
+                                                     data-bs-toggle="collapse"
+                                                     data-bs-target="#defaultTown" aria-expanded="false"
+                                                     aria-controls="defaultTown">
+                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                         height="24"
+                                                         viewBox="0 0 24 24" fill="none"
+                                                         stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round"
+                                                         stroke-linejoin="round"
+                                                         class="feather feather-chevron-down">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </div>
+                                            </section>
+                                        </div>
+                                        <div id="defaultTown" class="collapse"
+                                             aria-labelledby="headingTown"
+                                             wire:ignore.self
+                                             data-bs-parent="#toggleTown">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-4">
+                                                        <input class="form-control" type="text"
+                                                               placeholder="بحث عن بلدة"
+                                                               wire:model.live="town_search">
+                                                    </div>
+                                                    @foreach($Towns as $key => $town)
+                                                        <div class="col-md-4 mb-4">
+                                                            <div
+                                                                class="form-check form-check-dark form-check-inline">
+                                                                <input class="form-check-input"
+                                                                       wire:model.live="ExportData.town.{{$town->id}}"
+                                                                       type="checkbox"
+                                                                       id="form-check-dark_{{$key}}">
+                                                                <label class="form-check-label"
+                                                                       for="form-check-dark_{{$key}}">
+                                                                    {{$town->town_name}}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-4">
                                 <label for="Belong">الإنتماء</label>
                                 <div id="toggleBelong" class="Belong">
                                     <div class="card">
@@ -552,7 +647,59 @@
                                 </div>
                             </div>
 
-
+                            <div class="form-group col-md-12 mb-4">
+                                <label for="SpecialCase">الحالات الخاصة</label>
+                                <div id="toggleSpecialCase" class="SpecialCase">
+                                    <div class="card">
+                                        <div class="card-header" id="headingSpecialCase"
+                                             wire:ignore.self>
+                                            <section class="mb-0 mt-0">
+                                                <div role="menu"
+                                                     class="collapsed d-flex justify-content-between"
+                                                     data-bs-toggle="collapse"
+                                                     data-bs-target="#defaultSpecialCase"
+                                                     aria-expanded="false"
+                                                     aria-controls="defaultSpecialCase">
+                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                         height="24"
+                                                         viewBox="0 0 24 24" fill="none"
+                                                         stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round"
+                                                         stroke-linejoin="round"
+                                                         class="feather feather-chevron-down">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </div>
+                                            </section>
+                                        </div>
+                                        <div id="defaultSpecialCase" class="collapse"
+                                             aria-labelledby="headingSpecialCase"
+                                             wire:ignore.self
+                                             data-bs-parent="#toggleSpecialCase">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    @foreach(\App\Enums\SpecialCase::cases() as $key => $row)
+                                                        <div class="col-md-4 mb-4">
+                                                            <div
+                                                                class="form-check form-check-dark form-check-inline">
+                                                                <input class="form-check-input"
+                                                                       wire:model.live="AdvanceSearch.special_case.{{$row->value}}"
+                                                                       type="checkbox"
+                                                                       id="form-check-dark_{{$key}}">
+                                                                <label class="form-check-label"
+                                                                       for="form-check-dark_{{$key}}">
+                                                                    {{$row->value}}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer d-flex justify-content-start align-items-start">
                             <button type="submit" class="btn btn-secondary">بحث
@@ -932,6 +1079,44 @@
                                                 <hr>
                                             </div>
                                             <div class="form-group col-md-12 mb-4 text-center">
+                                                <h3>الحكم مؤبدات<span class="text-danger" style="font-size: 18px">(إختياري)</span>
+                                                </h3>
+                                            </div>
+                                            <div class="form-group col-md-6 mb-4">
+                                                <label for="judgment_in_lifetime_from">من</label>
+                                                <input wire:model="ExportData.judgment_in_lifetime_from" type="number"
+                                                       class="form-control"
+                                                       id="judgment_in_lifetime_from">
+                                            </div>
+                                            <div class="form-group col-md-6 mb-4">
+                                                <label for="judgment_in_lifetime_to">إلى</label>
+                                                <input wire:model="ExportData.judgment_in_lifetime_to" type="number"
+                                                       class="form-control"
+                                                       id="judgment_in_lifetime_to">
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4 text-center">
+                                                <hr>
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4 text-center">
+                                                <h3>الحكم سنوات<span class="text-danger" style="font-size: 18px">(إختياري)</span>
+                                                </h3>
+                                            </div>
+                                            <div class="form-group col-md-6 mb-4">
+                                                <label for="judgment_in_years_from">من</label>
+                                                <input wire:model="ExportData.judgment_in_years_from" type="number"
+                                                       class="form-control"
+                                                       id="judgment_in_years_from">
+                                            </div>
+                                            <div class="form-group col-md-6 mb-4">
+                                                <label for="judgment_in_years_to">إلى</label>
+                                                <input wire:model="ExportData.judgment_in_years_to" type="number"
+                                                       class="form-control"
+                                                       id="judgment_in_years_to">
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4 text-center">
+                                                <hr>
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4 text-center">
                                                 <h3>بيانات اخرى <span class="text-danger" style="font-size: 18px">(إختياري)</span>
                                                 </h3>
                                             </div>
@@ -988,6 +1173,60 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-6 mb-4">
+                                                <label for="SocialType">الحالة الإجتماعية</label>
+                                                <div id="toggleSocialType" class="SocialType">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingSocialType"
+                                                             wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultSocialType"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultSocialType">
+                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultSocialType" class="collapse"
+                                                             aria-labelledby="headingSocialType"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleSocialType">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    @foreach(\App\Enums\SocialType::cases() as $row)
+                                                                        <div class="col-md-4 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="ExportData.social_type.{{$row->value}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$row->value}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group col-md-12 mb-4">
                                                 <label for="City">المحافظة</label>
                                                 <div id="toggleCity" class="City">
                                                     <div class="card">
@@ -1038,7 +1277,63 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-6 mb-4">
+                                            <div class="form-group col-md-12 mb-4">
+                                                <label for="Town">البلدة</label>
+                                                <div id="toggleTown" class="Town">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingTown" wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultTown" aria-expanded="false"
+                                                                     aria-controls="defaultTown">
+                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultTown" class="collapse"
+                                                             aria-labelledby="headingTown"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleTown">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <input class="form-control" type="text"
+                                                                               placeholder="بحث عن بلدة"
+                                                                               wire:model.live="town_search">
+                                                                    </div>
+                                                                    @foreach($Towns as $key => $town)
+                                                                        <div class="col-md-4 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="ExportData.town.{{$town->id}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark_{{$key}}">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark_{{$key}}">
+                                                                                    {{$town->town_name}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4">
                                                 <label for="Belong">الإنتماء</label>
                                                 <div id="toggleBelong" class="Belong">
                                                     <div class="card">
@@ -1090,7 +1385,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-6 mb-4">
+                                            <div class="form-group col-md-12 mb-4">
                                                 <label for="PrisonerType">التصنيف</label>
                                                 <div id="togglePrisonerType" class="PrisonerType">
                                                     <div class="card">
@@ -1143,19 +1438,19 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="SocialType">الحالة الإجتماعية</label>
-                                                <div id="toggleSocialType" class="SocialType">
+                                            <div class="form-group col-md-12 mb-4">
+                                                <label for="SpecialCase">الحالات الخاصة</label>
+                                                <div id="toggleSpecialCase" class="SpecialCase">
                                                     <div class="card">
-                                                        <div class="card-header" id="headingSocialType"
+                                                        <div class="card-header" id="headingSpecialCase"
                                                              wire:ignore.self>
                                                             <section class="mb-0 mt-0">
                                                                 <div role="menu"
                                                                      class="collapsed d-flex justify-content-between"
                                                                      data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultSocialType"
+                                                                     data-bs-target="#defaultSpecialCase"
                                                                      aria-expanded="false"
-                                                                     aria-controls="defaultSocialType">
+                                                                     aria-controls="defaultSpecialCase">
                                                                     <p class="p-0 m-0">إختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
@@ -1169,22 +1464,22 @@
                                                                 </div>
                                                             </section>
                                                         </div>
-                                                        <div id="defaultSocialType" class="collapse"
-                                                             aria-labelledby="headingSocialType"
+                                                        <div id="defaultSpecialCase" class="collapse"
+                                                             aria-labelledby="headingSpecialCase"
                                                              wire:ignore.self
-                                                             data-bs-parent="#toggleSocialType">
+                                                             data-bs-parent="#toggleSpecialCase">
                                                             <div class="card-body">
                                                                 <div class="row">
-                                                                    @foreach(\App\Enums\SocialType::cases() as $row)
+                                                                    @foreach(\App\Enums\SpecialCase::cases() as $key => $row)
                                                                         <div class="col-md-4 mb-4">
                                                                             <div
                                                                                 class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.social_type.{{$row->value}}"
+                                                                                       wire:model.live="ExportData.special_case.{{$row->value}}"
                                                                                        type="checkbox"
-                                                                                       id="form-check-dark">
+                                                                                       id="form-check-dark_{{$key}}">
                                                                                 <label class="form-check-label"
-                                                                                       for="form-check-dark">
+                                                                                       for="form-check-dark_{{$key}}">
                                                                                     {{$row->value}}
                                                                                 </label>
                                                                             </div>

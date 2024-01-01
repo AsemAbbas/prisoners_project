@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-             background-color: #117b5d;
+                background-color: #117b5d;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -190,8 +190,8 @@
                                         <div class="d-flex align-items-center position-relative mt-3">
                                             <div>
                                                 <ul class="nav align-items-center small">
-                                                    <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('M d, Y')}}</li>
-                                                    <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('D')}}</li>
+                                                    <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->isoFormat('D MMMM، YYYY')}}</li>
+                                                    <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->isoFormat('dddd')}}</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -272,7 +272,8 @@
                                     @if($show)
                                         <ul class="nav nav-tabs nav-justified" dir="rtl">
                                             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab"
-                                                                    href="#tab-2-1" style=" font-size: 18px!important;font-weight: bold;color:#ffffff;">
+                                                                    href="#tab-2-1"
+                                                                    style=" font-size: 18px!important;font-weight: bold;color:#ffffff;">
                                                     البيانات الأساسية </a></li>
                                         </ul>
                                         <div class="tab-content" dir="rtl">

@@ -119,6 +119,16 @@ return [
     'attributes' => [
 
 
+        'news_title' => 'عنوان الخبر',
+        'news_photo' => 'صورة الخبر',
+        'news_url' => 'رابط الخبر',
+        'news_type_id' => 'تصنيف الخبر',
+        'town_id' => 'البلدة',
+        'city_id' => 'المحافظة',
+        'education_level' => 'المستوى التعليمي',
+
+
+
         'suggester_identification_number' => 'رقم هوية مقدم البيانات',
         'suggester_name' => 'اسم مقدم البيانات',
         'suggester_phone_number' => 'رقم هاتف مقدم البيانات',

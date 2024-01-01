@@ -21,6 +21,7 @@ class IndexPage extends Component
     ];
     public ?object $Prisoners = null;
 
+
     public ?string $error_ms = null;
 
     public bool $show = false;
@@ -30,8 +31,6 @@ class IndexPage extends Component
 
     public function SearchPrisoners(): void
     {
-
-
         // Replace 'أ' with 'ا' in Arabic names
         $this->search['first_name'] = $this->replaceHamza($this->search['first_name']);
         $this->search['second_name'] = $this->replaceHamza($this->search['second_name']);
@@ -51,7 +50,7 @@ class IndexPage extends Component
 
         if (!empty(array_filter($this->search))) {
             $this->Prisoners = Prisoner::query()
-                ->with('City','Arrest','RelativesPrisoner')
+                ->with('City', 'Arrest', 'RelativesPrisoner')
                 ->where('identification_number', $this->search['identification_number'])
                 ->orWhere(function ($q) {
                     $q->where('first_name', $this->search['first_name'])
@@ -71,12 +70,9 @@ class IndexPage extends Component
             $this->Prisoners = null;
             $this->error_ms = 'عليك تعبئة الاسم أو رقم الهوية';
         }
+
     }
 
-    private function replaceSpace($text): array|string
-    {
-        return str_replace(' ', '', $text);
-    }
 
     private function replaceHamza($text): array|string
     {
@@ -96,10 +92,6 @@ class IndexPage extends Component
 
         return str_replace($diacritics, '', $text);
     }
-    private function replaceAlefMaksura($text): array|string
-    {
-        return str_replace('ى', 'ي', $text);
-    }
 
     public function showDetails(): void
     {
@@ -118,5 +110,15 @@ class IndexPage extends Component
         $SocialMedia = SocialMedia::all();
         return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia'))
             ->layout('components.layouts.main');
+    }
+
+    private function replaceSpace($text): array|string
+    {
+        return str_replace(' ', '', $text);
+    }
+
+    private function replaceAlefMaksura($text): array|string
+    {
+        return str_replace('ى', 'ي', $text);
     }
 }

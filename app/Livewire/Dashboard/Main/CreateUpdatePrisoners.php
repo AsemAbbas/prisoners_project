@@ -73,8 +73,6 @@ class CreateUpdatePrisoners extends Component
                 "wife_type" => $data['arrest']['wife_type'],
                 "number_of_children" => $data['arrest']['number_of_children'],
                 "education_level" => $data['arrest']['education_level'],
-                "specialization_name" => $data['arrest']['specialization_name'],
-                "university_name" => $data['arrest']['university_name'],
                 "father_arrested" => (bool)$data['arrest']['father_arrested'],
                 "mother_arrested" => (bool)$data['arrest']['mother_arrested'],
                 "husband_arrested" => (bool)$data['arrest']['husband_arrested'],

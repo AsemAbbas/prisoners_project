@@ -75,7 +75,7 @@ class PrisonerImport implements
             'wife_type' => $row['wife_type'] ?? null,
             'number_of_children' => $row['number_of_children'] ?? null,
             'education_level' => $row['education_level'] ?? null,
-            'health_note' => $row['university_name'] ?? null,
+            'health_note' => $row['health_note'] ?? null,
             'father_arrested' => $row['father_arrested'] ?? null,
             'mother_arrested' => $row['mother_arrested'] ?? null,
             'husband_arrested' => $row['husband_arrested'] ?? null,

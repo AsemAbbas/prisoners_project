@@ -21,18 +21,13 @@ return new class extends Migration {
             $table->string('judgment_in_lifetime')->index()->nullable();//الحكم بالمؤبدات
             $table->string('judgment_in_years')->index()->nullable();//الحكم بالسنوات
             $table->string('judgment_in_months')->index()->nullable();//الحكم بالأشهر
-
             $table->foreignId('belong_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('special_case')->index()->nullable();//enum
             $table->text('health_note')->nullable();
             $table->string('social_type')->index()->nullable();//enum
             $table->string('wife_type')->index()->nullable();//enum
             $table->string('number_of_children')->index()->nullable();
-
             $table->string('education_level')->index()->nullable();//enum
-            $table->string('university_name')->nullable();
-            $table->string('specialization_name')->nullable();
-
             $table->string('father_arrested')->nullable();//enum
             $table->string('mother_arrested')->nullable();//enum
             $table->string('husband_arrested')->nullable();//enum

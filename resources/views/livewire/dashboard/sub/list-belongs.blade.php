@@ -1,5 +1,5 @@
 @section('title')
-    فجر الحرية | قائمة الفصائل
+    فجر الحرية | قائمة الإنتماء
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -46,7 +46,7 @@
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">لوحة التحكم</a></li>
-                <li class="breadcrumb-item active" aria-current="page">قائمة الفصائل </li>
+                <li class="breadcrumb-item active" aria-current="page">قائمة الإنتماء </li>
             </ol>
         </nav>
     </div>
@@ -57,7 +57,7 @@
                 <div>
                     <a class="btn btn-primary mb-2" wire:click="addNew"
                        target="_blank">
-                        إضافة فصيل
+                        إضافة إنتماء
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                              fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -70,7 +70,7 @@
                 </div>
                 <div>
                     <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الفصائل...">
+                           placeholder="البحث في قائمة الإنتماء...">
                     <label class="btn btn-info" for="Search">
                         البحث
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -127,7 +127,7 @@
             <div class="modal-content bg-white">
                 <div class="modal-header {{$showEdit ? 'bg-warning': 'bg-primary'}}" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإنتماء':'إضافة فصيل'}}</h1>
+                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإنتماء':'إضافة إنتماء'}}</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>

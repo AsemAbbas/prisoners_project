@@ -194,7 +194,7 @@
                                 <a href="{{route('dashboard.relationships')}}">قائمة صلة القرابة</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.belongs' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.belongs')}}">قائمة الفصائل</a>
+                                <a href="{{route('dashboard.belongs')}}">قائمة الإنتماء</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.statistics' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.statistics')}}">قائمة الإحصائيات</a>

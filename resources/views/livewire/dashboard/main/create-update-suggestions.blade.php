@@ -81,7 +81,7 @@
                                         <option>إختر...</option>
                                         @foreach($Relationships as $relationship)
                                             <option
-                                                value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
+                                                    value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
                                         @endforeach
                                     </select>
                                     @error('relationship_id')
@@ -330,7 +330,7 @@
                                     </div>
                                     @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','إختر...']))
                                         <div
-                                            class="form-group @if($state['social_type'] == "مطلق") col-md-12 @else col-md-6 @endif mb-4">
+                                                class="form-group @if($state['social_type'] == "مطلق") col-md-12 @else col-md-6 @endif mb-4">
                                             <label for="number_of_children">عدد الأبناء</label>
                                             <input wire:model="state.number_of_children" type="text"
                                                    class="form-control @error('number_of_children') is-invalid @enderror"
@@ -348,7 +348,7 @@
                                                     <div class="bg-white p-2">
                                                         @foreach(\App\Enums\WifeType::cases() as $row)
                                                             <div
-                                                                class="form-check form-check-primary form-check-inline">
+                                                                    class="form-check form-check-primary form-check-inline">
                                                                 <input class="form-check-input" type="radio"
                                                                        name="wife_type"
                                                                        wire:model="state.wife_type"
@@ -404,7 +404,7 @@
                                                                 @if(isset($state['gender']) && $state['gender'] == "انثى")
                                                                     <div class="col-md-4 mb-4">
                                                                         <div
-                                                                            class="form-check form-check-dark form-check-inline">
+                                                                                class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="state.special_case.{{$row->value}}"
                                                                                    type="checkbox"
@@ -423,7 +423,7 @@
                                                             @else
                                                                 <div class="col-md-4 mb-4">
                                                                     <div
-                                                                        class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                         <input class="form-check-input"
                                                                                wire:model.live="state.special_case.{{$row->value}}"
                                                                                type="checkbox"
@@ -498,7 +498,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-6 mb-4">
                                                                     <div
-                                                                        class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                         <input class="form-check-input"
                                                                                wire:model.live="state.father_arrested"
                                                                                type="checkbox"
@@ -511,7 +511,7 @@
                                                                 </div>
                                                                 <div class="col-md-6 mb-4">
                                                                     <div
-                                                                        class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                         <input class="form-check-input"
                                                                                wire:model.live="state.mother_arrested"
                                                                                type="checkbox"
@@ -524,7 +524,7 @@
                                                                 </div>
                                                                 <div class="col-md-6 mb-4">
                                                                     <div
-                                                                        class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                         <input class="form-check-input"
                                                                                wire:model.live="state.husband_arrested"
                                                                                type="checkbox"
@@ -537,7 +537,7 @@
                                                                 </div>
                                                                 <div class="col-md-6 mb-4">
                                                                     <div
-                                                                        class="form-check form-check-dark form-check-inline">
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                         <input class="form-check-input"
                                                                                wire:model.live="state.wife_arrested"
                                                                                type="checkbox"
@@ -679,12 +679,18 @@
                                     @enderror
                                 </div>
                                 @php
-                                $full_name = $state['first_name'] . ' ' . $state['second_name'] . ' ' . $state['third_name'] . ' ' . $state['last_name'];
-                                $identification_number = $state['identification_number'];
+                                    if (isset($state['first_name'], $state['second_name'], $state['third_name'], $state['last_name'])) {
+                                        $full_name = $state['first_name'] . ' ' . $state['second_name'] . ' ' . $state['third_name'] . ' ' . $state['last_name'];
+                                    }else $full_name = null;
+
+                                    if (isset($state['identification_number'])) {
+                                        $identification_number = $state['identification_number'];
+                                    }else $identification_number = null;
                                 @endphp
                                 <div class="form-group col-md-6 mb-4">
                                     <label for="email">إرفاق ملفات</label>
-                                    <a class="btn btn-link d-block py-2" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform?entry.1999411339=<?php echo $full_name; ?>&entry.1095886086=<?php echo $identification_number; ?>">
+                                    <a class="btn btn-link d-block py-2" target="_blank"
+                                       href="https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform?entry.1999411339=<?php echo $full_name; ?>&entry.1095886086=<?php echo $identification_number; ?>">
                                         الرابط الخاص بك
                                     </a>
                                     <span class="text-danger">إضغط متابعة بعد الدخول للرابط</span>

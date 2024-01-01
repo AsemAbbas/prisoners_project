@@ -228,7 +228,7 @@ class ListPrisonerConfirms extends Component
                 ],
             'وصف المرض:' =>
                 [
-                    'name' => 'university_name',
+                    'name' => 'health_note',
                     'confirm' => $this->Confirms_->ArrestConfirm->health_note ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->health_note ?? 'لا يوجد',
                 ],
