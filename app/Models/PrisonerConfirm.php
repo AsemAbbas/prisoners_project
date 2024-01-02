@@ -15,6 +15,18 @@ class PrisonerConfirm extends Model
 
     protected $guarded = [];
 
+    public static function boot(): void
+    {
+        parent::boot();
+        self::deleting(function ($PrisonerConfirm) {
+            $PrisonerConfirm->ArrestConfirm()->each(function ($ArrestConfirm) {
+                $ArrestConfirm->delete();
+            });
+            $PrisonerConfirm->OldArrestConfirm()->each(function ($OldArrestConfirm) {
+                $OldArrestConfirm->delete();
+            });
+        });
+    }
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->second_name . ' ' . $this->third_name . ' ' . $this->last_name;

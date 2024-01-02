@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                background-color: #117b5d;
+                   background-color: #117b5d;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -30,7 +30,7 @@
 @endsection
 <div id="Search">
     <section class="pb-0 pt-3 mt-1 mb-3">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="bg-gif p-3 p-sm-4 rounded-3 position-relative overflow-hidden">
@@ -38,8 +38,8 @@
                             <div class="col-md-8 col-lg-6 mx-auto text-center py-5 position-relative"
                                  style="direction: rtl">
                                 <figure class="position-absolute translate-middle"
-                                        @if(isset($error_ms)) style="bottom: 50px;right: 0"
-                                        @else style="bottom: 0;right: 0" @endif>
+                                        @if(isset($error_ms)) style="top: -130px;right: 300px"
+                                        @else style="top: -130px;right: 300px" @endif>
                                     <svg width="1848" height="481" viewBox="0 0 1848.9 481.8"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <path class="fill-success"
@@ -112,7 +112,7 @@
     </section>
 
     <section class="pb-0 pt-3 mt-1 mb-3" dir="rtl">
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div>
                     <h4 class="mb-3 text-center"
@@ -161,7 +161,7 @@
 
     @if(count($News->where('on_slider')->take(2)) > 0)
         <section class="pt-0">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <h4 class="mb-3 text-center"
                         style="font-family: 'Changa', sans-serif !important;font-size: 30px">الأخبار</h4>
@@ -171,7 +171,7 @@
                         @foreach($News->where('on_slider')->take(2) as $row)
                             <div class="card border rounded-3 up-hover p-4 mb-4" style="direction: rtl">
                                 <div class="row g-3">
-                                    <div class="col-lg-5">
+                                    <div class="col-lg-5 mt-5">
                                         <!-- Categories -->
                                         <a href="{{ route('news.index',$row->NewsType->news_type_name)}}"
                                            class="badge text-bg-danger mb-2"
@@ -199,8 +199,15 @@
                                     <!-- Detail -->
                                     @if(isset($row->news_short_description))
                                         <div class="col-md-6 col-lg-4">
-                                            <p>
-                                                {{ strlen($row->news_short_description) > 500 ? substr($row->news_short_description, 0, 500) . '...' : $row->news_short_description}}
+                                            <p class="description" id="newsDescription">
+                                                    <?php
+                                                    $description = $row->news_short_description; // Assuming $row contains the news data
+                                                    if (strlen($description) > 1500 && (strpos($_SERVER['HTTP_USER_AGENT'], 'Mobile') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Tablet') !== false)) {
+                                                        echo substr($description, 0, 500) . '...'; // Show 500 characters for smaller screens
+                                                    } else {
+                                                        echo substr($description, 0, 800) . '...'; // Show 1500 characters for medium/large screens
+                                                    }
+                                                    ?>
                                             </p>
                                         </div>
                                     @endif
@@ -212,9 +219,6 @@
                                 </div>
                             </div>
                         @endforeach
-                        <!-- Card item END -->
-
-                        <!-- Load more -->
                         <a href="{{route('news.index')}}" style="font-size: 20px;background-color:#117b5d;color: white"
                            class="btn w-100 mt-4">
                             عرض جميع الأخبار
@@ -224,7 +228,6 @@
             </div>
         </section>
     @endif
-
     <div class="modal fade" dir="rtl" id="searchPrisonersModal" tabindex="-1" aria-hidden="false" wire:ignore.self>
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
@@ -413,7 +416,6 @@
         window.addEventListener('show_prisoners_modal', event => {
             $('#searchPrisonersModal').modal('show');
         })
-
         $(document).ready(function () {
             var counterStarted = false;
             $(window).scroll(function () {

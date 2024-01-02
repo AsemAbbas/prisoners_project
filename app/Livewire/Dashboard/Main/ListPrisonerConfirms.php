@@ -10,6 +10,7 @@ use App\Enums\SocialType;
 use App\Enums\SpecialCase;
 use App\Enums\SuggestionStatus;
 use App\Enums\WifeType;
+use App\Models\Arrest;
 use App\Models\Belong;
 use App\Models\City;
 use App\Models\OldArrest;
@@ -371,15 +372,16 @@ class ListPrisonerConfirms extends Component
         $PrisonerOldArrestArray = isset($this->Prisoner_) ? $this->Prisoner_->OldArrest->toArray() : null;
         $ConfirmsOldArrestArray = $this->Confirms_->OldArrestConfirm->toArray() ?? null;
 
+
         $validation = Validator::make($ConfirmsArray, [
             'identification_number' => "nullable",
-            'first_name' => "required",
+            'first_name' => "nullable",
             'second_name' => "nullable",
             'third_name' => "nullable",
-            'last_name' => "required",
-            'mother_name' => "required",
+            'last_name' => "nullable",
+            'mother_name' => "nullable",
             'date_of_birth' => "nullable",
-            'gender' => "required|in:" . $this->subTables()['Gender'],
+            'gender' => "nullable|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
             'town_id' => "nullable|in:" . $this->subTables()['Town'],
             'notes' => "nullable",
@@ -419,7 +421,7 @@ class ListPrisonerConfirms extends Component
         ])->validate();
         $finalArrestData = $validationArrest;
 
-        /* if (isset($ConfirmsArray['prisoner_id'])) {
+       if (isset($ConfirmsArray['prisoner_id'])) {
 
              $Prisoner = Prisoner::query()->where('id', $ConfirmsArray['prisoner_id'])->first();
              $Arrest = $Prisoner->Arrest ?? null;
@@ -534,7 +536,7 @@ class ListPrisonerConfirms extends Component
                  "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
                  "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
              ]);
-         }*/
+         }
 
 
         $finalOldArrestData = [];

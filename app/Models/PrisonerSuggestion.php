@@ -15,6 +15,19 @@ class PrisonerSuggestion extends Model
 
     protected $guarded = [];
 
+    public static function boot(): void
+    {
+        parent::boot();
+        self::deleting(function ($PrisonerSuggestion) {
+            $PrisonerSuggestion->ArrestSuggestion()->each(function ($ArrestSuggestion) {
+                $ArrestSuggestion->delete();
+            });
+            $PrisonerSuggestion->OldArrestSuggestion()->each(function ($OldArrestSuggestion) {
+                $OldArrestSuggestion->delete();
+            });
+        });
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->second_name . ' ' . $this->third_name . ' ' . $this->last_name;
