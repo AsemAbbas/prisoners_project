@@ -12,12 +12,7 @@
     @vite(['resources/rtl/scss/light/assets/main.scss', 'resources/rtl/scss/dark/assets/main.scss'])
     <link rel="stylesheet" type="text/css" href="{{asset('plugins-rtl/waves/waves.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('plugins-rtl/highlight/styles/monokai-sublime.css')}}">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-{{--    <link rel="preconnect" href="https://fonts.googleapis.com">--}}
-{{--    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>--}}
-{{--    <link href="https://fonts.googleapis.com/css2?family=Alexandria&display=swap" rel="stylesheet">--}}
 
     @vite([
         'resources/rtl/scss/light/plugins/perfect-scrollbar/perfect-scrollbar.scss',
@@ -42,6 +37,7 @@
         body {
             font-family: 'Changa', sans-serif !important;
         }
+
         /* Width */
         ::-webkit-scrollbar {
             width: 10px; /* You can adjust this to change the width of the scrollbar */

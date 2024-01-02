@@ -89,6 +89,7 @@
                     <tr style="font-size: 16px">
                         <th>#</th>
                         <th>اسم المحافظة</th>
+                        <th>البلدات</th>
                         <th>الخيارات</th>
                     </tr>
                     </thead>
@@ -97,6 +98,15 @@
                         <tr>
                             <td>{{$Cities->firstItem() + $key}}</td>
                             <td>{{$row->city_name ?? 'لا يوجد'}}</td>
+                            <td>
+                                @if(count($row->Town) > 0)
+                                    <a wire:click="showTowns({{$row->id}})" class="btn btn-link">
+                                        عرض {{count($row->Town)}}
+                                    </a>
+                                @else
+                                    لا يوجد
+                                @endif
+                            </td>
                             <td>
                                 <a wire:click="edit({{$row}})" class="btn btn-warning"
                                    data-toggle="tooltip" data-placement="top" title="Edit">
@@ -164,7 +174,37 @@
             </div>
         </div>
     </div>
-
+    <!-- showTowns Modal -->
+    @if(!empty($Towns))
+        <div class="modal modal-lg fade" id="towns" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header bg-info" style="margin: 5px;">
+                        <h1 class="modal-title fs-5 text-white"
+                            id="staticBackdropLabel">عرض البلدات</h1>
+                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <input class="form-control mb-3" placeholder="بحث عن بلدة..." type="text" wire:model.live="TownSearch">
+                            @foreach($Towns as $town)
+                                <div class="col-md-6 mb-3">
+                                    <h5 class="text-info">
+                                        {{$town->town_name}}
+                                    </h5>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-start align-items-start">
+                        <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
     <!-- Delete Modal -->
     <div class="modal modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
@@ -211,6 +251,10 @@
     <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
     @vite(['resources/rtl/assets/js/custom.js'])
     <script>
+        window.addEventListener('showTowns', event => {
+            $('#towns').modal('show');
+        })
+
         window.addEventListener('show_delete_modal', event => {
             $('#delete').modal('show');
         })
