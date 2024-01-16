@@ -4,6 +4,7 @@ namespace App\Livewire\Main;
 
 use App\Models\News;
 use App\Models\SocialMedia;
+use Illuminate\Contracts\View\Factory;
 use Livewire\Component;
 
 class NewsShowPage extends Component
@@ -15,14 +16,14 @@ class NewsShowPage extends Component
         $this->url = $url;
     }
 
-    public function render(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    public function render(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
 
         $News = News::query()->where('news_url', $this->url)->first();
 
-        $SocialMedia = SocialMedia::all();
+        $SocialMedia = SocialMedia::query()->orderBy('order_by')->get();
 
-        return view('livewire.main.news-show-page', compact('News','SocialMedia'))
+        return view('livewire.main.news-show-page', compact('News', 'SocialMedia'))
             ->layout('components.layouts.main');
     }
 }

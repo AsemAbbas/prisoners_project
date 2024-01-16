@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('social_photo');
             $table->string('social_name');
             $table->string('social_link');
+            $table->string('order_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

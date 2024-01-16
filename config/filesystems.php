@@ -60,6 +60,14 @@ return [
             'throw' => false,
         ],
 
+        'statistic_photo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/statistic_photo'),
+            'url' => env('APP_URL').'/storage/statistic_photo',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -89,6 +97,7 @@ return [
         public_path('storage') => storage_path('app/public'),
         public_path('storage/news_photo') => storage_path('app/public/news_photo'),
         public_path('storage/social_photo') => storage_path('app/public/social_photo'),
+        public_path('storage/social_photo') => storage_path('app/public/statistic_photo'),
     ],
 
 ];

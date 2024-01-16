@@ -1,7 +1,7 @@
 <footer id="footer">
     <div class="container-fluid" dir="rtl">
         <!-- About and Newsletter START -->
-        <div class="row bg-dark py-5 mx-0 card card-header flex-row align-items-center text-center text-md-start">
+        <div style="background-color:#022d4f!important;" class="row bg-dark py-5 mx-0 card card-header flex-row align-items-center text-center text-md-start">
             <!-- Copyright -->
             <div class="col-md-4 mb-3 mb-md-0" style="text-align: right;">
                 <div style="display: flex; flex-direction: column; align-items: center;">
@@ -17,7 +17,7 @@
             </div>
             <!-- Social links -->
             @php
-                $SocialMedia = \App\Models\SocialMedia::all();
+                $SocialMedia = \App\Models\SocialMedia::query()->orderBy('order_by')->get();
             @endphp
             <div class="col-md-4 text-center">
                 <ul class="nav text-primary-hover justify-content-center justify-content-center text-center">

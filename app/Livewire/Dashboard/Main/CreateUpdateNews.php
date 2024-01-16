@@ -46,7 +46,6 @@ class CreateUpdateNews extends Component
 
         $NewsTypes = NewsType::query()->pluck('id')->implode(',');
 
-
         $rules = [
             'news_title' => "required",
             'news_photo' => "required",
@@ -81,6 +80,9 @@ class CreateUpdateNews extends Component
      */
     public function createNews(): void
     {
+        $lastNews = News::query()->orderByDesc('order_by')->pluck('order_by')->first() ?? null;
+        $order_by = !empty($lastNews) ? $lastNews + 1 : 1;
+
         $NewsTypes = NewsType::query()->pluck('id')->implode(',');
         $validation = Validator::make($this->state, [
             'news_title' => "required",
@@ -96,6 +98,7 @@ class CreateUpdateNews extends Component
             'news_long_description' => "required",
         ])->validate();
 
+        $validation['order_by'] = $order_by;
         $validation['news_photo'] = $validation['news_photo']->store('/', 'news_photo');
 
         News::query()->create($validation);

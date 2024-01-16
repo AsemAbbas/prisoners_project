@@ -15,8 +15,27 @@ class ListNews extends Component
     public ?string $Search = null;
     public ?string $sortBy = null;
     public ?object $News_ = null;
-
+    public ?int $news_id;
+    public ?int $news_key;
+    public ?string $order_by;
     protected string $paginationTheme = 'bootstrap';
+
+    public function NewsOrderBy($news_id, $news_key): void
+    {
+        $this->news_id = $news_id;
+        $this->news_key = $news_key;
+    }
+
+    public function ChangeOrderBy(): void
+    {
+        News::query()->find($this->news_id)->update([
+            'order_by' => $this->order_by
+        ]);
+
+        $this->news_id = null;
+        $this->news_key = null;
+        $this->order_by = null;
+    }
 
     public function onSlider(News $news): void
     {
@@ -65,6 +84,7 @@ class ListNews extends Component
     public function getNewsProperty()
     {
         return News::query()
+            ->orderBy('order_by')
             ->when(isset($this->Search), function ($query) {
                 $query->where('news_title', 'LIKE', '%' . $this->Search . '%');
                 $query->orWhereHas('NewsType', function ($q) {

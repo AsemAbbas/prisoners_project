@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <title>@yield('title')</title>
     <!-- Meta Tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="#">
+    <meta name="description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الإحتلال.">
+    <meta name="author" content="فجر الحرية">
+    <meta name="keywords" content="فلسطين, إعلام, منصة إعلامية,فجر,الحرية,حرية,أسرى,إحتلال,فجر الحرية,فجرالحرية">
+
+    <meta property="og:title" content="@yield('title')">
+    <meta property="og:description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الإحتلال.">
 
     <!-- Dark mode -->
     <script>
@@ -70,11 +75,6 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
 
-    <!-- Google Font -->
-    {{--    <link rel="preconnect" href="https://fonts.googleapis.com">--}}
-    {{--    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>--}}
-    {{--    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@700&display=swap" rel="stylesheet">--}}
-
     <!-- Plugins CSS -->
     <link rel="stylesheet" type="text/css" href="{{asset('main/vendor/font-awesome/css/all.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('main/vendor/bootstrap-icons/bootstrap-icons.css')}}">
@@ -111,12 +111,12 @@
 
         /* Handle */
         ::-webkit-scrollbar-thumb {
-            background-color: #117b5d;
+            background-color: #022d4f;
             border-radius: 5px;
         }
 
         ::selection {
-            background-color: #117b5d;
+            background-color: #022d4f;
             color: white; /* This changes the text color */
         }
 

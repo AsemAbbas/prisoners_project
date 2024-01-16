@@ -49,22 +49,21 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/admin/login', Login::class)->name('dashboard.admin.login');
 
     Route::get('/users', ListUsers::class)->name('dashboard.users')->middleware(['auth', 'admin']);
-
     Route::get('/news', ListNews::class)->name('dashboard.news')->middleware(['auth', 'editor']);
     Route::get('/news/create', CreateUpdateNews::class)->name('dashboard.news.create')->middleware(['auth', 'editor']);
     Route::get('/news/update/{news?}', CreateUpdateNews::class)->name('dashboard.news.update')->middleware('auth', 'editor');
 
-    Route::get('/prisoners', ListPrisoners::class)->name('dashboard.prisoners');
+    Route::get('/prisoners', ListPrisoners::class)->name('dashboard.prisoners')->middleware(['auth', 'editor']);
     Route::get('/prisoners/create', CreateUpdatePrisoners::class)->name('dashboard.prisoners.create')->middleware(['auth', 'editor']);
     Route::get('/prisoners/update/{prisoner}', CreateUpdatePrisoners::class)->name('dashboard.prisoners.update')->middleware('auth', 'editor');
-    Route::get('/arrests/{prisoner_id?}', ListArrests::class)->name('dashboard.arrests');
+    Route::get('/arrests/{prisoner_id?}', ListArrests::class)->name('dashboard.arrests')->middleware(['auth', 'editor']);
 
     Route::get('/confirms', ListPrisonerConfirms::class)->name('dashboard.confirms')->middleware('auth', 'editor');
     Route::get('/suggestions', ListPrisonerSuggestions::class)->name('dashboard.suggestions')->middleware('auth', 'reviewer');
     Route::get('/suggestions/create', CreateUpdateSuggestions::class)->name('dashboard.suggestions.create');
     Route::get('/suggestions/update/{suggestion}', CreateUpdateSuggestions::class)->name('dashboard.suggestions.update');
 
-    Route::get('/relatives_prisoners/{prisoner_id?}', ListRelativesPrisoners::class)->name('dashboard.relatives_prisoners');
+    Route::get('/relatives_prisoners/{prisoner_id?}', ListRelativesPrisoners::class)->name('dashboard.relatives_prisoners')->middleware(['auth', 'editor']);;
     Route::get('/cities', ListCities::class)->name('dashboard.cities')->middleware('auth', 'editor');
     Route::get('/belongs', ListBelongs::class)->name('dashboard.belongs')->middleware('auth', 'editor');
     Route::get('/prisoner_types', ListPrisonerTypes::class)->name('dashboard.prisoner_types')->middleware('auth', 'editor');

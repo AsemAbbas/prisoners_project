@@ -151,7 +151,7 @@
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
                                     <label for="identification_number">رقم الهوية</label>
-                                    <input wire:model="state.identification_number" type="password"
+                                    <input wire:model="state.identification_number" type="text"
                                            class="form-control @error('identification_number') is-invalid @enderror"
                                            id="identification_number"
                                            placeholder="رقم الهوية">
@@ -845,7 +845,7 @@
                         confirmButtonText: 'تم',
                     }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = '/dashboard/prisoners';
+                        window.location.href = '/';
                     }
                 });
             });
@@ -860,7 +860,7 @@
                         confirmButtonText: 'تم',
                     }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = '/dashboard/prisoners';
+                        window.location.href = '/';
                     }
                 });
             });

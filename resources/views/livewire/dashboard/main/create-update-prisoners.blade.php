@@ -145,7 +145,8 @@
                                 </div>
                                 <div class="form-group col-md-6 mb-4">
                                     <label for="town_id">البلدة</label>
-                                    <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled @endif
+                                    <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled
+                                            @endif
                                             class="form-select @error('town_id') is-invalid @enderror"
                                             id="town_id">
                                         <option>إختر...</option>
@@ -716,7 +717,7 @@
                                                                id="old_arrest_start_date">
                                                     </div>
                                                     <div class="form-group col-md-6 mb-4">
-                                                        <label style="font-weight: bold" for="old_arrest_end_date">بداية
+                                                        <label style="font-weight: bold" for="old_arrest_end_date">نهاية
                                                             الإعتقال</label>
                                                         <input wire:model="old_arrests.{{$key}}.old_arrest_end_date"
                                                                type="date"

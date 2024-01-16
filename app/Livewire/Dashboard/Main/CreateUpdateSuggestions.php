@@ -252,7 +252,7 @@ class CreateUpdateSuggestions extends Component
         if (isset($this->state['special_case']) && !in_array('مريض', array_filter(array_keys($this->state['special_case'])))) {
             $this->state['health_note'] = null;
         }
-        
+
         if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
             $this->state['special_case']['حامل'] = false;
         }
@@ -331,9 +331,6 @@ class CreateUpdateSuggestions extends Component
         try {
             if (!empty($this->old_arrests)) {
                 foreach ($this->old_arrests as $arrest) {
-                    if (isset($arrest['id']))
-                        $old_arrest_now = $this->Prisoners_->OldArrest->where('id', $arrest['id'])->first() ?? null;
-                    else $old_arrest_now = null;
                     OldArrestSuggestion::query()->create([
                         'suggestion_status' => "يحتاج مراجعة",
                         'prisoner_id' => $this->Prisoners_->id ?? null,
@@ -352,7 +349,7 @@ class CreateUpdateSuggestions extends Component
         }
         DB::beginTransaction();
         try {
-            $Arrest = $PrisonerSuggestion->ArrestSuggestion()->create([
+            $PrisonerSuggestion->ArrestSuggestion()->create([
                 'suggestion_status' => "يحتاج مراجعة",
                 'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
                 'prisoner_id' => $this->Prisoners_->id ?? null,

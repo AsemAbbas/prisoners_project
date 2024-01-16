@@ -116,6 +116,7 @@
                         <th>نوع الخبر</th>
                         <th>رابط الخبر</th>
                         <th>شريط الأخبار</th>
+                        <th>ترتيب الخبر</th>
                         <th>صورة الخبر</th>
                         <th>الخيارات</th>
                     </tr>
@@ -161,6 +162,29 @@
                                         شريط الأخبار
                                     </label>
                                 </div>
+                            </td>
+                            <td>
+                                <a @if(isset($news_id) && isset($news_key) && $news_key === $key) hidden
+                                   @endif
+                                   wire:click="NewsOrderBy({{$row->id}},{{$key}})"
+                                   class="btn btn-link">{{$row->order_by ?? 'لا يوجد'}}</a>
+                                @if(isset($news_id))
+                                    @if(isset($news_key) && $news_key === $key)
+                                        <label>
+                                            <input style="width: 60px;" class="form-control m-0 p-2" type="number"
+                                                   wire:model="order_by" wire:keydown.enter="ChangeOrderBy">
+                                        </label>
+                                        <br>
+                                        اضغط Enter
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             style="margin-top: 4px;"
+                                             fill="currentColor" class="bi bi-arrow-return-left text-black" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                  d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
+                                        </svg>
+                                        للتأكيد
+                                    @endif
+                                @endif
                             </td>
                             <td>
                                 <img src="{{asset('storage/news_photo/'.$row->news_photo) ?? null}}"

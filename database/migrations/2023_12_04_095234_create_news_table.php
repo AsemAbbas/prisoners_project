@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->boolean('on_slider')->default(false)->nullable();
             $table->text('news_short_description')->nullable();
             $table->longText('news_long_description')->nullable();
+            $table->string('order_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

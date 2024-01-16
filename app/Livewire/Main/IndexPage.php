@@ -105,8 +105,12 @@ class IndexPage extends Component
 
     public function render()
     {
-        $News = News::query()->latest()->get();
-        $Statistics = Statistic::all();
+        $News = News::query()
+            ->orderBy('order_by')
+            ->get();
+        $Statistics = Statistic::query()
+            ->orderBy('order_by')
+            ->get();
         $SocialMedia = SocialMedia::all();
         return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia'))
             ->layout('components.layouts.main');

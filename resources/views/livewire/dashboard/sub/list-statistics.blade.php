@@ -90,6 +90,8 @@
                         <th>#</th>
                         <th>نوع الإحصائية</th>
                         <th>مجموع الإحصائية</th>
+                        <th>ترتيب الإحصائية</th>
+                        <th>صورة الإحصائية</th>
                         <th>الخيارات</th>
                     </tr>
                     </thead>
@@ -99,6 +101,37 @@
                             <td>{{$Statistics->firstItem() + $key}}</td>
                             <td>{{$row->statistic_type ?? 'لا يوجد'}}</td>
                             <td>{{$row->statistic_number ?? 'لا يوجد'}}</td>
+                            <td>
+                                <a @if(isset($statistics_id) && isset($statistics_key) && $statistics_key === $key) hidden
+                                   @endif
+                                   wire:click="StatisticOrderBy({{$row->id}},{{$key}})"
+                                   class="btn btn-link">{{$row->order_by ?? 'لا يوجد'}}</a>
+                                @if(isset($statistics_id))
+                                    @if(isset($statistics_key) && $statistics_key === $key)
+                                        <label>
+                                            <input style="width: 60px;" class="form-control m-0 p-2" type="number"
+                                                   wire:model="order_by" wire:keydown.enter="ChangeOrderBy">
+                                        </label>
+                                        <br>
+                                        اضغط Enter
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             style="margin-top: 4px;"
+                                             fill="currentColor" class="bi bi-arrow-return-left text-black" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                  d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
+                                        </svg>
+                                        للتأكيد
+                                    @endif
+                                @endif
+                            </td>
+                            <td>
+                                @if(!empty($row->statistic_photo))
+                                    <img src="{{asset('storage/statistic_photo/'.$row->statistic_photo) ?? null}}"
+                                         alt="news_photo" class="border border-dark rounded rounded-1" width="100">
+                                @else
+                                    لا يوجد
+                                @endif
+                            </td>
                             <td>
                                 <a wire:click="edit({{$row}})" class="btn btn-warning"
                                    data-toggle="tooltip" data-placement="top" title="Edit">
@@ -146,13 +179,35 @@
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-12 mb-3">
                                 <label for="statistic_number">مجموع الإحصائية</label>
                                 <input wire:model="state.statistic_number" type="text"
                                        class="form-control @error('statistic_number') is-invalid @enderror"
                                        id="statistic_number"
                                        placeholder="مجموع الإحصائية">
                                 @error('statistic_number')
+                                <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-12 mb-3">
+                                <label for="statistic_photo">صورة الإحصائية</label>
+                                <input wire:model.live="state.statistic_photo" type="file"
+                                       class="form-control @error('statistic_photo') is-invalid @enderror"
+                                       id="statistic_photo"
+                                       placeholder="صورة الإحصائية">
+
+                                @if(isset($state['statistic_photo']))
+                                    @if(gettype($state['statistic_photo']) !== "string")
+                                        <img src="{{ $state['statistic_photo']->temporaryUrl() }}" alt="Preview"
+                                             style="max-width: 300px;"/>
+                                    @else
+                                        <img src="{{ asset('storage/statistic_photo/'.$state['statistic_photo']) }}"
+                                             alt="Preview"
+                                             style="max-width: 300px;"/>
+                                    @endif
+                                @endif
+
+                                @error('statistic_photo')
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>

@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->string('statistic_number')->index()->nullable();
             $table->string('statistic_type')->index()->nullable();
+            $table->string('statistic_photo')->nullable();
+            $table->string('order_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
