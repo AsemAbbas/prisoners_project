@@ -69,11 +69,17 @@ class Prisoner extends Model
     {
         return $this->belongsTo(Town::class);
     }
+
     public function ArrestJudgment(): ?string
     {
         $lastArrest = $this->Arrest()->first();
 
         return $lastArrest?->judgment;
+    }
+
+    public function PrisonerSuggestion(): HasMany
+    {
+        return $this->hasMany(PrisonerSuggestion::class);
     }
 
 }

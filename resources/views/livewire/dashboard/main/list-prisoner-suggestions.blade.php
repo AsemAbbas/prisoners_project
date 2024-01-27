@@ -88,12 +88,12 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btndefault">
                             <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
-                                        class="flaticon-home-fill-1 mr-1"></i>الكل ({{$SuggestionCount['all']}})</a>
+                                    class="flaticon-home-fill-1 mr-1"></i>الكل ({{$SuggestionCount['all']}})</a>
                             <a wire:click="SortBy('يحتاج مراجعة')" class="btn dropdown-item"><i
-                                        class="flaticon-home-fill-1 mr-1"></i>يحتاج مراجعة
+                                    class="flaticon-home-fill-1 mr-1"></i>يحتاج مراجعة
                                 ({{$SuggestionCount['needReview']}})</a>
                             <a wire:click="SortBy('تم القبول')" class="btn dropdown-item"><i
-                                        class="flaticon-gear-fill mr-1"></i>تم القبول ({{$SuggestionCount['accepted']}})</a>
+                                    class="flaticon-gear-fill mr-1"></i>تم القبول ({{$SuggestionCount['accepted']}})</a>
                         </div>
                     </div>
                 </div>
@@ -103,6 +103,7 @@
                     <thead>
                     <tr style="font-size: 15px">
                         <th>#</th>
+                        <th style="min-width: 230px">رقم الأسير</th>
                         <th style="min-width: 230px">اسم الأسير</th>
                         <th style="min-width: 230px">رقم الهوية</th>
                         <th style="min-width: 230px">اسم مقدم البيانات</th>
@@ -115,8 +116,18 @@
                     @foreach($Suggestions as $key => $row)
                         <tr>
                             <td>{{$Suggestions->firstItem() + $key}}</td>
-                            <td>{{$row->full_name ?? 'لا يوجد'}}</td>
-                            <td>{{$row->identification_number ?? 'لا يوجد'}}</td>
+                            <td>
+                                @if(isset($row->Prisoner->id))
+                                    <a class="btn btn-link" wire:click="SearchFor({{$row->Prisoner->id}})">
+                                        {{$row->Prisoner->id}}
+                                    </a>
+                                @else
+                                    لا يوجد
+                                @endif
+                            </td>
+                            <td>{{$row->Prisoner->full_name ?? 'لا يوجد'}}</td>
+                            {{--                            <td>{{$row->full_name ?? 'لا يوجد'}}</td>--}}
+                            <td>{{$row->Prisoner->identification_number ?? 'لا يوجد'}}</td>
                             <td>{{$row->suggester_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->Relationship->relationship_name ?? 'لا يوجد'}}</td>
                             <td>
@@ -184,22 +195,22 @@
                                 <hr>
                             </div>
                             <div
-                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>اسم مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_name ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>رقم هوية مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_identification_number ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>رقم هاتف مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_phone_number ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>صلة قرابة مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->Relationship->relationship_name ?? 'لا يوجد'}}</h5>
                             </div>
@@ -440,25 +451,25 @@
                                         <h5>بيانات الإعتقالات السابقة</h5>
                                         <hr>
                                     </div>
-                                        @foreach($oldArrestColumns['suggestion'] as $index => $col)
-                                            <div class="col-12 text-center">
-                                                <hr>
-                                            </div>
-                                            @foreach($col as $key => $data)
-                                                @if($key != "الرقم الأساسي:")
-                                                    <div class="col-md-6 mb-3">
-                                                        <h6>
-                                                            <input type="checkbox"
-                                                                   id="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                                   name="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                                   wire:model.live="selectAcceptedSuggestionOldArrest.{{$col['الرقم الأساسي:']['suggestion']}}.{{$data['name']}}">
-                                                            {{$key}}
-                                                        </h6>
-                                                        <h5 class="">{{$data['suggestion']}}</h5>
-                                                    </div>
-                                                @endif
-                                            @endforeach
+                                    @foreach($oldArrestColumns['suggestion'] as $index => $col)
+                                        <div class="col-12 text-center">
+                                            <hr>
+                                        </div>
+                                        @foreach($col as $key => $data)
+                                            @if($key != "الرقم الأساسي:")
+                                                <div class="col-md-6 mb-3">
+                                                    <h6>
+                                                        <input type="checkbox"
+                                                               id="{{$index.'_suggestion_'.$data['name']}}Checkbox"
+                                                               name="{{$index.'_suggestion_'.$data['name']}}Checkbox"
+                                                               wire:model.live="selectAcceptedSuggestionOldArrest.{{$col['الرقم الأساسي:']['suggestion']}}.{{$data['name']}}">
+                                                        {{$key}}
+                                                    </h6>
+                                                    <h5 class="">{{$data['suggestion']}}</h5>
+                                                </div>
+                                            @endif
                                         @endforeach
+                                    @endforeach
                                 </div>
                             @endif
                         </div>
@@ -466,7 +477,8 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-start align-items-start">
                     <button type="submit"
-                            @if(!empty(array_filter($selectAccepted)) || !empty(array_filter($selectAcceptedArrest)) || $APOAStatus || $ASOAStatus )@else disabled @endif
+                            @if(!empty(array_filter($selectAccepted)) || !empty(array_filter($selectAcceptedArrest)) || $APOAStatus || $ASOAStatus )@else disabled
+                            @endif
                             wire:click="ConfirmAccept"
                             class="btn btn-success">
                         تأكيد
@@ -514,7 +526,7 @@
                              class="feather feather-trash-2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path
-                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                         </svg>

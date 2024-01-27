@@ -152,7 +152,7 @@
 
         $(function () {
             $('#news_long_description').summernote({
-                placeholder: 'إكتب وصف الخبر...',
+                placeholder: 'اكتب وصف الخبر...',
                 height: 200,
                 toolbar: [
                     ['style', ['style']],

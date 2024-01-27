@@ -339,7 +339,7 @@
 {{--                            <div class="form-group col-md-12 mb-4">--}}
 {{--                                <label for="notes">ملاحظات</label>--}}
 {{--                                <textarea id="notes" rows="3" class="form-control @error('notes') is-invalid @enderror"--}}
-{{--                                          placeholder="إكتب الملاحظات..."--}}
+{{--                                          placeholder="اكتب الملاحظات..."--}}
 {{--                                          wire:model="state.notes"></textarea>--}}
 {{--                                @error('notes')--}}
 {{--                                <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>--}}

@@ -542,13 +542,11 @@ class ListPrisonerConfirms extends Component
         $finalOldArrestData = [];
         $Prisoner = Prisoner::query()->where('id', $ConfirmsArray['prisoner_id'])->first();
 
-        $PrisonerOldArrest_id = [];
         if (isset($PrisonerOldArrestArray)) {
             foreach ($PrisonerOldArrestArray as $old) {
-                $PrisonerOldArrest_id[] = $old['id'];
                 $finalOldArrestData[] = [
                     "id" => $old['id'],
-                    "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id,
+                    "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
                     "old_arrest_start_date" => $old['old_arrest_start_date'] ?? null,
                     "old_arrest_end_date" => $old['old_arrest_end_date'] ?? null,
                 ];
@@ -557,12 +555,12 @@ class ListPrisonerConfirms extends Component
         foreach ($ConfirmsOldArrestArray as $old) {
             $finalOldArrestData[] = [
                 "id" => $old['id'],
-                "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id,
+                "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
                 "old_arrest_start_date" => $old['old_arrest_start_date'] ?? null,
                 "old_arrest_end_date" => $old['old_arrest_end_date'] ?? null,
             ];
         }
-        if (!empty($finalOldArrestData)) {
+        if (!empty($finalOldArrestData) && isset($Prisoner->id)) {
             $old = OldArrest::query()
                 ->where('prisoner_id', $Prisoner->id)
                 ->pluck('id')->toArray();

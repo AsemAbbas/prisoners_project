@@ -670,9 +670,25 @@ class ListPrisonerSuggestions extends Component
                         });
                     }
                 })
+                    ->orWhereHas('Prisoner', function ($subQuery_) use ($searchTerms) {
+                        foreach ($searchTerms as $term_) {
+                            $subQuery_->where(function ($nameSubQuery_) use ($term_) {
+                                $nameSubQuery_->where('first_name', 'LIKE', '%' . $term_ . '%')
+                                    ->orWhere('second_name', 'LIKE', '%' . $term_ . '%')
+                                    ->orWhere('third_name', 'LIKE', '%' . $term_ . '%')
+                                    ->orWhere('last_name', 'LIKE', '%' . $term_ . '%');
+                            });
+                        }
+                    })
                     ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('suggester_identification_number', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('identification_number', 'LIKE', '%' . $this->Search . '%')
+                    ->orWhere('suggester_identification_number', 'LIKE', $this->Search)
+                    ->orWhere('identification_number', 'LIKE', $this->Search)
+                    ->orWhereHas('Prisoner', function ($q) {
+                        $q->where('identification_number', 'LIKE', $this->Search);
+                    })
+                    ->orWhereHas('Prisoner', function ($q) {
+                        $q->where('id', 'LIKE', $this->Search);
+                    })
                     ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
                     ->orWhereHas('City', function ($q) {
                         $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
@@ -681,6 +697,11 @@ class ListPrisonerSuggestions extends Component
                         $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
                     });
             });
+    }
+
+    public function SearchFor($prisoner_id): void
+    {
+        $this->Search = $prisoner_id;
     }
 
     public function SortBy($sort): void

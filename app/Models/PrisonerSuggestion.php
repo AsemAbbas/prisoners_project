@@ -57,4 +57,9 @@ class PrisonerSuggestion extends Model
     {
         return $this->hasMany(OldArrestSuggestion::class);
     }
+
+    public function Prisoner(): BelongsTo
+    {
+        return $this->belongsTo(Prisoner::class);
+    }
 }
