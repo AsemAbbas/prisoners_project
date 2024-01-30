@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                       background-color: #022d4f;
+                        background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -112,7 +112,7 @@
                     <div class="row">
                         @foreach($Statistics as $row)
                             <div
-                                class="@if($row->statistic_type === "الأسرى الإجمالي") col-lg-12 @endif col-lg-4 mx-auto">
+                                    class="@if($row->statistic_type === "الأسرى الإجمالي") col-lg-12 @endif col-lg-4 mx-auto">
                                 <div class="text-center mb-3 position-relative overflow-hidden"
                                      style="border-radius: 10px!important;@if($row->statistic_type === "الأسرى الإجمالي") background-image:url('{{asset('main/images/total_statistic_bg.jpg')}}'); @else background-image:url('{{asset('main/images/statistic_bg.jpg')}}'); @endif background-repeat: no-repeat;background-size:cover;background-position:center;">
                                     <div class="p-3">
@@ -161,7 +161,7 @@
                                         <a href="{{ route('news.index',$row->NewsType->news_type_name)}}"
                                            class="badge text-bg-danger mb-2"
                                            style="background-color:{{$row->NewsType->news_type_color}}!important;"><i
-                                                class="fas fa-circle me-2 small fw-bold"></i>{{$row->NewsType->news_type_name}}
+                                                    class="fas fa-circle me-2 small fw-bold"></i>{{$row->NewsType->news_type_name}}
                                         </a>
                                         <!-- Title -->
                                         <h2 class="card-title"
@@ -246,7 +246,7 @@
                                                     style="font-family: 'Changa', sans-serif !important;font-size: 25px">
                                                     <a wire:click="{{$show ? 'hideDetails' : 'showDetails'}}"
                                                        class="btn-link text-reset stretched-link">
-                                                        {{$prisoner->full_name}}
+                                                        {{$prisoner->full_name}} @if(!empty($prisoner->nick_name)) ({{$prisoner->nick_name}}) @endif
                                                     </a>
                                                 </h2>
                                             </div>
@@ -275,7 +275,7 @@
                                                             <!-- Blog list table START -->
                                                             <div class="table-responsive border-0 mb-4">
                                                                 <table
-                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center" style="font-weight: bold">
@@ -308,12 +308,14 @@
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             @php
-                                                                                $firstTwo = substr($prisoner->identification_number, 0, 2);
-                                                                                $lastTwo = substr($prisoner->identification_number, -2);
-                                                                                $hiddenPart = str_repeat('*', strlen($prisoner->identification_number) - 4);
-                                                                                $identification_number = $lastTwo.$hiddenPart.$firstTwo
+                                                                                if (isset($prisoner->identification_number) && strlen($prisoner->identification_number) == 9){
+                                                                                     $firstTwo = substr($prisoner->identification_number, 0, 2);
+                                                                                    $lastTwo = substr($prisoner->identification_number, -2);
+                                                                                    $hiddenPart = str_repeat('*', strlen($prisoner->identification_number) - 4);
+                                                                                    $identification_number = $lastTwo.$hiddenPart.$firstTwo;
+                                                                                }
                                                                             @endphp
-                                                                            {{$identification_number ?? 'لا يوجد'}}
+                                                                            {{$identification_number ?? $prisoner->identification_number ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
@@ -332,7 +334,7 @@
                                                             </div>
                                                             <div class="table-responsive border-0">
                                                                 <table
-                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">

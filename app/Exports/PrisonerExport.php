@@ -90,7 +90,8 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
      */
     public function styles(Worksheet $sheet): array
     {
-        $columns = range('A', $sheet->getHighestColumn());
+        $highestColumn = $sheet->getHighestColumn();
+        $columns = range('A', mb_substr($highestColumn, 0, 1));
 
         foreach ($columns as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);

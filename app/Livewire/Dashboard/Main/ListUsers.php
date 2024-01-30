@@ -29,6 +29,8 @@ class ListUsers extends Component
 
     public function addNew(): void
     {
+        $this->ShowModal = false;
+        $this->AllCities = false;
         $this->state = [];
         $this->dispatch('showForm');
     }

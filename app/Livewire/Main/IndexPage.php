@@ -66,8 +66,10 @@ class IndexPage extends Component
                 ->orWhere(function ($q) {
                     $q->where('first_name', $this->search['first_name'])
                         ->where('second_name', $this->search['second_name'])
-                        ->where('last_name', $this->search['last_name'])
-                        ->where('nick_name', $this->search['last_name']);
+                        ->where(function ($q) {
+                            $q->where('last_name', $this->search['last_name'])
+                                ->orWhere('nick_name', 'like', '%' . $this->search['last_name'] . '%');
+                        });
                 })
                 ->get();
 
