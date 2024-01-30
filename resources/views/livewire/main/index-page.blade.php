@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                     background-color: #022d4f;
+                       background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -46,10 +46,18 @@
                                 <h2 class="display-6 text-white"
                                     style="font-family: 'Changa', sans-serif !important;font-size: 30px">الإستعلام عن
                                     أسير</h2>
-                                <p class="text-white">البحث عن طريق الاسم حسب الهوية أو رقم الهوية</p>
+                                <p class="text-white">البحث عن طريق رقم الهوية أو الاسم</p>
                                 <!-- Form -->
                                 <form wire:submit.prevent="SearchPrisoners"
                                       class="row g-2 mt-3">
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control text-input"
+                                               style="background-color:#fff;color: black"
+                                               wire:model="search.identification_number" placeholder="رقم الهوية">
+                                    </div>
+                                    <div class="col-sm-12 mt-3 text-white">
+                                        <p>أو</p>
+                                    </div>
                                     <div class="col-sm-12 col-md-4">
                                         <input type="text" wire:model="search.first_name"
                                                class="form-control text-input"
@@ -67,31 +75,23 @@
                                                style="background-color:#fff;color: black"
                                                placeholder="اسم العائلة">
                                     </div>
-                                    <div class="col-sm-12 mt-3 text-white">
-                                        <p>أو</p>
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control text-input"
-                                               style="background-color:#fff;color: black"
-                                               wire:model="search.identification_number" placeholder="رقم الهوية">
-                                    </div>
                                     <div class="col-sm-12 mt-4" id="Statistics">
                                         <button type="submit" style="background-color:#fff;color: black"
                                                 class="btn m-0">بحث
                                         </button>
                                     </div>
-                                    @if(isset($error_ms))
-                                        <div class="col-6 mt-3 text-white mx-auto">
-                                            <span class="bg-danger p-2 rounded d-block" style="font-size: 17px">
-                                                {{$error_ms}}
+                                    <div class="col-6 mt-3 text-white mx-auto">
+                                        @if($errors->any())
+                                            <span class="bg-danger p-2 rounded d-block mb-2" style="font-size: 17px">
+                                                {{$errors->first()}}
                                             </span>
-                                            @if($error_ms === "لا يوجد بيانات مشابهة")
+                                            @if($errors->first() === "لا يوجد بيانات مشابهة")
                                                 <a href="{{route('dashboard.suggestions.create')}}"
                                                    class="btn btn-warning mt-2"
                                                    style="font-size: 18px">إقتراح إضافة</a>
                                             @endif
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -106,7 +106,8 @@
             <div class="row">
                 <div>
                     <h4 class="mb-3 text-center"
-                        style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">الإحصائيات</h4>
+                        style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
+                        الإحصائيات</h4>
                     <!-- Category item -->
                     <div class="row">
                         @foreach($Statistics as $row)
@@ -125,7 +126,8 @@
                                             {{$row->statistic_number}}
                                         </p>
                                         @if($row->statistic_type !== "الأسرى الإجمالي")
-                                            <img width="80" style="opacity: 0.6;position: fixed;top: 35px;left: 30px;z-index: -1;background-color:#fff;border-radius: 20px;padding: 15px"
+                                            <img width="80"
+                                                 style="opacity: 0.6;position: fixed;top: 35px;left: 30px;z-index: -1;background-color:#fff;border-radius: 20px;padding: 15px"
                                                  src="{{asset('storage/statistic_photo/'.$row->statistic_photo)}}"
                                                  alt="statistic_photo">
                                         @endif
@@ -146,7 +148,8 @@
             <div class="container">
                 <div class="row">
                     <h4 class="mb-3 text-center"
-                        style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">الأخبار</h4>
+                        style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
+                        الأخبار</h4>
                     <!-- Category item -->
                     <div class="col-12">
                         <!-- Card item START -->

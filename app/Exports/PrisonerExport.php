@@ -38,6 +38,8 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
             'second_name' => 'اسم الاب',
             'third_name' => 'اسم الجد',
             'last_name' => 'اسم العائلة',
+            'mother_name' => 'اسم الأم',
+            'nick_name' => 'الكنية',
             'date_of_birth' => 'تاريخ الميلاد',
             'gender' => 'الجنس',
             'city_id' => 'المحافظة',
@@ -69,6 +71,7 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
             'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
             'second_phone_number' => 'رقم التواصل الإضافي',
             'second_phone_owner' => 'اسم صاحب الرقم',
+            'IsReleased' => 'مفرج عنه؟',
             'email' => 'البريد الإلكتروني',
         ];
         $export = [];

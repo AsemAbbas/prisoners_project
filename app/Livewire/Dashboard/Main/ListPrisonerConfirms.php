@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard\Main;
 
+use App\Enums\ArrestedSide;
 use App\Enums\ArrestType;
 use App\Enums\DefaultEnum;
 use App\Enums\EducationLevel;
@@ -13,6 +14,8 @@ use App\Enums\WifeType;
 use App\Models\Arrest;
 use App\Models\Belong;
 use App\Models\City;
+use App\Models\FamilyIDNumber;
+use App\Models\FamilyIDNumberConfirm;
 use App\Models\OldArrest;
 use App\Models\OldArrestConfirm;
 use App\Models\Prisoner;
@@ -20,8 +23,11 @@ use App\Models\PrisonerConfirm;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
+use App\Models\User;
+use App\Rules\PalestineIdValidationRule;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -40,6 +46,7 @@ class ListPrisonerConfirms extends Component
     public array $prisonerColumns = [];
     public array $arrestColumns = [];
     public array $oldArrestColumns = [];
+    public array $familyIDNumberColumns = [];
 
 
     protected string $paginationTheme = 'bootstrap';
@@ -57,7 +64,7 @@ class ListPrisonerConfirms extends Component
 
         $this->Confirms_ = $prisonerConfirm;
         if (isset($this->Confirms_->prisoner_id))
-            $this->Prisoner_ = Prisoner::query()->with('OldArrest', 'Arrest', 'Arrest.Belong', 'Town', 'City')->where('id', $this->Confirms_->prisoner_id)->first() ?? null;
+            $this->Prisoner_ = Prisoner::query()->with('OldArrest', 'Arrest', 'Arrest.Belong', 'Town', 'City', 'FamilyIDNumber')->where('id', $this->Confirms_->prisoner_id)->first() ?? null;
 
         $Confirm_identification_number = $prisonerConfirm->identification_number;
 
@@ -101,6 +108,12 @@ class ListPrisonerConfirms extends Component
                     'name' => 'mother_name',
                     'confirm' => $this->Confirms_->mother_name ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->mother_name ?? 'لا يوجد',
+                ],
+            'الكنية:' =>
+                [
+                    'name' => 'nick_name',
+                    'confirm' => $this->Confirms_->nick_name ?? 'لا يوجد',
+                    'prisoner' => $this->Prisoner_->nick_name ?? 'لا يوجد',
                 ],
             'تاريخ الميلاد:' =>
                 [
@@ -305,6 +318,12 @@ class ListPrisonerConfirms extends Component
                     'confirm' => $this->Confirms_->ArrestConfirm->second_phone_owner ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->second_phone_owner ?? 'لا يوجد',
                 ],
+            'مفرج عنه؟:' =>
+                [
+                    'name' => 'IsReleased',
+                    'confirm' => $this->Confirms_->ArrestConfirm->IsReleased ?? 'لا يوجد',
+                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ?? 'لا يوجد',
+                ],
             'البريد الإلكتروني:' =>
                 [
                     'name' => 'email',
@@ -334,6 +353,11 @@ class ListPrisonerConfirms extends Component
                         'name' => 'old_arrest_end_date',
                         'prisoner' => $oldPrisoner->old_arrest_end_date ?? 'لا يوجد',
                     ],
+                'جهة الإعتقال:' =>
+                    [
+                        'name' => 'arrested_side',
+                        'prisoner' => $oldPrisoner->arrested_side ?? 'لا يوجد',
+                    ],
             ];
         }
 
@@ -355,9 +379,89 @@ class ListPrisonerConfirms extends Component
                         'name' => 'old_arrest_end_date',
                         'confirm' => $oldConfirm->old_arrest_end_date ?? 'لا يوجد',
                     ],
+                'جهة الإعتقال:' =>
+                    [
+                        'name' => 'arrested_side',
+                        'confirm' => $oldConfirm->arrested_side ?? 'لا يوجد',
+                    ],
             ];
         }
 
+        if (!empty($this->Prisoner_))
+            $prisonerIdn = $this->Prisoner_;
+        else $prisonerIdn = null;
+        function formatArrestedPrisonerValues($prisonerIdn, $relationship): array
+        {
+            if (isset($prisonerIdn->FamilyIDNumberConfirm)) {
+                $values = $prisonerIdn->FamilyIDNumberConfirm->where('relationship_name', $relationship)->pluck('id_number', 'id')->toArray();
+                $formattedIds = [];
+
+                foreach ($values as $index => $value) {
+                    $formattedIds[$index] = ["idn" => $value, "relationship_name" => $relationship];
+                }
+
+                return $formattedIds;
+            }
+            return [];
+        }
+
+        $father_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اب');
+        $mother_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ام');
+        $husband_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'زوج');
+        $wife_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'زوجة');
+        $brother_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اخ');
+        $sister_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اخت');
+        $son_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ابن');
+        $daughter_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ابنه');
+
+        $confirmIdn = $this->Confirms_;
+        function formatArrestedConfirmValues($confirmIdn, $relationship): array
+        {
+            if (isset($confirmIdn->FamilyIDNumberConfirm)) {
+                $values = $confirmIdn->FamilyIDNumberConfirm->where('relationship_name', $relationship)->pluck('id_number', 'id')->toArray();
+                $formattedIds = [];
+
+                foreach ($values as $index => $value) {
+                    $formattedIds[$index] = ["idn" => $value, "relationship_name" => $relationship];
+                }
+
+                return $formattedIds;
+            }
+            return [];
+        }
+
+        $father_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'اب');
+        $mother_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'ام');
+        $husband_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'زوج');
+        $wife_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'زوجة');
+        $brother_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'اخ');
+        $sister_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'اخت');
+        $son_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'ابن');
+        $daughter_arrested_confirm_ids = formatArrestedConfirmValues($confirmIdn, 'ابنه');
+
+
+        $this->familyIDNumberColumns = [
+            "prisoner" => [
+                "father_arrested_prisoner_ids" => $father_arrested_prisoner_ids,
+                "mother_arrested_prisoner_ids" => $mother_arrested_prisoner_ids,
+                "husband_arrested_prisoner_ids" => $husband_arrested_prisoner_ids,
+                "wife_arrested_prisoner_ids" => $wife_arrested_prisoner_ids,
+                "brother_arrested_prisoner_ids" => $brother_arrested_prisoner_ids,
+                "sister_arrested_prisoner_ids" => $sister_arrested_prisoner_ids,
+                "son_arrested_prisoner_ids" => $son_arrested_prisoner_ids,
+                "daughter_arrested_prisoner_ids" => $daughter_arrested_prisoner_ids,
+            ],
+            "confirm" => [
+                "father_arrested_confirm_ids" => $father_arrested_confirm_ids,
+                "mother_arrested_confirm_ids" => $mother_arrested_confirm_ids,
+                "husband_arrested_confirm_ids" => $husband_arrested_confirm_ids,
+                "wife_arrested_confirm_ids" => $wife_arrested_confirm_ids,
+                "brother_arrested_confirm_ids" => $brother_arrested_confirm_ids,
+                "sister_arrested_confirm_ids" => $sister_arrested_confirm_ids,
+                "son_arrested_confirm_ids" => $son_arrested_confirm_ids,
+                "daughter_arrested_confirm_ids" => $daughter_arrested_confirm_ids,
+            ],
+        ];
 
         $this->dispatch('ShowAcceptModal');
     }
@@ -367,19 +471,20 @@ class ListPrisonerConfirms extends Component
      */
     public function ConfirmAccept(): void
     {
-        $ConfirmsArray = $this->Confirms_->toArray() ?? null;
-        $ConfirmsArrestArray = $this->Confirms_->ArrestConfirm->toArray() ?? null;
-        $PrisonerOldArrestArray = isset($this->Prisoner_) ? $this->Prisoner_->OldArrest->toArray() : null;
-        $ConfirmsOldArrestArray = $this->Confirms_->OldArrestConfirm->toArray() ?? null;
+        $ConfirmsArray = $this->Confirms_->toArray() ?? [];
+        $ConfirmsArrestArray = isset($this->Confirms_->ArrestConfirm) ? $this->Confirms_->ArrestConfirm->toArray() : [];
+        $PrisonerOldArrestArray = isset($this->Prisoner_) ? $this->Prisoner_->OldArrest->toArray() : [];
+        $ConfirmsOldArrestArray = $this->Confirms_->OldArrestConfirm->toArray() ?? [];
 
 
         $validation = Validator::make($ConfirmsArray, [
-            'identification_number' => "nullable",
+            'identification_number' => ["nullable",new PalestineIdValidationRule],
             'first_name' => "nullable",
             'second_name' => "nullable",
             'third_name' => "nullable",
             'last_name' => "nullable",
             'mother_name' => "nullable",
+            'nick_name' => "nullable",
             'date_of_birth' => "nullable",
             'gender' => "nullable|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
@@ -417,131 +522,135 @@ class ListPrisonerConfirms extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
+            'IsReleased' => "nullable|boolean",
             'email' => "nullable|email",
         ])->validate();
         $finalArrestData = $validationArrest;
 
-       if (isset($ConfirmsArray['prisoner_id'])) {
+        if (isset($ConfirmsArray['prisoner_id'])) {
 
-             $Prisoner = Prisoner::query()->where('id', $ConfirmsArray['prisoner_id'])->first();
-             $Arrest = $Prisoner->Arrest ?? null;
-             $Prisoner->update([
-                 'identification_number' => $finalData['identification_number'],
-                 'first_name' => $finalData['first_name'],
-                 'second_name' => $finalData['second_name'],
-                 'third_name' => $finalData['third_name'],
-                 'last_name' => $finalData['last_name'],
-                 'mother_name' => $finalData['mother_name'],
-                 'date_of_birth' => $finalData['date_of_birth'],
-                 'gender' => $finalData['gender'],
-                 'city_id' => $finalData['city_id'],
-                 'town_id' => $finalData['town_id'],
-                 'notes' => $finalData['notes'],
-             ]);
-             if (isset($Arrest))
-                 $Arrest->update([
-                     "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
-                     "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
-                     "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
-                     "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
-                     "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
-                     "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
-                     "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
-                     "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
-                     "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
-                     "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
-                     "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
-                     "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
-                     "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
-                     "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
-                     "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
-                     "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
-                     "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
-                     "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
-                     "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
-                     "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
-                     "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
-                     "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
-                     "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
-                     "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                     "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
-                 ]);
-             else Arrest::query()->create([
-                 "prisoner_id" => $Prisoner->id,
-                 "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
-                 "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
-                 "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
-                 "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
-                 "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
-                 "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
-                 "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
-                 "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
-                 "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
-                 "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
-                 "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
-                 "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
-                 "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
-                 "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
-                 "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
-                 "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
-                 "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
-                 "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
-                 "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
-                 "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
-                 "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
-                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
-                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
-                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
-             ]);
-         } else {
-             $Prisoner = Prisoner::query()->create([
-                 'identification_number' => $finalData['identification_number'],
-                 'first_name' => $finalData['first_name'],
-                 'second_name' => $finalData['second_name'],
-                 'third_name' => $finalData['third_name'],
-                 'last_name' => $finalData['last_name'],
-                 'mother_name' => $finalData['mother_name'],
-                 'date_of_birth' => $finalData['date_of_birth'],
-                 'gender' => $finalData['gender'],
-                 'city_id' => $finalData['city_id'],
-                 'town_id' => $finalData['town_id'],
-                 'notes' => $finalData['notes'],
-             ]);
-             $Arrest = Arrest::query()->create([
-                 "prisoner_id" => $Prisoner->id,
-                 "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
-                 "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
-                 "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
-                 "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
-                 "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
-                 "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
-                 "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
-                 "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
-                 "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
-                 "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
-                 "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
-                 "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
-                 "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
-                 "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
-                 "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
-                 "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
-                 "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
-                 "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
-                 "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
-                 "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
-                 "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
-                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
-                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
-                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
-             ]);
-         }
+            $Prisoner = Prisoner::query()->where('id', $ConfirmsArray['prisoner_id'])->first();
+            $Arrest = $Prisoner->Arrest ?? null;
+            $Prisoner->update([
+                'identification_number' => $finalData['identification_number'],
+                'first_name' => $finalData['first_name'],
+                'second_name' => $finalData['second_name'],
+                'third_name' => $finalData['third_name'],
+                'last_name' => $finalData['last_name'],
+                'mother_name' => $finalData['mother_name'],
+                'nick_name' => $finalData['nick_name'],
+                'date_of_birth' => $finalData['date_of_birth'],
+                'gender' => $finalData['gender'],
+                'city_id' => $finalData['city_id'],
+                'town_id' => $finalData['town_id'],
+                'notes' => $finalData['notes'],
+            ]);
+            if (isset($Arrest))
+                $Arrest->update([
+                    "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
+                    "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
+                    "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
+                    "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
+                    "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
+                    "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
+                    "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
+                    "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
+                    "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
+                    "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
+                    "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
+                    "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
+                    "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
+                    "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
+                    "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
+                    "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
+                    "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
+                    "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
+                    "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
+                    "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
+                    "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
+                    "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
+                    "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
+                    "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
+                    "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                    "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
+                ]);
+            else Arrest::query()->create([
+                "prisoner_id" => $Prisoner->id,
+                "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
+                "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
+                "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
+                "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
+                "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
+                "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
+                "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
+                "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
+                "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
+                "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
+                "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
+                "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
+                "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
+                "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
+                "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
+                "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
+                "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
+                "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
+                "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
+                "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
+                "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
+                "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
+                "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
+                "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
+                "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
+            ]);
+        } else {
+            $Prisoner = Prisoner::query()->create([
+                'identification_number' => $finalData['identification_number'],
+                'first_name' => $finalData['first_name'],
+                'second_name' => $finalData['second_name'],
+                'third_name' => $finalData['third_name'],
+                'last_name' => $finalData['last_name'],
+                'mother_name' => $finalData['mother_name'],
+                'nick_name' => $finalData['nick_name'],
+                'date_of_birth' => $finalData['date_of_birth'],
+                'gender' => $finalData['gender'],
+                'city_id' => $finalData['city_id'],
+                'town_id' => $finalData['town_id'],
+                'notes' => $finalData['notes'],
+            ]);
+            $Arrest = Arrest::query()->create([
+                "prisoner_id" => $Prisoner->id,
+                "arrest_start_date" => $finalArrestData["arrest_start_date"] ?? $Arrest["arrest_start_date"] ?? null,
+                "arrest_type" => $finalArrestData["arrest_type"] ?? $Arrest["arrest_type"] ?? null,
+                "judgment_in_lifetime" => $finalArrestData["judgment_in_lifetime"] ?? $Arrest["judgment_in_lifetime"] ?? null,
+                "judgment_in_years" => $finalArrestData["judgment_in_years"] ?? $Arrest["judgment_in_years"] ?? null,
+                "judgment_in_months" => $finalArrestData["judgment_in_months"] ?? $Arrest["judgment_in_months"] ?? null,
+                "belong_id" => $finalArrestData["belong_id"] ?? $Arrest["belong_id"] ?? null,
+                "special_case" => $finalArrestData["special_case"] ?? $Arrest["special_case"] ?? null,
+                "social_type" => $finalArrestData["social_type"] ?? $Arrest["social_type"] ?? null,
+                "wife_type" => $finalArrestData["wife_type"] ?? $Arrest["wife_type"] ?? null,
+                "number_of_children" => $finalArrestData["number_of_children"] ?? $Arrest["number_of_children"] ?? null,
+                "education_level" => $finalArrestData["education_level"] ?? $Arrest["education_level"] ?? null,
+                "health_note" => $finalArrestData["health_note"] ?? $Arrest["health_note"] ?? null,
+                "father_arrested" => $finalArrestData["father_arrested"] ?? $Arrest["father_arrested"] ?? null,
+                "mother_arrested" => $finalArrestData["mother_arrested"] ?? $Arrest["mother_arrested"] ?? null,
+                "husband_arrested" => $finalArrestData["husband_arrested"] ?? $Arrest["husband_arrested"] ?? null,
+                "wife_arrested" => $finalArrestData["wife_arrested"] ?? $Arrest["wife_arrested"] ?? null,
+                "brother_arrested" => $finalArrestData["brother_arrested"] ?? $Arrest["brother_arrested"] ?? null,
+                "sister_arrested" => $finalArrestData["sister_arrested"] ?? $Arrest["sister_arrested"] ?? null,
+                "son_arrested" => $finalArrestData["son_arrested"] ?? $Arrest["son_arrested"] ?? null,
+                "daughter_arrested" => $finalArrestData["daughter_arrested"] ?? $Arrest["daughter_arrested"] ?? null,
+                "first_phone_owner" => $finalArrestData["first_phone_owner"] ?? $Arrest["first_phone_owner"] ?? null,
+                "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
+                "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
+                "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
+                "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
+            ]);
+        }
 
-
-        $finalOldArrestData = [];
         $Prisoner = Prisoner::query()->where('id', $ConfirmsArray['prisoner_id'])->first();
-
+        $finalOldArrestData = [];
         if (isset($PrisonerOldArrestArray)) {
             foreach ($PrisonerOldArrestArray as $old) {
                 $finalOldArrestData[] = [
@@ -549,6 +658,7 @@ class ListPrisonerConfirms extends Component
                     "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
                     "old_arrest_start_date" => $old['old_arrest_start_date'] ?? null,
                     "old_arrest_end_date" => $old['old_arrest_end_date'] ?? null,
+                    "arrested_side" => $old['arrested_side'] ?? null,
                 ];
             }
         }
@@ -558,6 +668,7 @@ class ListPrisonerConfirms extends Component
                 "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
                 "old_arrest_start_date" => $old['old_arrest_start_date'] ?? null,
                 "old_arrest_end_date" => $old['old_arrest_end_date'] ?? null,
+                "arrested_side" => $old['arrested_side'] ?? null,
             ];
         }
         if (!empty($finalOldArrestData) && isset($Prisoner->id)) {
@@ -573,8 +684,45 @@ class ListPrisonerConfirms extends Component
                     'prisoner_id' => $row['prisoner_id'] ?? null,
                     'old_arrest_start_date' => $row['old_arrest_start_date'] ?? null,
                     'old_arrest_end_date' => $row['old_arrest_end_date'] ?? null,
+                    'arrested_side' => $row['arrested_side'] ?? null,
                 ]);
                 OldArrestConfirm::query()
+                    ->where('id', $row['id'])
+                    ->update(['confirm_status' => 'تم القبول']);
+            }
+        }
+
+        $finalArrestedIdn = [];
+        if (isset($this->familyIDNumberColumns)) {
+            foreach ($this->familyIDNumberColumns['prisoner'] as $prisoner) {
+                foreach ($prisoner as $key => $row)
+                    $finalArrestedIdn[] = [
+                        "id" => $key,
+                        "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
+                        "id_number" => $row['idn'],
+                        "relationship_name" => $row['relationship_name'],
+                    ];
+            }
+        }
+        if (isset($this->familyIDNumberColumns)) {
+            foreach ($this->familyIDNumberColumns['confirm'] as $prisoner) {
+                foreach ($prisoner as $key => $row)
+                    $finalArrestedIdn[] = [
+                        "id" => $key,
+                        "prisoner_id" => $old['prisoner_id'] ?? $Prisoner->id ?? null,
+                        "id_number" => $row['idn'],
+                        "relationship_name" => $row['relationship_name'],
+                    ];
+            }
+        }
+        if (!empty($finalArrestedIdn) && isset($Prisoner->id)) {
+            foreach ($finalArrestedIdn as $row) {
+                FamilyIDNumber::query()->create([
+                    'prisoner_id' => $Prisoner->id ?? null,
+                    'id_number' => $row['id_number'] ?? null,
+                    'relationship_name' => $row['relationship_name'] ?? null,
+                ]);
+                FamilyIDNumberConfirm::query()
                     ->where('id', $row['id'])
                     ->update(['confirm_status' => 'تم القبول']);
             }
@@ -602,6 +750,7 @@ class ListPrisonerConfirms extends Component
             'SpecialCase' => join(",", array_column(SpecialCase::cases(), 'value')),
             'SuggestionStatus' => join(",", array_column(SuggestionStatus::cases(), 'value')),
             'EducationLevel' => join(",", array_column(EducationLevel::cases(), 'value')),
+            'ArrestedSide' => join(",", array_column(ArrestedSide::cases(), 'value')),
         ];
     }
 
@@ -620,13 +769,31 @@ class ListPrisonerConfirms extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $Confirms = $this->getConfirmsProperty()->when(isset($this->sortBy), function ($q) {
+
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')->first()->toArray()['city'] ?? [];
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
+
+        $Confirms = $this->getConfirmsProperty()
+            ->where(function ($query) use ($cityIdArray) {
+                $query->whereIn('city_id', $cityIdArray)
+                    ->orWhereNull('city_id');
+            })
+            ->when(isset($this->sortBy), function ($q) {
             if ($this->sortBy == "تم القبول")
                 $q->where('confirm_status', "تم القبول");
             elseif ($this->sortBy == "يحتاج مراجعة")
                 $q->where('confirm_status', 'يحتاج مراجعة');
             else   $q->whereIn('confirm_status', ['تم القبول', 'يحتاج مراجعة']);
-        })->orderBy('confirm_status')->paginate(10);
+        })
+            ->orderBy('confirm_status')
+            ->paginate(10);
 
         $ConfirmCount = [
             'all' => PrisonerConfirm::query()->count(),

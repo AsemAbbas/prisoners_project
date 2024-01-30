@@ -94,7 +94,6 @@
                         @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <th>الخيارات</th>
                         @endif
-
                     </tr>
                     </thead>
                     <tbody>
@@ -121,6 +120,12 @@
                             </td>
                             <td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                    <a wire:click="edit({{$row}})" class="btn btn-warning"
+                                       title="Edit">
+                                        تعديل
+                                    </a>
+                                @endif
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                                     <a wire:click="delete({{$row}})" class="btn btn-danger"
                                        title="Delete">
                                         حذف
@@ -139,18 +144,18 @@
     </div>
 
     <!-- Form Modal -->
-    <div class="modal modal fade" id="form" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+    <div class="modal modal-lg fade" id="form" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog">
             <div class="modal-content bg-white">
-                <div class="modal-header bg-primary" style="margin: 5px;">
+                <div class="modal-header {{$ShowModal ? 'bg-warning' : 'bg-primary'}}" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
                         id="staticBackdropLabel">إضافة مستخدم</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form wire:submit.prevent="createUser">
+                    <form wire:submit.prevent="{{$ShowModal ? 'updateUser' : 'createUser'}}">
                         <div class="row">
                             <div class="form-group col-md-12 mb-3">
                                 <label for="name">اسم المستخدم</label>
@@ -162,6 +167,79 @@
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="form-group col-md-12 mb-3">
+                                <label for="user_status">حالة المستخدم</label>
+                                <select class="form-select" id="user_status"
+                                        name="user_status"
+                                        wire:model.live="state.user_status">
+                                    <option>اختر...</option>
+                                    @foreach(\App\Enums\UserStatus::cases() as $status)
+                                        <option value="{{$status->value}}">{{$status->value}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group col-md-12 mb-3">
+                                <label for="City">المحافظات</label>
+                                <div id="toggleCity" class="City">
+                                    <div class="card">
+                                        <div class="card-header" id="headingCity" wire:ignore.self>
+                                            <section class="mb-0 mt-0">
+                                                <div role="menu" class="collapsed d-flex justify-content-between"
+                                                     data-bs-toggle="collapse"
+                                                     data-bs-target="#defaultCity" aria-expanded="false"
+                                                     aria-controls="defaultCity">
+                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round"
+                                                         stroke-linejoin="round"
+                                                         class="feather feather-chevron-down">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </div>
+                                            </section>
+                                        </div>
+                                        @php $city = $state['cities'] ?? [] @endphp
+                                        <div id="defaultCity" class="collapse @if(isset($city)) show @endif"
+                                             aria-labelledby="headingCity"
+
+                                             wire:ignore.self
+                                             data-bs-parent="#toggleCity">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-check form-check-dark form-check-inline">
+                                                            <input class="form-check-input"
+                                                                   wire:model.live="AllCities"
+                                                                   type="checkbox"
+                                                                   id="form-check-dark">
+                                                            <label class="form-check-label" for="form-check-dark">
+                                                                جميع المحافظات
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    @foreach($Cities as $city)
+                                                        <div class="col-md-6 mb-4">
+                                                            <div class="form-check form-check-dark form-check-inline">
+                                                                <input class="form-check-input"
+                                                                       wire:model.live="state.cities.{{$city->id}}"
+                                                                       type="checkbox"
+                                                                       id="form-check-dark">
+                                                                <label class="form-check-label" for="form-check-dark">
+                                                                    {{$city->city_name}}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group col-md-12 mb-3">
                                 <label for="email">البريد الإلكتروني</label>
                                 <input wire:model="state.email" type="email"
@@ -184,8 +262,8 @@
                     </form>
                 </div>
                 <div class="modal-footer d-flex justify-content-start align-items-start">
-                    <button type="submit" wire:click="createUser"
-                            class="btn btn-primary">حفظ
+                    <button type="submit" wire:click="{{$ShowModal ? 'updateUser' : 'createUser'}}"
+                            class="btn {{$ShowModal ? 'bg-warning' : 'bg-primary'}}">حفظ
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                              stroke-linejoin="round" class="feather feather-save">

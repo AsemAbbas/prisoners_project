@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('old_arrest_end_date')->index()->nullable();
             $table->date('before_old_arrest_start_date')->index()->nullable();
             $table->date('before_old_arrest_end_date')->index()->nullable();
+            $table->string('arrested_side')->nullable();//enum
             $table->timestamps();
             $table->softDeletes();
         });

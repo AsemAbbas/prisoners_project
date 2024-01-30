@@ -83,10 +83,22 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6 mb-4">
+                            <label for="nick_name">الكنية</label>
+                            <input wire:model="state.nick_name" type="text"
+                                   class="form-control @error('nick_name') is-invalid @enderror"
+                                   id="nick_name"
+                                   placeholder="الكنية">
+                            @error('nick_name')
+                            <div class="error-message invalid-feedback"
+                                 style="font-size: 15px">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-6 mb-4">
                             <label for="identification_number">رقم الهوية</label>
                             <input wire:model="state.identification_number" type="text"
                                    class="form-control @error('identification_number') is-invalid @enderror"
                                    id="identification_number"
+                                   maxlength="9"
                                    placeholder="رقم الهوية">
                             @error('identification_number')
                             <div class="error-message invalid-feedback"
@@ -192,7 +204,7 @@
                                                 </div>
                                             </section>
                                         </div>
-                                        <div id="defaultPrisonerType" class="collapse"
+                                        <div id="defaultPrisonerType" class="collapse @if(isset($state['prisoner_type'])) show @endif"
                                              aria-labelledby="headingPrisonerType"
                                              wire:ignore.self
                                              data-bs-parent="#togglePrisonerType">
@@ -378,7 +390,16 @@
                                             </div>
                                         </section>
                                     </div>
-                                    <div id="defaultSpecialCase" class="collapse"
+                                    @php
+                                        // Assuming $state['special_case'] is an array
+                                        $keyToDelete = ''; // Set the key you want to delete
+
+                                        if (isset($state['special_case'][$keyToDelete])) {
+                                            unset($state['special_case'][$keyToDelete]);
+                                        }
+                                    @endphp
+                                    <div id="defaultSpecialCase"
+                                         class="collapse @if(!empty($state) && !empty($state['special_case'])) show @endif"
                                          aria-labelledby="headingSpecialCase"
                                          wire:ignore.self
                                          data-bs-parent="#toggleSpecialCase">
@@ -475,7 +496,7 @@
                                                     </div>
                                                 </section>
                                             </div>
-                                            <div id="defaultFamilyArrested" class="collapse"
+                                            <div id="defaultFamilyArrested" class="collapse show"
                                                  aria-labelledby="headingFamilyArrested"
                                                  wire:ignore.self
                                                  data-bs-parent="#toggleFamilyArrested">
@@ -493,6 +514,29 @@
                                                                     الأب
                                                                 </label>
                                                             </div>
+                                                            @if(isset($state) && isset($state['father_arrested']) &&  $state['father_arrested'] === true)
+                                                                <div>
+                                                                    <label>
+                                                                        <input class="form-input border rounded-2 p-2"
+                                                                               wire:model.live="state.father_arrested_id"
+                                                                               maxlength="9"
+                                                                               placeholder="رقم هوية الاب" type="text">
+                                                                    </label>
+                                                                    @php
+                                                                        if (isset($state) && isset($state['father_arrested_id']) && strlen($state['father_arrested_id']) == 9)
+                                                                            $father_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['father_arrested_id'])->first()
+                                                                    @endphp
+                                                                    @if(isset($state['father_arrested_id']) && strlen($state['father_arrested_id']) == 9)
+                                                                        @if(isset($father_arrested_id_check))
+                                                                            @if($father_arrested_id_check)
+                                                                                <span class="text-success">موجود</span>
+                                                                            @else
+                                                                                <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
                                                             <div
@@ -506,6 +550,29 @@
                                                                     الأم
                                                                 </label>
                                                             </div>
+                                                            @if(isset($state) && isset($state['mother_arrested']) &&  $state['mother_arrested'] === true)
+                                                                <div>
+                                                                    <label>
+                                                                        <input class="form-input border rounded-2 p-2"
+                                                                               wire:model.live="state.mother_arrested_id"
+                                                                               maxlength="9"
+                                                                               placeholder="رقم هوية الأم" type="text">
+                                                                    </label>
+                                                                    @php
+                                                                        if (isset($state) && isset($state['mother_arrested_id']) && strlen($state['mother_arrested_id']) == 9)
+                                                                            $mother_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['mother_arrested_id'])->first()
+                                                                    @endphp
+                                                                    @if(isset($state['mother_arrested_id']) && strlen($state['mother_arrested_id']) == 9)
+                                                                        @if(isset($mother_arrested_id_check))
+                                                                            @if($mother_arrested_id_check)
+                                                                                <span class="text-success">موجود</span>
+                                                                            @else
+                                                                                <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
                                                             <div
@@ -519,6 +586,29 @@
                                                                     الزوج
                                                                 </label>
                                                             </div>
+                                                            @if(isset($state) && isset($state['husband_arrested']) &&  $state['husband_arrested'] === true)
+                                                                <div>
+                                                                    <label>
+                                                                        <input class="form-input border rounded-2 p-2"
+                                                                               wire:model.live="state.husband_arrested_id"
+                                                                               maxlength="9"
+                                                                               placeholder="رقم هوية الزوج" type="text">
+                                                                    </label>
+                                                                    @php
+                                                                        if (isset($state) && isset($state['husband_arrested_id']) && strlen($state['husband_arrested_id']) == 9)
+                                                                            $husband_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['husband_arrested_id'])->first()
+                                                                    @endphp
+                                                                    @if(isset($state['husband_arrested_id']) && strlen($state['husband_arrested_id']) == 9)
+                                                                        @if(isset($husband_arrested_id_check))
+                                                                            @if($husband_arrested_id_check)
+                                                                                <span class="text-success">موجود</span>
+                                                                            @else
+                                                                                <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
                                                             <div
@@ -532,9 +622,33 @@
                                                                     الزوجة
                                                                 </label>
                                                             </div>
+                                                            @if(isset($state) && isset($state['wife_arrested']) &&  $state['wife_arrested'] === true)
+                                                                <div>
+                                                                    <label>
+                                                                        <input class="form-input border rounded-2 p-2"
+                                                                               wire:model.live="state.wife_arrested_id"
+                                                                               placeholder="رقم هوية الزوجة"
+                                                                               maxlength="9"
+                                                                               type="text">
+                                                                    </label>
+                                                                    @php
+                                                                        if (isset($state) && isset($state['wife_arrested_id']) && strlen($state['wife_arrested_id']) == 9)
+                                                                            $wife_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['wife_arrested_id'])->first()
+                                                                    @endphp
+                                                                    @if(isset($state['wife_arrested_id']) && strlen($state['wife_arrested_id']) == 9)
+                                                                        @if(isset($wife_arrested_id_check))
+                                                                            @if($wife_arrested_id_check)
+                                                                                <span class="text-success">موجود</span>
+                                                                            @else
+                                                                                <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endif
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
-                                                            <div class="form-group">
+                                                            <div class="form-group mb-2">
                                                                 <label for="brother_arrested"
                                                                        style="display: inline-block;">
                                                                     أخ
@@ -542,12 +656,42 @@
                                                                 <input class="form-control form-control-sm"
                                                                        wire:model.live="state.brother_arrested"
                                                                        type="number"
+                                                                       max="10"
+                                                                       min="0"
                                                                        id="brother_arrested"
                                                                        style="width: 80px; display: inline-block;">
                                                             </div>
+                                                            @if(isset($state) && isset($state['brother_arrested']) &&  $state['brother_arrested'] > 0)
+                                                                @for($i = 1; $i <= min(10, $state['brother_arrested']); $i++)
+                                                                    <div>
+                                                                        <label>
+                                                                            <input
+                                                                                class="form-input border rounded-2 p-2"
+                                                                                wire:model.live="state.brother_arrested_id.{{$i}}"
+                                                                                placeholder="رقم هوية الأخ {{$i}}"
+                                                                                maxlength="9"
+                                                                                type="text">
+                                                                        </label>
+                                                                        @php
+                                                                            if (isset($state) && isset($state['brother_arrested_id']) && isset($state['brother_arrested_id'][$i]) && strlen($state['brother_arrested_id'][$i]) == 9)
+                                                                                $brother_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['brother_arrested_id'][$i])->first()
+                                                                        @endphp
+                                                                        @if(isset($state['brother_arrested_id'][$i]) && strlen($state['brother_arrested_id'][$i]) == 9)
+                                                                            @if(isset($brother_arrested_id_check[$i]))
+                                                                                @if($brother_arrested_id_check[$i])
+                                                                                    <span
+                                                                                        class="text-success">موجود</span>
+                                                                                @else
+                                                                                    <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                @endfor
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
-                                                            <div class="form-group">
+                                                            <div class="form-group mb-2">
                                                                 <label for="brother_arrested"
                                                                        style="display: inline-block;">
                                                                     أخت
@@ -555,35 +699,125 @@
                                                                 <input class="form-control form-control-sm"
                                                                        wire:model.live="state.sister_arrested"
                                                                        type="number"
+                                                                       max="10"
+                                                                       min="0"
                                                                        id="brother_arrested"
                                                                        style="width: 80px; display: inline-block;">
                                                             </div>
+                                                            @if(isset($state) && isset($state['sister_arrested']) &&  $state['sister_arrested'] > 0)
+                                                                @for($i = 1; $i <= min(10, $state['sister_arrested']); $i++)
+                                                                    <div>
+                                                                        <label>
+                                                                            <input
+                                                                                class="form-input border rounded-2 p-2"
+                                                                                wire:model.live="state.sister_arrested_id.{{$i}}"
+                                                                                placeholder="رقم هوية الأخت {{$i}}"
+                                                                                maxlength="9"
+                                                                                type="text">
+                                                                        </label>
+                                                                        @php
+                                                                            if (isset($state) && isset($state['sister_arrested_id']) && isset($state['sister_arrested_id'][$i]) && strlen($state['sister_arrested_id'][$i]) == 9)
+                                                                                $sister_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['sister_arrested_id'][$i])->first()
+                                                                        @endphp
+                                                                        @if(isset($state['sister_arrested_id'][$i]) && strlen($state['sister_arrested_id'][$i]) == 9)
+                                                                            @if(isset($sister_arrested_id_check[$i]))
+                                                                                @if($sister_arrested_id_check[$i])
+                                                                                    <span
+                                                                                        class="text-success">موجود</span>
+                                                                                @else
+                                                                                    <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                @endfor
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
-                                                            <div class="form-group">
-                                                                <label for="brother_arrested"
+                                                            <div class="form-group mb-2">
+                                                                <label for="son_arrested"
                                                                        style="display: inline-block;">
                                                                     ابن
                                                                 </label>
                                                                 <input class="form-control form-control-sm"
                                                                        wire:model.live="state.son_arrested"
                                                                        type="number"
-                                                                       id="brother_arrested"
+                                                                       max="10"
+                                                                       min="0"
+                                                                       id="son_arrested"
                                                                        style="width: 80px; display: inline-block;">
                                                             </div>
+                                                            @if(isset($state) && isset($state['son_arrested']) &&  $state['son_arrested'] > 0)
+                                                                @for($i = 1; $i <= min(10, $state['son_arrested']); $i++)
+                                                                    <div>
+                                                                        <label>
+                                                                            <input
+                                                                                class="form-input border rounded-2 p-2"
+                                                                                wire:model.live="state.son_arrested_id.{{$i}}"
+                                                                                placeholder="رقم هوية الابن {{$i}}"
+                                                                                maxlength="9"
+                                                                                type="text">
+                                                                        </label>
+                                                                        @php
+                                                                            if (isset($state) && isset($state['son_arrested_id']) && isset($state['son_arrested_id'][$i]) && strlen($state['son_arrested_id'][$i]) == 9)
+                                                                                $son_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['son_arrested_id'][$i])->first()
+                                                                        @endphp
+                                                                        @if(isset($state['son_arrested_id'][$i]) && strlen($state['son_arrested_id'][$i]) == 9)
+                                                                            @if(isset($son_arrested_id_check[$i]))
+                                                                                @if($son_arrested_id_check[$i])
+                                                                                    <span
+                                                                                        class="text-success">موجود</span>
+                                                                                @else
+                                                                                    <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                @endfor
+                                                            @endif
                                                         </div>
                                                         <div class="col-md-6 mb-4">
-                                                            <div class="form-group">
-                                                                <label for="brother_arrested"
+                                                            <div class="form-group mb-2">
+                                                                <label for="daughter_arrested"
                                                                        style="display: inline-block;">
                                                                     ابنه
                                                                 </label>
                                                                 <input class="form-control form-control-sm"
                                                                        wire:model.live="state.daughter_arrested"
                                                                        type="number"
-                                                                       id="brother_arrested"
+                                                                       max="10"
+                                                                       min="0"
+                                                                       id="daughter_arrested"
                                                                        style="width: 80px; display: inline-block;">
                                                             </div>
+                                                            @if(isset($state) && isset($state['daughter_arrested']) && $state['daughter_arrested'] > 0)
+                                                                @for($i = 1; $i <= min(10, $state['daughter_arrested']); $i++)
+                                                                    <div>
+                                                                        <label>
+                                                                            <input
+                                                                                class="form-input border rounded-2 p-2"
+                                                                                wire:model.live="state.daughter_arrested_id.{{$i}}"
+                                                                                maxlength="9"
+                                                                                placeholder="رقم هوية الابنه {{$i}}"
+                                                                                type="text">
+                                                                        </label>
+                                                                        @php
+                                                                            if (isset($state) && isset($state['daughter_arrested_id']) && isset($state['daughter_arrested_id'][$i]) && strlen($state['daughter_arrested_id'][$i]) == 9)
+                                                                                $daughter_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['daughter_arrested_id'][$i])->first()
+                                                                        @endphp
+                                                                        @if(isset($daughter_arrested_id_check[$i]))
+                                                                            @if(isset($state['daughter_arrested_id'][$i]) && strlen($state['daughter_arrested_id'][$i]) == 9)
+                                                                                @if($daughter_arrested_id_check[$i])
+                                                                                    <span
+                                                                                        class="text-success">موجود</span>
+                                                                                @else
+                                                                                    <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                @endif
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                @endfor
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -593,7 +827,15 @@
                                 </div>
                             @endif
                         @endif
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-6 mb-4 text-center" style="margin-top: 35px;">
+                            <label class="form-check-label" style="font-size: 18px" for="form-check-dark">مفرج
+                                عنه؟</label>
+                            <input class="form-check-input border"
+                                   wire:model.live="state.IsReleased"
+                                   type="checkbox"
+                                   id="form-check-dark">
+                        </div>
+                        <div class="form-group col-md-6 mb-4">
                             <label for="education_level">المستوى التعليمي</label>
                             <select wire:model.live="state.education_level"
                                     class="form-select @error('education_level') is-invalid @enderror"
@@ -714,6 +956,18 @@
                                                        type="date"
                                                        class="form-control"
                                                        id="old_arrest_end_date">
+                                            </div>
+                                            <div class="form-group col-md-12 mb-4">
+                                                <label style="font-weight: bold" for="arrested_side">جهة
+                                                    الإعتقال</label>
+                                                <select id="arrested_side"
+                                                        wire:model="old_arrests.{{$key}}.arrested_side"
+                                                        class="form-select">
+                                                    <option>إختر...</option>
+                                                    @foreach(\App\Enums\ArrestedSide::cases() as $row)
+                                                        <option value="{{$row->value}}">{{$row->value}}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                     </div>

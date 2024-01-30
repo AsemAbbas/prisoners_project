@@ -56,7 +56,7 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/prisoners', ListPrisoners::class)->name('dashboard.prisoners')->middleware(['auth', 'editor']);
     Route::get('/prisoners/create', CreateUpdatePrisoners::class)->name('dashboard.prisoners.create')->middleware(['auth', 'editor']);
     Route::get('/prisoners/update/{prisoner}', CreateUpdatePrisoners::class)->name('dashboard.prisoners.update')->middleware('auth', 'editor');
-    Route::get('/arrests/{prisoner_id?}', ListArrests::class)->name('dashboard.arrests')->middleware(['auth', 'editor']);
+//    Route::get('/arrests/{prisoner_id?}', ListArrests::class)->name('dashboard.arrests')->middleware(['auth', 'editor']);
 
     Route::get('/confirms', ListPrisonerConfirms::class)->name('dashboard.confirms')->middleware('auth', 'editor');
     Route::get('/suggestions', ListPrisonerSuggestions::class)->name('dashboard.suggestions')->middleware('auth', 'reviewer');
@@ -72,13 +72,3 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/statistics', ListStatistics::class)->name('dashboard.statistics')->middleware('auth', 'editor');
     Route::get('/social_media', ListSocialMedia::class)->name('dashboard.social_media')->middleware('auth', 'editor');
 });
-
-//Route::middleware([
-//    'auth:sanctum',
-//    config('jetstream.auth_session'),
-//    'verified',
-//])->group(function () {
-//    Route::get('/dashboard', function () {
-//        return view('dashboard');
-//    })->name('dashboard');
-//});

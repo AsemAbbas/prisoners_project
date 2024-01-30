@@ -27,6 +27,17 @@ class PrisonerConfirm extends Model
             });
         });
     }
+
+    public function ArrestConfirm(): HasOne
+    {
+        return $this->hasOne(ArrestConfirm::class);
+    }
+
+    public function OldArrestConfirm(): HasMany
+    {
+        return $this->hasMany(OldArrestConfirm::class);
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->second_name . ' ' . $this->third_name . ' ' . $this->last_name;
@@ -47,13 +58,8 @@ class PrisonerConfirm extends Model
         return $this->belongsTo(Relationship::class);
     }
 
-    public function ArrestConfirm(): HasOne
+    public function FamilyIDNumberConfirm(): HasMany
     {
-        return $this->hasOne(ArrestConfirm::class);
-    }
-
-    public function OldArrestConfirm(): HasMany
-    {
-        return $this->hasMany(OldArrestConfirm::class);
+        return $this->hasMany(FamilyIDNumberConfirm::class);
     }
 }

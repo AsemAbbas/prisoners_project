@@ -172,11 +172,11 @@
                         <th style="min-width: 180px;font-weight: bold">تاريخ الميلاد</th>
                         <th style="min-width: 180px;font-weight: bold">الجنس</th>
                         <th style="min-width: 180px;font-weight: bold">المحافظة</th>
-                        @auth
-                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
-                                <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>
-                            @endif
-                        @endauth
+                        {{--                        @auth--}}
+                        {{--                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))--}}
+                        {{--                                <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>--}}
+                        {{--                            @endif--}}
+                        {{--                        @endauth--}}
                         <th style="min-width: 180px;font-weight: bold">الخيارات</th>
                     </tr>
                     </thead>
@@ -205,17 +205,17 @@
                                 {{--                                    </a>--}}
                                 {{--                                </td>--}}
                                 @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
-                                    <td>
-                                        <a href="{{route('dashboard.relatives_prisoners',$row)}}"
-                                           class="btn btn-dark-soft"
-                                           data-toggle="tooltip" data-placement="top" title="show">
-                                            @if(count($row->RelativesPrisoner) > 0)
-                                                أقارب معتقلون ({{count($row->RelativesPrisoner)}})
-                                            @else
-                                                أضف قريب
-                                            @endif
-                                        </a>
-                                    </td>
+                                    {{--                                    <td>--}}
+                                    {{--                                        <a href="{{route('dashboard.relatives_prisoners',$row)}}"--}}
+                                    {{--                                           class="btn btn-dark-soft"--}}
+                                    {{--                                           data-toggle="tooltip" data-placement="top" title="show">--}}
+                                    {{--                                            @if(count($row->RelativesPrisoner) > 0)--}}
+                                    {{--                                                أقارب معتقلون ({{count($row->RelativesPrisoner)}})--}}
+                                    {{--                                            @else--}}
+                                    {{--                                                أضف قريب--}}
+                                    {{--                                            @endif--}}
+                                    {{--                                        </a>--}}
+                                    {{--                                    </td>--}}
                                 @else
                                     <td>
                                         <a wire:click="show({{$row}})" class="btn btn-info">
@@ -812,11 +812,17 @@
                                                 d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2M3 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1z"/>
                                         </svg>
                                         <h6>تاريخ الإفراج المتوقع:</h6>
+                                        @php
+                                            $arrest_start_date = $Prisoners_->Arrest->arrest_start_date;
+                                            $judgment_in_lifetime = $Prisoners_->Arrest->judgment_in_lifetime;
+                                            $judgment_in_years = $Prisoners_->Arrest->judgment_in_years;
+                                            $judgment_in_months = $Prisoners_->Arrest->judgment_in_months;
+
+                                            $data = \Illuminate\Support\Carbon::parse($arrest_start_date)->addYears(($judgment_in_lifetime * 99) + $judgment_in_years)->addMonths($judgment_in_months)->format('Y-m-d');
+                                        @endphp
                                         <h4>
-                                            @if(!empty($Prisoners_->Arrest->judgment_in_lifetime))
-                                                {{\Illuminate\Support\Carbon::parse($Prisoners_->Arrest->arrest_start_date)->addYears($Prisoners_->Arrest->judgment_in_lifetime * 99)->format('Y-m-d')}}
-                                            @elseif(!empty($Prisoners_->Arrest->judgment_in_years))
-                                                {{ \Illuminate\Support\Carbon::parse($Prisoners_->Arrest->arrest_start_date)->addMonths($Prisoners_->Arrest->judgment_in_months)->addYears($Prisoners_->Arrest->judgment_in_years)->format('Y-m-d') }}
+                                            @if($Prisoners_->ArrestJudgment())
+                                                {{$data ?? null}}
                                             @else
                                                 لا يوجد
                                             @endif
@@ -840,12 +846,11 @@
                                         <path fill-rule="evenodd"
                                               d="M2.832 13.228 8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086.086-.026z"/>
                                     </svg>
-                                    <h6>الحكم:</h6>
+                                    @php $text = $Prisoners_->Arrest->arrest_type == "موقوف" ? 'الحكم المتوقع' : 'الحكم' @endphp
+                                    <h6>{{$text}}:</h6>
                                     <h4>
-                                        @if(isset($Prisoners_->Arrest->arrest_type) && $Prisoners_->Arrest->arrest_type == "محكوم")
-                                            {{$Prisoners_->ArrestJudgment()}}
-                                        @else
-                                            لا يوجد
+                                        @if(isset($Prisoners_->Arrest->arrest_type))
+                                            {{$Prisoners_->ArrestJudgment() ?? 'لا يوجد'}}
                                         @endif
                                     </h4>
                                 </div>
@@ -1042,6 +1047,33 @@
                                             <div class="col-md-6">
                                                 <h6>نهاية الإعتقال:</h6>
                                                 <h4>{{$arrest->old_arrest_end_date ?? 'لا يوجد'}}</h4>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                @endforeach
+                            @else
+                                <h4 class="text-center">
+                                    لا يوجد
+                                </h4>
+                            @endif
+                            <div class="col-md-12 mb-3 text-center">
+                                <hr>
+                                <h3>أقارب معتقلين</h3>
+                                <hr>
+                            </div>
+                            @if(count($Prisoners_->FamilyIDNumber) > 0)
+                                @foreach($Prisoners_->FamilyIDNumber as $key => $arrested)
+                                    <div class="col-md-12 mb-3 text-center">
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>رقم الهوية:</h6>
+                                                <h4>{{$arrested->id_number ?? 'لا يوجد'}}</h4>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>صلة القرابة:</h6>
+                                                <h4>{{$arrested->relationship_name ?? 'لا يوجد'}}</h4>
                                             </div>
                                         </div>
                                         <hr>

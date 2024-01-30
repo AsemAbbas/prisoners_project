@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard\Main;
 
+use App\Enums\ArrestedSide;
 use App\Enums\ArrestType;
 use App\Enums\DefaultEnum;
 use App\Enums\EducationLevel;
@@ -11,12 +12,14 @@ use App\Enums\SpecialCase;
 use App\Enums\WifeType;
 use App\Models\Belong;
 use App\Models\City;
+use App\Models\FamilyIDNumberSuggestion;
 use App\Models\OldArrestSuggestion;
 use App\Models\Prisoner;
 use App\Models\PrisonerSuggestion;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
+use App\Rules\PalestineIdValidationRule;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +39,7 @@ class CreateUpdateSuggestions extends Component
     public function mount($suggestion = null): void
     {
         if ($suggestion) {
-            $loadedPrisoner = Prisoner::with('City', 'PrisonerType', 'OldArrest', 'Arrest')->find($suggestion);
+            $loadedPrisoner = Prisoner::with('City', 'PrisonerType', 'OldArrest', 'Arrest', 'FamilyIDNumber')->find($suggestion);
             if ($loadedPrisoner) {
                 $this->edit($loadedPrisoner);
             }
@@ -47,6 +50,37 @@ class CreateUpdateSuggestions extends Component
     {
         if ($suggestion) {
             $this->Prisoners_ = $suggestion;
+
+            $father_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'اب')->pluck('id_number')->first() ?? null;
+            $mother_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'ام')->pluck('id_number')->first() ?? null;
+            $husband_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوج')->pluck('id_number')->first() ?? null;
+            $wife_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوجة')->pluck('id_number')->first() ?? null;
+
+            $brother_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخ')->pluck('id_number')->toArray();
+            $brother_arrested_ids = [];
+            foreach ($brother_arrested_values as $key => $value) {
+                $brother_arrested_ids[$key + 1] = $value;
+            }
+
+            $sister_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخت')->pluck('id_number')->toArray();
+            $sister_arrested_ids = [];
+            foreach ($sister_arrested_values as $key => $value) {
+                $sister_arrested_ids[$key + 1] = $value;
+            }
+
+            $son_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابن')->pluck('id_number')->toArray();
+            $son_arrested_ids = [];
+            foreach ($son_arrested_values as $key => $value) {
+                $son_arrested_ids[$key + 1] = $value;
+            }
+
+            $daughter_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابنه')->pluck('id_number')->toArray();
+            $daughter_arrested_ids = [];
+            foreach ($daughter_arrested_values as $key => $value) {
+                $daughter_arrested_ids[$key + 1] = $value;
+            }
+
+
             $data = $suggestion->toArray();
             $this->state = [
                 "id" => $data['id'] ?? null,
@@ -61,6 +95,7 @@ class CreateUpdateSuggestions extends Component
                 "third_name" => $data['third_name'] ?? null,
                 "last_name" => $data['last_name'] ?? null,
                 "mother_name" => $data['mother_name'] ?? null,
+                "nick_name" => $data['nick_name'] ?? null,
                 "date_of_birth" => $data['date_of_birth'] ?? null,
                 "gender" => $data['gender'] ?? null,
                 "city_id" => $data['city_id'] ?? null,
@@ -73,7 +108,7 @@ class CreateUpdateSuggestions extends Component
                 "judgment_in_years" => $data['arrest']['judgment_in_years'] ?? null,
                 "judgment_in_months" => $data['arrest']['judgment_in_months'] ?? null,
                 "belong_id" => $data['arrest']['belong_id'] ?? null,
-                "special_case" => array_fill_keys(explode(' ?? null,' ?? null, $data['arrest']['special_case']) ?? null, true) ?? null,
+                "special_case" => array_fill_keys(explode(',' ?? null, $data['arrest']['special_case']) ?? null, true) ?? null,
                 "health_note" => $data['arrest']['health_note'] ?? null,
                 "social_type" => $data['arrest']['social_type'] ?? null,
                 "wife_type" => $data['arrest']['wife_type'] ?? null,
@@ -91,9 +126,19 @@ class CreateUpdateSuggestions extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'] ?? null,
                 "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
                 "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
+                "IsReleased" => (boolean)$data['arrest']['IsReleased'] ?? null,
                 "email" => $data['arrest']['email'] ?? null,
-            ];
 
+                "father_arrested_id" => $father_arrested_id,
+                "mother_arrested_id" => $mother_arrested_id,
+                "husband_arrested_id" => $husband_arrested_id,
+                "wife_arrested_id" => $wife_arrested_id,
+                "brother_arrested_id" => $brother_arrested_ids,
+                "sister_arrested_id" => $sister_arrested_ids,
+                "son_arrested_id" => $son_arrested_ids,
+                "daughter_arrested_id" => $daughter_arrested_ids,
+
+            ];
             $this->old_arrests = $data['old_arrest'];
 
             $this->showEdit = true;
@@ -142,13 +187,23 @@ class CreateUpdateSuggestions extends Component
     private function validateData(): void
     {
         $rule = $this->showEdit
-            ? "required|unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"
-            : "required|unique:prisoners,identification_number,NULL,id,deleted_at,NULL";
+            ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
+            : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
+        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
+            $judgment_in_lifetime_rule = ["nullable", "integer"];
+            $judgment_in_years_rule = ["nullable", "integer"];
+            $judgment_in_months_rule = ["nullable", "integer"];
+        } else {
+            $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
+            $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
+            $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
+        }
+
 
         $validation = Validator::make($this->state, [
             //Suggester
             'suggester_name' => "required",
-            'suggester_identification_number' => "required",
+            'suggester_identification_number' => ["required", "min:9", "max:9", new PalestineIdValidationRule],
             'suggester_phone_number' => "required",
             'relationship_id' => "required",
             //Prisoner
@@ -158,6 +213,7 @@ class CreateUpdateSuggestions extends Component
             'third_name' => "nullable",
             'last_name' => "required",
             'mother_name' => "nullable",
+            'nick_name' => "nullable",
             'date_of_birth' => "nullable",
             'gender' => "required|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
@@ -167,9 +223,9 @@ class CreateUpdateSuggestions extends Component
             //Arrest
             "arrest_start_date" => 'required',
             "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
-            "judgment_in_lifetime" => 'nullable|integer',
-            "judgment_in_years" => 'nullable|integer',
-            "judgment_in_months" => 'nullable|integer',
+            "judgment_in_lifetime" => $judgment_in_lifetime_rule,
+            "judgment_in_years" => $judgment_in_years_rule,
+            "judgment_in_months" => $judgment_in_months_rule,
             "education_level" => 'nullable|in:' . $this->subTables()['EducationLevel'],
             "health_note" => 'nullable',
             "father_arrested" => 'nullable|boolean',
@@ -189,12 +245,14 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
+            'IsReleased' => "nullable|boolean",
             'email' => "nullable",
         ]);
 
         $oldArrestsValidation = Validator::make($this->old_arrests, [
             '*.old_arrest_start_date' => 'nullable|date',
             '*.old_arrest_end_date' => 'nullable|date',
+            '*.arrested_side' => "nullable|in:" . $this->subTables()['ArrestedSide'],
         ]);
 
         if ($validation->fails() || $oldArrestsValidation->fails()) {
@@ -218,6 +276,7 @@ class CreateUpdateSuggestions extends Component
             'DefaultEnum' => join(",", array_column(DefaultEnum::cases(), 'value')),
             'EducationLevel' => join(",", array_column(EducationLevel::cases(), 'value')),
             'SpecialCase' => join(",", array_column(SpecialCase::cases(), 'value')),
+            'ArrestedSide' => join(",", array_column(ArrestedSide::cases(), 'value')),
         ];
     }
 
@@ -282,7 +341,7 @@ class CreateUpdateSuggestions extends Component
 
             $this->Done();
         } catch (\Exception $e) {
-            //dd($e);
+            dd($e);
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
     }
@@ -314,21 +373,13 @@ class CreateUpdateSuggestions extends Component
                 'third_name' => $this->state['third_name'] ?? null,
                 'last_name' => $this->state['last_name'] ?? null,
                 'mother_name' => $this->state['mother_name'] ?? null,
+                'nick_name' => $this->state['nick_name'] ?? null,
                 'date_of_birth' => $this->state['date_of_birth'] ?? null,
                 'gender' => $this->state['gender'] ?? null,
                 'city_id' => $this->state['city_id'] ?? null,
                 'town_id' => $this->state['town_id'] ?? null,
                 'notes' => $this->state['notes'] ?? null,
             ]);
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //dd($e);
-            abort(403, 'مشكلة في إضافة بيانات الأسير تواصل مع الدعم الفني');
-        }
-        DB::beginTransaction();
-        try {
             if (!empty($this->old_arrests)) {
                 foreach ($this->old_arrests as $arrest) {
                     OldArrestSuggestion::query()->create([
@@ -337,18 +388,10 @@ class CreateUpdateSuggestions extends Component
                         'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
                         'old_arrest_start_date' => $arrest['old_arrest_start_date'] ?? null,
                         'old_arrest_end_date' => $arrest['old_arrest_end_date'] ?? null,
+                        'arrested_side' => $arrest['arrested_side'] ?? null,
                     ]);
                 }
             }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            //dd($e);
-            abort(403, 'مشكلة في إضافة إعتقالات سابقة للأسير تواصل مع الدعم الفني');
-        }
-        DB::beginTransaction();
-        try {
             $PrisonerSuggestion->ArrestSuggestion()->create([
                 'suggestion_status' => "يحتاج مراجعة",
                 'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
@@ -384,14 +427,103 @@ class CreateUpdateSuggestions extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
+                'IsReleased' => (boolean)$this->state['IsReleased'] ?? null,
+
                 'email' => $this->state['email'] ?? null,
             ]);
+            if (isset($this->state) && isset($this->state['father_arrested_id'])) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $this->state['father_arrested_id'],
+                    'relationship_name' => "اب",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+            if (isset($this->state) && isset($this->state['mother_arrested_id'])) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $this->state['mother_arrested_id'],
+                    'relationship_name' => "ام",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+            if (isset($this->state) && isset($this->state['husband_arrested_id'])) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $this->state['husband_arrested_id'],
+                    'relationship_name' => "زوج",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+            if (isset($this->state) && isset($this->state['wife_arrested_id'])) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $this->state['wife_arrested_id'],
+                    'relationship_name' => "زوجة",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+            if (isset($this->state) && isset($this->state['brother_arrested_id'])) {
+                foreach ($this->state['brother_arrested_id'] as $row) {
+                    FamilyIDNumberSuggestion::query()->create([
+                        'id_number' => $row,
+                        'relationship_name' => "اخ",
+                        'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                        'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                        'suggestion_status' => "يحتاج مراجعة",
+                    ]);
+                }
+            }
+
+            if (isset($this->state) && isset($this->state['sister_arrested_id'])) {
+                foreach ($this->state['sister_arrested_id'] as $row) {
+                    FamilyIDNumberSuggestion::query()->create([
+                        'id_number' => $row,
+                        'relationship_name' => "اخت",
+                        'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                        'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                        'suggestion_status' => "يحتاج مراجعة",
+                    ]);
+                }
+            }
+
+            if (isset($this->state) && isset($this->state['son_arrested_id'])) {
+                foreach ($this->state['son_arrested_id'] as $row) {
+                    FamilyIDNumberSuggestion::query()->create([
+                        'id_number' => $row,
+                        'relationship_name' => "ابن",
+                        'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                        'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                        'suggestion_status' => "يحتاج مراجعة",
+                    ]);
+                }
+            }
+
+            if (isset($this->state) && isset($this->state['daughter_arrested_id'])) {
+                foreach ($this->state['daughter_arrested_id'] as $row) {
+                    FamilyIDNumberSuggestion::query()->create([
+                        'id_number' => $row,
+                        'relationship_name' => "ابنه",
+                        'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                        'prisoner_suggestion_id' => $PrisonerSuggestion->id,
+                        'suggestion_status' => "يحتاج مراجعة",
+                    ]);
+                }
+            }
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            //dd($e);
-            abort(403, 'مشكلة في إضافة بيانات الإعتقال للأسير تواصل مع الدعم الفني');
+//            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني");
+            $massage = $e->getMessage();
+            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني \n$massage");
         }
     }
 

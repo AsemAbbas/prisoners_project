@@ -43,6 +43,11 @@ class PrisonerSuggestion extends Model
         return $this->belongsTo(Town::class);
     }
 
+    public function FamilyIDNumberSuggestion(): HasMany
+    {
+        return $this->hasMany(FamilyIDNumberSuggestion::class);
+    }
+
     public function Relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class);

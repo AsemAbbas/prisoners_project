@@ -7,4 +7,5 @@ enum SocialType: string
     case one = 'أعزب';
     case two = 'مطلق';
     case three = 'متزوج';
+    case four = 'أرمل';
 }

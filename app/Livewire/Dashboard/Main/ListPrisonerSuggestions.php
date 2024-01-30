@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard\Main;
 
+use App\Enums\ArrestedSide;
 use App\Enums\ArrestType;
 use App\Enums\DefaultEnum;
 use App\Enums\EducationLevel;
@@ -13,6 +14,10 @@ use App\Enums\WifeType;
 use App\Models\ArrestConfirm;
 use App\Models\Belong;
 use App\Models\City;
+use App\Models\FamilyIDNumber;
+use App\Models\FamilyIDNumberConfirm;
+use App\Models\FamilyIDNumberSuggestion;
+use App\Models\OldArrest;
 use App\Models\OldArrestConfirm;
 use App\Models\OldArrestSuggestion;
 use App\Models\Prisoner;
@@ -21,8 +26,10 @@ use App\Models\PrisonerSuggestion;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
+use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -48,6 +55,7 @@ class ListPrisonerSuggestions extends Component
     public array $prisonerColumns = [];
     public array $arrestColumns = [];
     public array $oldArrestColumns = [];
+    public array $familyIDNumberColumns = [];
 
 
     protected string $paginationTheme = 'bootstrap';
@@ -112,7 +120,6 @@ class ListPrisonerSuggestions extends Component
 
     public function Accept(PrisonerSuggestion $prisonerSuggestion): void
     {
-
         $this->selectAccepted = [];
         $this->selectAcceptedArrest = [];
         $this->selectAcceptedSuggestionOldArrest = [];
@@ -127,7 +134,7 @@ class ListPrisonerSuggestions extends Component
 
         $this->Suggestions_ = $prisonerSuggestion;
         if (isset($this->Suggestions_->prisoner_id))
-            $this->Prisoner_ = Prisoner::query()->with('OldArrest', 'Arrest', 'Arrest.Belong', 'Town', 'City')->where('id', $this->Suggestions_->prisoner_id)->first() ?? null;
+            $this->Prisoner_ = Prisoner::query()->with('OldArrest', 'Arrest', 'Arrest.Belong', 'Town', 'City', 'FamilyIDNumber')->where('id', $this->Suggestions_->prisoner_id)->first() ?? null;
 
         $Suggestion_identification_number = $prisonerSuggestion->identification_number;
 
@@ -171,6 +178,12 @@ class ListPrisonerSuggestions extends Component
                     'name' => 'mother_name',
                     'suggestion' => $this->Suggestions_->mother_name ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->mother_name ?? 'لا يوجد',
+                ],
+            'الكنية:' =>
+                [
+                    'name' => 'nick_name',
+                    'suggestion' => $this->Suggestions_->nick_name ?? 'لا يوجد',
+                    'prisoner' => $this->Prisoner_->nick_name ?? 'لا يوجد',
                 ],
             'تاريخ الميلاد:' =>
                 [
@@ -352,6 +365,12 @@ class ListPrisonerSuggestions extends Component
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->second_phone_owner ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->second_phone_owner ?? 'لا يوجد',
                 ],
+            'مفرج عنه؟:' =>
+                [
+                    'name' => 'IsReleased',
+                    'suggestion' => $this->Suggestions_->ArrestSuggestion->IsReleased ?? 'لا يوجد',
+                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ?? 'لا يوجد',
+                ],
             'البريد الإلكتروني:' =>
                 [
                     'name' => 'email',
@@ -366,46 +385,175 @@ class ListPrisonerSuggestions extends Component
 
         foreach ($oldPrisoners as $oldPrisoner) {
             $this->oldArrestColumns['prisoner'][] = [
-                'الرقم الأساسي:' =>
-                    [
-                        'name' => 'id',
-                        'prisoner' => $oldPrisoner->id ?? 'لا يوجد',
-                    ],
-                'بداية الإعتقال:' =>
-                    [
-                        'name' => 'old_arrest_start_date',
-                        'prisoner' => $oldPrisoner->old_arrest_start_date ?? 'لا يوجد',
-                    ],
-                'نهاية الإعتقال:' =>
-                    [
-                        'name' => 'old_arrest_end_date',
-                        'prisoner' => $oldPrisoner->old_arrest_end_date ?? 'لا يوجد',
-                    ],
+                'id' => $oldPrisoner->id ?? null,
+                'old_arrest_start_date' => $oldPrisoner->old_arrest_start_date,
+                'old_arrest_end_date' => $oldPrisoner->old_arrest_end_date,
+                'arrested_side' => $oldPrisoner->arrested_side,
             ];
         }
         foreach ($oldSuggestions->where('suggestion_status', 'يحتاج مراجعة') as $oldSuggestion) {
             $this->oldArrestColumns['suggestion'][] = [
-                'الرقم الأساسي:' =>
-                    [
-                        'name' => 'id',
-                        'suggestion' => $oldSuggestion->id ?? 'لا يوجد',
-
-                    ],
-                'بداية الإعتقال:' =>
-                    [
-                        'name' => 'old_arrest_start_date',
-                        'suggestion' => $oldSuggestion->old_arrest_start_date ?? 'لا يوجد',
-                    ],
-                'نهاية الإعتقال:' =>
-                    [
-                        'name' => 'old_arrest_end_date',
-                        'suggestion' => $oldSuggestion->old_arrest_end_date ?? 'لا يوجد',
-                    ],
+                'id' => $oldSuggestion->id ?? null,
+                'old_arrest_start_date' => $oldSuggestion->old_arrest_start_date,
+                'old_arrest_end_date' => $oldSuggestion->old_arrest_end_date,
+                'arrested_side' => $oldSuggestion->arrested_side,
             ];
         }
 
 
+        function formatArrestedSuggestionValues($prisonerSuggestion, $relationship): array
+        {
+            if (isset($prisonerSuggestion->FamilyIDNumberSuggestion)) {
+                $values = $prisonerSuggestion->FamilyIDNumberSuggestion->where('relationship_name', $relationship)->pluck('id_number', 'id')->toArray();
+                $formattedIds = [];
+
+                foreach ($values as $index => $value) {
+                    $formattedIds[$index] = ["idn" => $value, "relationship_name" => $relationship];
+                }
+
+                return $formattedIds;
+            }
+            return [];
+        }
+
+        $father_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'اب');
+        $mother_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'ام');
+        $husband_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'زوج');
+        $wife_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'زوجة');
+        $brother_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'اخ');
+        $sister_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'اخت');
+        $son_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'ابن');
+        $daughter_arrested_suggestion_ids = formatArrestedSuggestionValues($prisonerSuggestion, 'ابنه');
+
+        if (!empty($this->Prisoner_))
+            $prisonerIdn = $this->Prisoner_;
+        else $prisonerIdn = null;
+        function formatArrestedPrisonerValues($prisonerIdn, $relationship): array
+        {
+            if (isset($prisonerIdn->FamilyIDNumber)) {
+                $values = $prisonerIdn->FamilyIDNumber->where('relationship_name', $relationship)->pluck('id_number', 'id')->toArray();
+                $formattedIds = [];
+
+                foreach ($values as $index => $value) {
+                    $formattedIds[$index] = ["idn" => $value, "relationship_name" => $relationship];
+                }
+
+                return $formattedIds;
+            }
+            return [];
+        }
+
+        $father_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اب');
+        $mother_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ام');
+        $husband_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'زوج');
+        $wife_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'زوجة');
+        $brother_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اخ');
+        $sister_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'اخت');
+        $son_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ابن');
+        $daughter_arrested_prisoner_ids = formatArrestedPrisonerValues($prisonerIdn, 'ابنه');
+
+        $this->familyIDNumberColumns = [
+            "prisoner" => [
+                "father_arrested_prisoner_ids" => $father_arrested_prisoner_ids,
+                "mother_arrested_prisoner_ids" => $mother_arrested_prisoner_ids,
+                "husband_arrested_prisoner_ids" => $husband_arrested_prisoner_ids,
+                "wife_arrested_prisoner_ids" => $wife_arrested_prisoner_ids,
+                "brother_arrested_prisoner_ids" => $brother_arrested_prisoner_ids,
+                "sister_arrested_prisoner_ids" => $sister_arrested_prisoner_ids,
+                "son_arrested_prisoner_ids" => $son_arrested_prisoner_ids,
+                "daughter_arrested_prisoner_ids" => $daughter_arrested_prisoner_ids,
+            ],
+            "suggestion" => [
+                "father_arrested_suggestion_ids" => $father_arrested_suggestion_ids,
+                "mother_arrested_suggestion_ids" => $mother_arrested_suggestion_ids,
+                "husband_arrested_suggestion_ids" => $husband_arrested_suggestion_ids,
+                "wife_arrested_suggestion_ids" => $wife_arrested_suggestion_ids,
+                "brother_arrested_suggestion_ids" => $brother_arrested_suggestion_ids,
+                "sister_arrested_suggestion_ids" => $sister_arrested_suggestion_ids,
+                "son_arrested_suggestion_ids" => $son_arrested_suggestion_ids,
+                "daughter_arrested_suggestion_ids" => $daughter_arrested_suggestion_ids,
+            ],
+        ];
+
+
         $this->dispatch('ShowAcceptModal');
+    }
+
+    public function FamilyIdnPrisonerDeleted($index, $key): void
+    {
+        // Find the item in "suggestion" and move it to "suggestion_accepted"
+        $this->moveItemTo('prisoner', 'prisoner_deleted', $index, $key);
+    }
+
+    private function moveItemTo($sourceKey, $destinationKey, $index, $key): void
+    {
+        foreach ($this->familyIDNumberColumns[$sourceKey] as $index_ => $row) {
+            if ($index_ == $index) {
+                if (!empty($row) && array_key_exists($key, $row)) {
+                    foreach ($row as $key_ => $inside) {
+                        if (!empty($inside) && $key_ == $key) {
+                            $itemToMove = $inside;
+                            // Move the item from source to destination
+                            $this->familyIDNumberColumns[$destinationKey][$index][$key] = $itemToMove;
+                            // Remove the item from the source
+                            unset($this->familyIDNumberColumns[$sourceKey][$index][$key]);
+
+                            if (empty($this->familyIDNumberColumns[$sourceKey][$index]))
+                                unset($this->familyIDNumberColumns[$sourceKey][$index]);
+                            break; // Assuming each ID is unique and we found the item
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function FamilyIdnPrisonerRestore($index, $key): void
+    {
+        // Find the item in "suggestion_accepted" and move it back to "suggestion"
+        $this->moveItemTo('prisoner_deleted', 'prisoner', $index, $key);
+    }
+
+    public function FamilyIdnSuggestionAccepted($index, $key): void
+    {
+        // Find the item in "suggestion" and move it to "suggestion_accepted"
+        $this->moveItemTo('suggestion', 'suggestion_accepted', $index, $key);
+    }
+
+    public function FamilyIdnSuggestionUnaccepted($index, $key): void
+    {
+        // Find the item in "suggestion_accepted" and move it back to "suggestion"
+        $this->moveItemTo('suggestion_accepted', 'suggestion', $index, $key);
+    }
+
+    public function removeFromPrisonerList($id): void
+    {
+        $this->moveItem($this->oldArrestColumns['prisoner'], $this->oldArrestColumns['prisoner_deleted'], $id);
+    }
+
+    private function moveItem(&$source, &$destination, $id): void
+    {
+        $item = array_filter($source, function ($row) use ($id) {
+            return $row['id'] == $id;
+        });
+
+        $destination[] = reset($item);
+        $source = array_values(array_diff_key($source, $item));
+    }
+
+    public function removeFromPrisonerDeletedList($id): void
+    {
+        $this->moveItem($this->oldArrestColumns['prisoner_deleted'], $this->oldArrestColumns['prisoner'], $id);
+    }
+
+    public function addToSuggestionAcceptedList($id): void
+    {
+        $this->moveItem($this->oldArrestColumns['suggestion'], $this->oldArrestColumns['suggestion_accepted'], $id);
+    }
+
+    public function removeFromSuggestionAcceptedList($id): void
+    {
+        $this->moveItem($this->oldArrestColumns['suggestion_accepted'], $this->oldArrestColumns['suggestion'], $id);
     }
 
     /**
@@ -426,7 +574,8 @@ class ListPrisonerSuggestions extends Component
             'second_name' => "nullable",
             'third_name' => "nullable",
             'last_name' => "required",
-            'mother_name' => "required",
+            'mother_name' => "nullable",
+            'nick_name' => "nullable",
             'date_of_birth' => "nullable",
             'gender' => "required|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
@@ -467,6 +616,7 @@ class ListPrisonerSuggestions extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
+            'IsReleased' => "nullable|boolean",
             'email' => "nullable|email",
         ])->validate();
 
@@ -485,13 +635,14 @@ class ListPrisonerSuggestions extends Component
             'third_name' => $finalData['third_name'] ?? $PrisonerArray['third_name'] ?? null,
             'last_name' => $finalData['last_name'] ?? $PrisonerArray['last_name'] ?? null,
             'mother_name' => $finalData['mother_name'] ?? $PrisonerArray['mother_name'] ?? null,
+            'nick_name' => $finalData['nick_name'] ?? $PrisonerArray['nick_name'] ?? null,
             'date_of_birth' => $finalData['date_of_birth'] ?? $PrisonerArray['date_of_birth'] ?? null,
             'gender' => $finalData['gender'] ?? $PrisonerArray['gender'] ?? null,
             'city_id' => $finalData['city_id'] ?? $PrisonerArray['city_id'] ?? null,
             'town_id' => $finalData['town_id'] ?? $PrisonerArray['town_id'] ?? null,
             'notes' => $finalData['notes'] ?? $PrisonerArray['notes'] ?? null,
         ]);
-        $Arrest = ArrestConfirm::query()->create([
+        ArrestConfirm::query()->create([
             'confirm_status' => "يحتاج مراجعة",
             "prisoner_id" => $SuggestionsArrestArray['prisoner_id'] ?? null,
             "prisoner_confirm_id" => $Prisoner->id,
@@ -519,51 +670,53 @@ class ListPrisonerSuggestions extends Component
             "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? $PrisonerArrestArray['first_phone_number'] ?? null,
             "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? $PrisonerArrestArray['second_phone_owner'] ?? null,
             "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? $PrisonerArrestArray['second_phone_number'] ?? null,
+            "IsReleased" => (boolean)$finalArrestData["IsReleased"] ?? (boolean)$Arrest["IsReleased"] ?? (boolean)$PrisonerArrestArray['IsReleased'] ?? null,
             "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? $PrisonerArrestArray['email'] ?? null,
         ]);
-        $finalOldArrestData = [];
 
-        if (isset($PrisonerOldArrestArray)) {
-            foreach ($PrisonerOldArrestArray as $old) {
-                foreach ($this->selectAcceptedPrisonerOldArrest as $key => $selected) {
-                    if ($old['id'] == $key) {
-                        $finalOldArrestData[] = [
-                            "id" => $old['id'],
-                            "prisoner_id" => $SuggestionsArrestArray['prisoner_id'] ?? null,
-                            "prisoner_confirm_id" => $Prisoner->id,
-                            "old_arrest_start_date" => in_array('old_arrest_start_date', array_keys($selected)) ? $old['old_arrest_start_date'] : null,
-                            "old_arrest_end_date" => in_array('old_arrest_end_date', array_keys($selected)) ? $old['old_arrest_end_date'] : null,
-                        ];
-                    }
-                }
+        if (isset($this->oldArrestColumns['prisoner_deleted'])) {
+            foreach ($this->oldArrestColumns['prisoner_deleted'] as $old) {
+                OldArrest::query()->find($old['id'])->delete();
             }
         }
-        foreach ($SuggestionsOldArrestArray as $old) {
-            foreach ($this->selectAcceptedSuggestionOldArrest as $key => $selected) {
-                if ($old['id'] == $key) {
-                    $finalOldArrestData[] = [
-                        "id" => $old['id'],
-                        "prisoner_id" => $SuggestionsArrestArray['prisoner_id'] ?? null,
-                        "prisoner_confirm_id" => $Prisoner->id,
-                        "old_arrest_start_date" => in_array('old_arrest_start_date', array_keys($selected)) ? $old['old_arrest_start_date'] : null,
-                        "old_arrest_end_date" => in_array('old_arrest_end_date', array_keys($selected)) ? $old['old_arrest_end_date'] : null,
-                    ];
-                }
-            }
-        }
-        if (!empty($finalOldArrestData)) {
 
-            foreach ($finalOldArrestData as $row) {
+        if (isset($this->oldArrestColumns['suggestion_accepted'])) {
+            foreach ($this->oldArrestColumns['suggestion_accepted'] as $old) {
                 OldArrestConfirm::query()->create([
                     'confirm_status' => "يحتاج مراجعة",
-                    'prisoner_id' => $row['prisoner_id'] ?? null,
-                    'prisoner_confirm_id' => $row['prisoner_confirm_id'] ?? null,
-                    'old_arrest_start_date' => $row['old_arrest_start_date'] ?? null,
-                    'old_arrest_end_date' => $row['old_arrest_end_date'] ?? null,
+                    'prisoner_id' => $SuggestionsArrestArray['prisoner_id'] ?? null,
+                    'prisoner_confirm_id' => $Prisoner->id ?? null,
+                    'old_arrest_start_date' => $old['old_arrest_start_date'] ?? null,
+                    'old_arrest_end_date' => $old['old_arrest_end_date'] ?? null,
+                    'arrested_side' => $old['arrested_side'] ?? null,
                 ]);
                 OldArrestSuggestion::query()
-                    ->where('id', $row['id'])
+                    ->find($old['id'])
                     ->update(['suggestion_status' => 'تم القبول']);
+            }
+        }
+
+        if (isset($this->familyIDNumberColumns['prisoner_deleted'])) {
+            foreach ($this->familyIDNumberColumns['prisoner_deleted'] as $index => $family_arrested) {
+                foreach ($family_arrested as $key => $row)
+                    FamilyIDNumber::query()->find($key)->delete();
+            }
+        }
+
+        if (isset($this->familyIDNumberColumns['suggestion_accepted'])) {
+            foreach ($this->familyIDNumberColumns['suggestion_accepted'] as $index => $family_arrested) {
+                foreach ($family_arrested as $key => $row) {
+                    FamilyIDNumberConfirm::query()->create([
+                        'confirm_status' => "يحتاج مراجعة",
+                        'prisoner_id' => $SuggestionsArrestArray['prisoner_id'] ?? null,
+                        'prisoner_confirm_id' => $Prisoner->id ?? null,
+                        'id_number' => $row['idn'] ?? null,
+                        'relationship_name' => $row['relationship_name'] ?? null,
+                    ]);
+                    FamilyIDNumberSuggestion::query()
+                        ->find($key)
+                        ->update(['suggestion_status' => 'تم القبول']);
+                }
             }
         }
 
@@ -589,13 +742,8 @@ class ListPrisonerSuggestions extends Component
             'SpecialCase' => join(",", array_column(SpecialCase::cases(), 'value')),
             'SuggestionStatus' => join(",", array_column(SuggestionStatus::cases(), 'value')),
             'EducationLevel' => join(",", array_column(EducationLevel::cases(), 'value')),
+            'ArrestedSide' => join(",", array_column(ArrestedSide::cases(), 'value')),
         ];
-    }
-
-    public function confirmDelete(): void
-    {
-        $this->Suggestions_->delete();
-        $this->dispatch('hide_delete_modal');
     }
 
     public function delete(PrisonerSuggestion $prisonerSuggestion): void
@@ -605,23 +753,32 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('show_delete_modal');
     }
 
+    public function confirmDelete(): void
+    {
+        $this->Suggestions_->delete();
+        $this->dispatch('hide_delete_modal');
+    }
+
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $Suggestions = $this->getSuggestionsProperty()->when(isset($this->sortBy), function ($q) {
-            if ($this->sortBy == "تم القبول")
-                $q->where('suggestion_status', "تم القبول");
-            elseif ($this->sortBy == "يحتاج مراجعة")
-                $q->where('suggestion_status', 'يحتاج مراجعة');
-            else   $q->whereIn('suggestion_status', ['تم القبول', 'يحتاج مراجعة']);
-        })->orderBy('suggestion_status')->paginate(10);
+        $Suggestions = $this->getSuggestionsProperty()
+            ->when(isset($this->sortBy), function ($q) {
+                if ($this->sortBy == "تم القبول")
+                    $q->where('suggestion_status', "تم القبول");
+                elseif ($this->sortBy == "يحتاج مراجعة")
+                    $q->where('suggestion_status', 'يحتاج مراجعة');
+                else   $q->whereIn('suggestion_status', ['تم القبول', 'يحتاج مراجعة']);
+            })
+            ->orderBy('suggestion_status')
+            ->paginate(10);
 
-        $value = !$this->Exist ? 11 : 10;
+        $value = !$this->Exist ? 12 : 11;
 
         if (count(array_filter($this->selectAccepted)) < $value)
             $this->SelectAllPrisoners = false;
         else $this->SelectAllPrisoners = true;
 
-        if (count(array_filter($this->selectAcceptedArrest)) < 26)
+        if (count(array_filter($this->selectAcceptedArrest)) < 27)
             $this->SelectAllPrisonersArrest = false;
         else $this->SelectAllPrisonersArrest = true;
 
@@ -656,8 +813,21 @@ class ListPrisonerSuggestions extends Component
 
     public function getSuggestionsProperty()
     {
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')->first()->toArray()['city'] ?? [];
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
         return PrisonerSuggestion::query()
             ->with(['City', 'Relationship'])
+            ->where(function ($query) use ($cityIdArray) {
+                $query->whereIn('city_id', $cityIdArray)
+                    ->orWhereNull('city_id');
+            })
             ->when(isset($this->Search), function ($query) {
                 $searchTerms = explode(' ', $this->Search);
                 $query->where(function ($subQuery) use ($searchTerms) {
@@ -710,5 +880,11 @@ class ListPrisonerSuggestions extends Component
         $this->Search = null;
         $this->sortBy = $sort;
     }
+
+    private function removeAndMoveToFamilyIDNumberSuggestionDeletedList($id): void
+    {
+        $this->moveItem($this->familyIDNumberColumns['prisoner'], $this->familyIDNumberColumns['prisoner_deleted'], $id);
+    }
+
 
 }

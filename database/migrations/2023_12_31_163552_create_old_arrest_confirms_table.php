@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('prisoner_confirm_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('old_arrest_start_date')->index()->nullable();
             $table->date('old_arrest_end_date')->index()->nullable();
+            $table->string('arrested_side')->nullable();//enum
             $table->timestamps();
             $table->softDeletes();
         });

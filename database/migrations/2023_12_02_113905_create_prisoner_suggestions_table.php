@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->string('third_name')->index()->nullable();
             $table->string('last_name')->index()->nullable();
             $table->string('mother_name')->index()->nullable();
+            $table->string('nick_name')->index()->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('gender')->index()->nullable();//enum
             $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete();

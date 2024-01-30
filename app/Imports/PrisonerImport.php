@@ -6,6 +6,7 @@ use App\Models\Arrest;
 use App\Models\ArrestsHealths;
 use App\Models\Belong;
 use App\Models\City;
+use App\Models\FamilyIDNumber;
 use App\Models\Health;
 use App\Models\Prisoner;
 use App\Models\PrisonersPrisonerTypes;
@@ -31,7 +32,6 @@ class PrisonerImport implements
 
     public function model(array $row): void
     {
-
         $nameFields = ['first_name', 'second_name', 'third_name', 'last_name', 'mother_name'];
 
         foreach ($nameFields as $field) {
@@ -41,6 +41,16 @@ class PrisonerImport implements
                 $row[$field] = $this->removeDiacritics($row[$field]);
             }
         }
+
+        $father_arrested = isset($row['father_arrested']) ? !empty($row['father_arrested']) : null;
+        $mother_arrested = isset($row['mother_arrested']) ? !empty($row['mother_arrested']) : null;
+        $husband_arrested = isset($row['husband_arrested']) ? !empty($row['husband_arrested']) : null;
+        $wife_arrested = isset($row['wife_arrested']) ? !empty($row['wife_arrested']) : null;
+
+        $brother_arrested = !empty($row['brother_arrested']) ? count(explode(',', $row['brother_arrested'])) : null;
+        $sister_arrested = !empty($row['sister_arrested']) ? count(explode(',', $row['sister_arrested'])) : null;
+        $son_arrested = !empty($row['son_arrested']) ? count(explode(',', $row['son_arrested'])) : null;
+        $daughter_arrested = !empty($row['daughter_arrested']) ? count(explode(',', $row['daughter_arrested'])) : null;
 
         $City = City::query()->where('city_name', $row['city_id'])->pluck('id')->first() ?? null;
         $Town = Town::query()->where('town_name', $row['town_id'])->pluck('id')->first() ?? null;
@@ -54,6 +64,7 @@ class PrisonerImport implements
             'third_name' => $row['third_name'] ?? null,
             'last_name' => $row['last_name'] ?? null,
             'mother_name' => $row['mother_name'] ?? null,
+            'nick_name' => $row['nick_name'] ?? null,
             'date_of_birth' => !empty($row['date_of_birth']) ? Date::excelToDateTimeObject($row['date_of_birth']) : null,
             'gender' => $row['gender'] ?? null,
             'city_id' => $City ?? null,
@@ -76,18 +87,19 @@ class PrisonerImport implements
             'number_of_children' => $row['number_of_children'] ?? null,
             'education_level' => $row['education_level'] ?? null,
             'health_note' => $row['health_note'] ?? null,
-            'father_arrested' => $row['father_arrested'] ?? null,
-            'mother_arrested' => $row['mother_arrested'] ?? null,
-            'husband_arrested' => $row['husband_arrested'] ?? null,
-            'wife_arrested' => $row['wife_arrested'] ?? null,
-            'brother_arrested' => $row['brother_arrested'] ?? null,
-            'sister_arrested' => $row['sister_arrested'] ?? null,
-            'son_arrested' => $row['son_arrested'] ?? null,
-            'daughter_arrested' => $row['daughter_arrested'] ?? null,
+            'father_arrested' => $father_arrested ?? null,
+            'mother_arrested' => $mother_arrested ?? null,
+            'husband_arrested' => $husband_arrested ?? null,
+            'wife_arrested' => $wife_arrested ?? null,
+            'brother_arrested' => $brother_arrested ?? null,
+            'sister_arrested' => $sister_arrested ?? null,
+            'son_arrested' => $son_arrested ?? null,
+            'daughter_arrested' => $daughter_arrested ?? null,
             'first_phone_owner' => $row['first_phone_owner'] ?? null,
             'first_phone_number' => $row['first_phone_number'] ?? null,
             'second_phone_owner' => $row['second_phone_owner'] ?? null,
             'second_phone_number' => $row['second_phone_number'] ?? null,
+            'IsReleased' => isset($row['IsReleased']) && $row['IsReleased'] === 'نعم' ? true : null,
             'email' => $row['email'] ?? null,
         ]);
 
@@ -102,7 +114,28 @@ class PrisonerImport implements
                     ]);
                 }
             }
+        }
 
+        $fieldGroups = [
+            ['father_arrested' => 'اب', 'mother_arrested' => 'ام', 'husband_arrested' => 'زوج', 'wife_arrested' => 'زوجه'],
+            ['brother_arrested' => 'اخ', 'sister_arrested' => 'اخت', 'son_arrested' => 'ابن', 'daughter_arrested' => 'ابنه'],
+        ];
+
+        foreach ($fieldGroups as $fields) {
+            foreach ($fields as $field => $relationshipName) {
+                $idNumber = $row[$field] ?? null;
+
+                if ($idNumber !== null) {
+                    $fieldsToCreate = explode(',', $idNumber);
+                    foreach ($fieldsToCreate as $IDN) {
+                        FamilyIDNumber::query()->create([
+                            'id_number' => $IDN,
+                            'relationship_name' => $relationshipName,
+                            'prisoner_id' => $Prisoner->id,
+                        ]);
+                    }
+                }
+            }
         }
 
     }
@@ -141,6 +174,7 @@ class PrisonerImport implements
             'third_name' => 'nullable',
             'last_name' => 'nullable',
             'mother_name' => 'nullable',
+            'nick_name' => 'nullable',
             'date_of_birth' => 'nullable',
             'gender' => 'nullable',
             'city_id' => 'nullable',
@@ -170,6 +204,8 @@ class PrisonerImport implements
             'first_phone_owner' => 'nullable',
             'first_phone_number' => 'nullable',
             'second_phone_owner' => 'nullable',
+            'IsReleased' => 'nullable',
+            'email' => 'nullable',
         ];
     }
 }

@@ -18,15 +18,15 @@ class Arrest extends Model
     {
         $attributes = [];
 
-        if ($this->judgment_in_lifetime !== null && $this->judgment_in_lifetime !== '') {
+        if ($this->judgment_in_lifetime !== null && $this->judgment_in_lifetime !== '' && $this->judgment_in_lifetime > 0) {
             $attributes[] = $this->judgment_in_lifetime . ' مؤبد ';
         }
 
-        if ($this->judgment_in_years !== null && $this->judgment_in_years !== '') {
+        if ($this->judgment_in_years !== null && $this->judgment_in_years !== '' && $this->judgment_in_years > 0) {
             $attributes[] = $this->judgment_in_years . ' سنوات ';
         }
 
-        if ($this->judgment_in_months !== null && $this->judgment_in_months !== '') {
+        if ($this->judgment_in_months !== null && $this->judgment_in_months !== '' && $this->judgment_in_months > 0) {
             $attributes[] = $this->judgment_in_months . ' شهور ';
         }
 

@@ -50,6 +50,11 @@ class Prisoner extends Model
         return $this->hasMany(RelativesPrisoner::class);
     }
 
+    public function FamilyIDNumber(): HasMany
+    {
+        return $this->hasMany(FamilyIDNumber::class);
+    }
+
     public function PrisonerType(): BelongsToMany
     {
         return $this->belongsToMany(PrisonerType::class, 'prisoners_prisoner_types', 'prisoner_id', 'prisoner_type_id');

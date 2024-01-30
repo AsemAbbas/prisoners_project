@@ -72,9 +72,9 @@ return [
     'required_if' => 'الحقل :attribute مطلوب في حال ما إذا كان :other يساوي :value.',
     'required_unless' => 'الحقل :attribute مطلوب في حال ما لم يكن :other يساوي :values.',
     'required_with' => 'الحقل :attribute إذا توفّر :values.',
-    'required_with_all' => 'الحقل :attribute إذا توفّر :values.',
-    'required_without' => 'الحقل :attribute إذا لم يتوفّر :values.',
-    'required_without_all' => 'الحقل :attribute إذا لم يتوفّر :values.',
+    'required_with_all' => 'الحقل :attribute مطلوب إذا توفّر :values.',
+    'required_without' => 'الحقل :attribute مطلوب إذا لم يتوفّر :values.',
+    'required_without_all' => 'الحقل :attribute مطلوب إذا لم يتوفّر :values.',
     'same' => 'يجب أن يتطابق الحقل :attribute مع :other',
     'size' => [
         'numeric' => 'يجب أن تكون قيمة الحقل :attribute مساوية لـ :size',
@@ -126,8 +126,14 @@ return [
         'town_id' => 'البلدة',
         'city_id' => 'المحافظة',
         'education_level' => 'المستوى التعليمي',
+        'judgment_in_lifetime' => 'الحكم مؤبدات',
+        'judgment_in_years' => 'الحكم سنوات',
+        'judgment_in_months' => 'الحكم أشهر',
+        'search.identification_number' => 'رقم الهوية',
 
-
+        'search.first_name' => 'الاسم الأول',
+        'search.second_name' => 'اسم الاب',
+        'search.last_name' => 'اسم العائلة',
 
         'suggester_identification_number' => 'رقم هوية مقدم البيانات',
         'suggester_name' => 'اسم مقدم البيانات',

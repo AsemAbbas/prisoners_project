@@ -105,8 +105,6 @@
                         <th>#</th>
                         <th style="min-width: 230px">اسم الأسير</th>
                         <th style="min-width: 230px">رقم الهوية</th>
-                        <th style="min-width: 230px">اسم مقدم البيانات</th>
-                        <th style="min-width: 230px">صلة قرابة مقدم البيانات</th>
                         <th style="min-width: 230px">حالة الطلب</th>
                         <th style="min-width: 230px">الخيارات</th>
                     </tr>
@@ -117,8 +115,6 @@
                             <td>{{$Confirms->firstItem() + $key}}</td>
                             <td>{{$row->full_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->identification_number ?? 'لا يوجد'}}</td>
-                            <td>{{$row->suggester_name ?? 'لا يوجد'}}</td>
-                            <td>{{$row->Relationship->relationship_name ?? 'لا يوجد'}}</td>
                             <td>
                                 @if(isset($row->prisoner_id))
                                     <p class="text-warning">تعديل</p>
@@ -277,48 +273,105 @@
                             </div>
                         </div>
                         <div class="col-lg-8 mx-auto top-body mb-5 text-center">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            @if(!empty($familyIDNumberColumns['prisoner']))
+                                                <div class="col-12 text-center">
+                                                    <hr>
+                                                    <h5 class="d-inline">
+                                                        أقارب معتقلين حالية
+                                                    </h5>
+                                                    <hr>
+                                                </div>
+                                                @foreach($familyIDNumberColumns['prisoner'] as $index_idn => $row)
+                                                    @if(!empty($row))
+                                                        @foreach($row as $key_idn => $inside)
+                                                            <div class="col-md-4 mb-3">
+                                                                <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            @if(!empty($familyIDNumberColumns['confirm']))
+                                                <div class="col-12 text-center">
+                                                    <hr>
+                                                    <h5 class="d-inline">
+                                                        أقارب معتقلين جدد
+                                                    </h5>
+                                                    <hr>
+                                                </div>
+                                                @foreach($familyIDNumberColumns['confirm'] as $index_idn => $row)
+                                                    @if(!empty($row))
+                                                        @foreach($row as $key_idn => $inside)
+                                                            <div class="col-md-6 mb-3">
+                                                                <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 mx-auto top-body mb-5 text-center">
                             <div class="row text-center">
                                 <div class="col-12 text-center">
                                     <hr>
                                     <h5>
                                         الإعتقالات السابقة
                                     </h5>
-                                    <span class="text-danger" style="font-size: 17px">عليك تحديد الإعتقالات التي تريد أن يتم إضافتها سواء حالي أو مقترح</span>
                                     <hr>
                                 </div>
                                 <div class="row">
-{{--                                    <div class="col-md-6">--}}
-{{--                                        <div class="row">--}}
-{{--                                            @if(isset($oldArrestColumns['prisoner']))--}}
-{{--                                                @foreach($oldArrestColumns['prisoner'] as $index => $col)--}}
-{{--                                                    <div class="col-12 text-center">--}}
-{{--                                                        <hr>--}}
-{{--                                                        <h5 class="d-inline">إعتقال سابق حالي</h5>--}}
-{{--                                                        <hr>--}}
-{{--                                                    </div>--}}
-{{--                                                    @foreach($col as $key => $data)--}}
-{{--                                                        @if($key != "الرقم الأساسي:")--}}
-{{--                                                            <div class="col-md-6 mb-3">--}}
-{{--                                                                <h6>--}}
-{{--                                                                    {{$key}}--}}
-{{--                                                                </h6>--}}
-{{--                                                                <h5>{{$data['prisoner'] ?? 'لا يوجد'}}</h5>--}}
-{{--                                                            </div>--}}
-{{--                                                        @endif--}}
-{{--                                                    @endforeach--}}
-{{--                                                @endforeach--}}
-{{--                                            @endif--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            @if(isset($oldArrestColumns['prisoner']))
+                                                <div class="col-12 text-center">
+                                                    <hr>
+                                                    <h5 class="d-inline">إعتقال سابق حالي</h5>
+                                                    <hr>
+                                                </div>
+                                                @foreach($oldArrestColumns['prisoner'] as $index => $col)
+                                                    @foreach($col as $key => $data)
+                                                        @if($key != "الرقم الأساسي:")
+                                                            <div class="col-md-6 mb-3">
+                                                                <h6>
+                                                                    {{$key}}
+                                                                </h6>
+                                                                <h5>{{$data['prisoner'] ?? 'لا يوجد'}}</h5>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
                                         <div class="row">
                                             @if(isset($oldArrestColumns['confirm']))
+                                                <div class="col-12 text-center">
+                                                    <hr>
+                                                    <h5 class="d-inline">إعتقال سابق جديد</h5>
+                                                    <hr>
+                                                </div>
                                                 @foreach($oldArrestColumns['confirm'] as $index => $col)
-                                                    <div class="col-12 text-center">
-                                                        <hr>
-                                                        <h5 class="d-inline">إعتقال سابق</h5>
-                                                        <hr>`
-                                                    </div>
                                                     @foreach($col as $key => $data)
                                                         @if($key != "الرقم الأساسي:")
                                                             <div class="col-md-6 mb-3">
@@ -379,6 +432,31 @@
                                     @endforeach
                                 @endif
                             </div>
+                            @if(!empty($familyIDNumberColumns))
+                                <div class="row">
+                                    @if(!empty($familyIDNumberColumns['confirm']))
+                                        <div class="col-12 text-center">
+                                            <hr>
+                                            <h5 class="d-inline">
+                                                أقارب معتقلين مقترحين
+                                            </h5>
+                                            <hr>
+                                        </div>
+                                        @foreach($familyIDNumberColumns['confirm'] as $index_idn => $row)
+                                            @if(!empty($row))
+                                                @foreach($row as $key_idn => $inside)
+                                                    <div class="col-md-6 mb-3">
+                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endif
                             @if(isset($oldArrestColumns['confirm']))
                                 <div class="row">
                                     <div class="col-12 text-center">

@@ -37,6 +37,7 @@ return new class extends Migration {
             $table->string('first_phone_number')->nullable();
             $table->string('second_phone_owner')->nullable();
             $table->string('second_phone_number')->nullable();
+            $table->boolean('IsReleased')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();
             $table->softDeletes();

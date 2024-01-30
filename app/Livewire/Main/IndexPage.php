@@ -6,6 +6,7 @@ use App\Models\News;
 use App\Models\Prisoner;
 use App\Models\SocialMedia;
 use App\Models\Statistic;
+use App\Rules\PalestineIdValidationRule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -29,8 +30,19 @@ class IndexPage extends Component
 
     protected string $paginationTheme = 'bootstrap';
 
+    public function rules(): array
+    {
+        return [
+            'search.identification_number' => ['required_without_all:search.first_name,search.second_name,search.last_name', new PalestineIdValidationRule],
+            'search.first_name' => 'required_without_all:search.identification_number',
+            'search.second_name' => 'required_without_all:search.identification_number',
+            'search.last_name' => 'required_without_all:search.identification_number',
+        ];
+    }
+
     public function SearchPrisoners(): void
     {
+        $this->validate();
         // Replace 'أ' with 'ا' in Arabic names
         $this->search['first_name'] = $this->replaceHamza($this->search['first_name']);
         $this->search['second_name'] = $this->replaceHamza($this->search['second_name']);
@@ -47,7 +59,6 @@ class IndexPage extends Component
         $this->search['second_name'] = $this->removeDiacritics($this->search['second_name']);
         $this->search['last_name'] = $this->removeDiacritics($this->search['last_name']);
 
-
         if (!empty(array_filter($this->search))) {
             $this->Prisoners = Prisoner::query()
                 ->with('City', 'Arrest', 'RelativesPrisoner')
@@ -55,20 +66,18 @@ class IndexPage extends Component
                 ->orWhere(function ($q) {
                     $q->where('first_name', $this->search['first_name'])
                         ->where('second_name', $this->search['second_name'])
-                        ->where('last_name', $this->search['last_name']);
+                        ->where('last_name', $this->search['last_name'])
+                        ->where('nick_name', $this->search['last_name']);
                 })
                 ->get();
-
 
             if ($this->Prisoners->isEmpty()) {
                 $this->Prisoners = null;
                 $this->error_ms = 'لا يوجد بيانات مشابهة';
+                $this->addError('search', $this->error_ms);
             } else {
                 $this->dispatch('show_prisoners_modal');
             }
-        } else {
-            $this->Prisoners = null;
-            $this->error_ms = 'عليك تعبئة الاسم أو رقم الهوية';
         }
 
     }

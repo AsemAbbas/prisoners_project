@@ -9,8 +9,10 @@ use App\Models\City;
 use App\Models\Prisoner;
 use App\Models\PrisonerType;
 use App\Models\Town;
+use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -38,6 +40,8 @@ class ListPrisoners extends Component
         'second_name' => 'اسم الاب',
         'third_name' => 'اسم الجد',
         'last_name' => 'اسم العائلة',
+        'mother_name' => 'اسم الأم',
+        'nick_name' => 'الكنية',
         'date_of_birth' => 'تاريخ الميلاد',
         'gender' => 'الجنس',
         'city_id' => 'المحافظة',
@@ -47,7 +51,7 @@ class ListPrisoners extends Component
 
     ];
     public array $ArrestColumn = [
-        'arrest_start_date' => 'بداية الاعتقال',
+        'arrest_start_date' => 'تاريخ الاعتقال',
         'arrest_type' => 'نوع الاعتقال',
         'judgment_in_lifetime' => 'الحكم مؤبدات',
         'judgment_in_years' => 'الحكم سنوات',
@@ -71,6 +75,7 @@ class ListPrisoners extends Component
         'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
         'second_phone_number' => 'رقم التواصل الإضافي',
         'second_phone_owner' => 'اسم صاحب الرقم',
+        'IsReleased' => 'مفرج عنه؟',
         'email' => 'البريد الإلكتروني',
     ];
     public array $AdvanceSearch = [];
@@ -86,6 +91,8 @@ class ListPrisoners extends Component
                 'second_name' => true,
                 'third_name' => true,
                 'last_name' => true,
+                'mother_name' => true,
+                'nick_name' => true,
                 'date_of_birth' => true,
                 'gender' => true,
                 'city_id' => true,
@@ -124,6 +131,7 @@ class ListPrisoners extends Component
                 'first_phone_owner' => true,
                 'second_phone_number' => true,
                 'second_phone_owner' => true,
+                'IsReleased' => true,
                 'email' => true,
             ];
         } else $this->ExportData['selectArrest'] = [];
@@ -150,9 +158,23 @@ class ListPrisoners extends Component
 
     public function getPrisonersProperty()
     {
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')->first()->toArray()['city'] ?? [];
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
+
         return Prisoner::query()
-            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner'])
+            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner','FamilyIDNumber'])
             ->orderByDesc('created_at')
+            ->where(function ($query) use ($cityIdArray) {
+                $query->whereIn('city_id', $cityIdArray)
+                    ->orWhereNull('city_id');
+            })
             ->when(isset($this->Search), function ($query) {
                 $searchTerms = explode(' ', $this->Search);
                 $query->where(function ($subQuery) use ($searchTerms) {
@@ -165,7 +187,8 @@ class ListPrisoners extends Component
                         });
                     }
                 })
-                    ->orWhere('identification_number', 'LIKE', '%' . $this->Search . '%')
+                    ->orWhere('identification_number', 'LIKE', $this->Search)
+                    ->orWhere('id', 'LIKE', $this->Search)
                     ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
                     ->orWhereHas('City', function ($q) {
                         $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
@@ -276,7 +299,6 @@ class ListPrisoners extends Component
                     }
                 });
             });
-
     }
 
     public function updatedSearch(): void
@@ -313,21 +335,31 @@ class ListPrisoners extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')->first()->toArray()['city'] ?? [];
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
+        $Prisoners = $this->getPrisonersProperty()->paginate(10);
+
         $Cities = City::all();
         $Towns = Town::query()->when(isset($this->town_search), function ($q) {
             $q->where('town_name', 'LIKE', '%' . $this->town_search . '%');
         })->get();
         $Belongs = Belong::all();
         $PrisonerTypes = PrisonerType::all();
-        $Prisoners = $this->getPrisonersProperty()->paginate(10);
 
         if (isset($this->ExportData['selectPrisoner']))
-            if (count(array_filter($this->ExportData['selectPrisoner'])) < 12)
+            if (count(array_filter($this->ExportData['selectPrisoner'])) < 14)
                 $this->SelectAllPrisoner = false;
             else $this->SelectAllPrisoner = true;
 
         if (isset($this->ExportData['selectArrest']))
-            if (count(array_filter($this->ExportData['selectArrest'])) < 25)
+            if (count(array_filter($this->ExportData['selectArrest'])) < 26)
                 $this->SelectAllArrest = false;
             else $this->SelectAllArrest = true;
 

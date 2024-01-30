@@ -125,9 +125,8 @@
                                     لا يوجد
                                 @endif
                             </td>
-                            <td>{{$row->Prisoner->full_name ?? 'لا يوجد'}}</td>
-                            {{--                            <td>{{$row->full_name ?? 'لا يوجد'}}</td>--}}
-                            <td>{{$row->Prisoner->identification_number ?? 'لا يوجد'}}</td>
+                            <td>{{$row->Prisoner->full_name ?? $row->full_name}}</td>
+                            <td>{{$row->Prisoner->identification_number ?? $row->identification_number}}</td>
                             <td>{{$row->suggester_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->Relationship->relationship_name ?? 'لا يوجد'}}</td>
                             <td>
@@ -319,6 +318,154 @@
                                 @endif
                             </div>
                         </div>
+                        @if(!empty($familyIDNumberColumns))
+                            <div class="col-lg-8 mx-auto top-body mb-5 text-center">
+                                <div class="row text-center">
+                                    <div class="col-12 text-center">
+                                        <hr>
+                                        <h5>
+                                            أقارب معتقلين
+                                        </h5>
+                                        <span class="text-danger" style="font-size: 17px">عليك تحديد الاقارب المقترحين الذين تريد أن يتم إضافتهم</span>
+                                        <hr>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['prisoner']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين حالية
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['prisoner'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnPrisonerDeleted('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-danger">
+                                                                            إزالة
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['prisoner_deleted']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين حالية
+                                                                <span
+                                                                    class="text-danger d-block mt-2">(سيتم إزالتها)</span>
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['prisoner_deleted'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnPrisonerRestore('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-warning">
+                                                                            تراجع
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['suggestion']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين مقترحة
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['suggestion'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnSuggestionAccepted('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-success">
+                                                                            إضافة
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['suggestion_accepted']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين مقترحة
+                                                                <span
+                                                                    class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['suggestion_accepted'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnSuggestionUnaccepted('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-warning">
+                                                                            تراجع
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-lg-8 mx-auto top-body mb-5 text-center">
                             <div class="row text-center">
                                 <div class="col-12 text-center">
@@ -326,62 +473,119 @@
                                     <h5>
                                         الإعتقالات السابقة
                                     </h5>
-                                    <span class="text-danger" style="font-size: 17px">عليك تحديد الإعتقالات التي تريد أن يتم إضافتها سواء حالي أو مقترح</span>
+                                    <span class="text-danger" style="font-size: 17px">عليك تحديد الإعتقالات المقترحة التي تريد أن يتم إضافتها</span>
                                     <hr>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="row">
-                                            @if(isset($oldArrestColumns['prisoner']))
-                                                @foreach($oldArrestColumns['prisoner'] as $index => $col)
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                @if(!empty($oldArrestColumns['prisoner']))
                                                     <div class="col-12 text-center">
                                                         <hr>
-                                                        <h5 class="d-inline">إعتقال سابق حالي</h5>
+                                                        <h5 class="d-inline">إعتقالات سابقة حالية</h5>
                                                         <hr>
                                                     </div>
-                                                    @foreach($col as $key => $data)
-                                                        @if($key != "الرقم الأساسي:")
-                                                            <div class="col-md-6 mb-3">
-                                                                <h6>
-                                                                    <input type="checkbox"
-                                                                           id="{{$index.'_prisoner_'.$data['name']}}Checkbox"
-                                                                           name="{{$index.'_prisoner_'.$data['name']}}Checkbox"
-                                                                           wire:model.live="selectAcceptedPrisonerOldArrest.{{$col['الرقم الأساسي:']['prisoner']}}.{{$data['name']}}">
-                                                                    {{$key}}
-                                                                </h6>
-                                                                <h5>{{$data['prisoner'] ?? 'لا يوجد'}}</h5>
-                                                            </div>
-                                                        @endif
+                                                    @foreach($oldArrestColumns['prisoner'] as $index => $row)
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <a wire:click="removeFromPrisonerList({{$row['id']}})"
+                                                               class="btn btn-danger">
+                                                                إزالة
+                                                            </a>
+                                                        </div>
                                                     @endforeach
-                                                @endforeach
-                                            @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                @if(!empty($oldArrestColumns['prisoner_deleted']))
+                                                    <div class="col-12 text-center">
+                                                        <hr>
+                                                        <h5 class="d-inline">
+                                                            إعتقالات سابقة حالية
+                                                            <span class="text-danger d-block mt-2">(سيتم إزالتها)</span>
+                                                        </h5>
+                                                        <hr>
+                                                    </div>
+                                                    @foreach($oldArrestColumns['prisoner_deleted'] as $index => $row)
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <a wire:click="removeFromPrisonerDeletedList({{$row['id']}})"
+                                                               class="btn btn-warning">
+                                                                تراجع
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="row">
-                                            @if(isset($oldArrestColumns['suggestion']))
-                                                @foreach($oldArrestColumns['suggestion'] as $index => $col)
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                @if(!empty($oldArrestColumns['suggestion']))
                                                     <div class="col-12 text-center">
                                                         <hr>
-                                                        <h5 class="d-inline">إعتقال سابق مقترح</h5>
+                                                        <h5 class="d-inline">إعتقالات سابقة مقترحة</h5>
                                                         <hr>
                                                     </div>
-                                                    @foreach($col as $key => $data)
-                                                        @if($key != "الرقم الأساسي:")
-                                                            <div class="col-md-6 mb-3">
-                                                                <h6>
-                                                                    <input type="checkbox"
-                                                                           id="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                                           name="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                                           wire:model.live="selectAcceptedSuggestionOldArrest.{{$col['الرقم الأساسي:']['suggestion']}}.{{$data['name']}}">
-                                                                    {{$key}}
-                                                                </h6>
-                                                                <h5 class="">{{$data['suggestion']}}</h5>
-                                                            </div>
-                                                        @endif
+                                                    @foreach($oldArrestColumns['suggestion'] as $index => $row)
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <a wire:click="addToSuggestionAcceptedList({{$row['id']}})"
+                                                               class="btn btn-success">
+                                                                قبول
+                                                            </a>
+                                                        </div>
                                                     @endforeach
-                                                @endforeach
-                                            @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                @if(!empty($oldArrestColumns['suggestion_accepted']))
+                                                    <div class="col-12 text-center">
+                                                        <hr>
+                                                        <h5 class="d-inline">
+                                                            إعتقالات سابقة مقترحة
+                                                            <span
+                                                                class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                        </h5>
+                                                        <hr>
+                                                    </div>
+                                                    @foreach($oldArrestColumns['suggestion_accepted'] as $index => $row)
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <a wire:click="removeFromSuggestionAcceptedList({{$row['id']}})"
+                                                               class="btn btn-warning">
+                                                                تراجع
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -408,7 +612,6 @@
                                                        wire:model.live="selectAccepted.{{$col['name']}}">
                                                 {{$key}}
                                             </h6>
-
                                             <h5>{{$col['suggestion']}}</h5>
                                             @error($col['name'])
                                             <div class="text-danger" style="font-size: 15px">{{ $message }}</div>
@@ -444,34 +647,142 @@
                                     @endforeach
                                 @endif
                             </div>
-                            @if(isset($oldArrestColumns['suggestion']))
+                            @if(!empty($familyIDNumberColumns))
                                 <div class="row">
                                     <div class="col-12 text-center">
                                         <hr>
-                                        <h5>بيانات الإعتقالات السابقة</h5>
+                                        <h5>
+                                            أقارب معتقلين
+                                        </h5>
+                                        <span class="text-danger" style="font-size: 17px">عليك تحديد الاقارب المقترحين الذين تريد أن يتم إضافتهم</span>
                                         <hr>
                                     </div>
-                                    @foreach($oldArrestColumns['suggestion'] as $index => $col)
-                                        <div class="col-12 text-center">
-                                            <hr>
-                                        </div>
-                                        @foreach($col as $key => $data)
-                                            @if($key != "الرقم الأساسي:")
-                                                <div class="col-md-6 mb-3">
-                                                    <h6>
-                                                        <input type="checkbox"
-                                                               id="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                               name="{{$index.'_suggestion_'.$data['name']}}Checkbox"
-                                                               wire:model.live="selectAcceptedSuggestionOldArrest.{{$col['الرقم الأساسي:']['suggestion']}}.{{$data['name']}}">
-                                                        {{$key}}
-                                                    </h6>
-                                                    <h5 class="">{{$data['suggestion']}}</h5>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['suggestion']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين مقترحة
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['suggestion'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnSuggestionAccepted('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-success">
+                                                                            إضافة
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
                                                 </div>
-                                            @endif
-                                        @endforeach
-                                    @endforeach
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    @if(!empty($familyIDNumberColumns['suggestion_accepted']))
+                                                        <div class="col-12 text-center">
+                                                            <hr>
+                                                            <h5 class="d-inline">
+                                                                أقارب معتقلين مقترحة
+                                                                <span
+                                                                    class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                            </h5>
+                                                            <hr>
+                                                        </div>
+                                                        @foreach($familyIDNumberColumns['suggestion_accepted'] as $index_idn => $row)
+                                                            @if(!empty($row))
+                                                                @foreach($row as $key_idn => $inside)
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['idn'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <h5 class="">{{ $inside['relationship_name'] ?? 'لا يوجد' }}</h5>
+                                                                    </div>
+                                                                    <div class="col-md-4 mb-3">
+                                                                        <a wire:click="FamilyIdnSuggestionUnaccepted('{{ $index_idn }}','{{ $key_idn }}')"
+                                                                           class="btn btn-warning">
+                                                                            تراجع
+                                                                        </a>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        @if(isset($oldArrestColumns['suggestion']))
+                                            <div class="col-12 text-center">
+                                                <hr>
+                                                <h5 class="d-inline">إعتقالات سابقة مقترحة</h5>
+                                                <hr>
+                                            </div>
+                                            @foreach($oldArrestColumns['suggestion'] as $index => $row)
+                                                <div class="col-md-4 mb-3">
+                                                    <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <a wire:click="addToSuggestionAcceptedList({{$row['id']}})"
+                                                       class="btn btn-success">
+                                                        قبول
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        @if(isset($oldArrestColumns['suggestion_accepted']))
+                                            <div class="col-12 text-center">
+                                                <hr>
+                                                <h5 class="d-inline">
+                                                    إعتقالات سابقة مقترحة
+                                                    <span
+                                                        class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                </h5>
+                                                <hr>
+                                            </div>
+                                            @foreach($oldArrestColumns['suggestion_accepted'] as $index => $row)
+                                                <div class="col-md-4 mb-3">
+                                                    <h5 class="">{{$row['old_arrest_start_date']}}</h5>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <h5 class="">{{$row['old_arrest_end_date']}}</h5>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <a wire:click="removeFromSuggestionAcceptedList({{$row['id']}})"
+                                                       class="btn btn-warning">
+                                                        تراجع
+                                                    </a>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>

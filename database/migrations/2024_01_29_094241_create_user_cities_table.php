@@ -10,12 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('old_arrests', function (Blueprint $table) {
+        Schema::create('user_city', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('prisoner_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->date('old_arrest_start_date')->index()->nullable();
-            $table->date('old_arrest_end_date')->index()->nullable();
-            $table->string('arrested_side')->nullable();//enum
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('old_arrests');
+        Schema::dropIfExists('user_city');
     }
 };
