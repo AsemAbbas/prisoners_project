@@ -19,7 +19,7 @@ class SearchNews extends Component
             $News = News::query()
                 ->where('news_title', 'like', '%' . $this->searchTerm . '%')
                 ->latest()
-                ->paginate(20);
+                ->paginate(10);
         } else $News = null;
 
         return view('livewire.main.search-news', compact('News'));

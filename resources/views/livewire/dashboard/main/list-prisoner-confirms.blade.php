@@ -345,7 +345,7 @@
                                             @if(isset($oldArrestColumns['prisoner']))
                                                 <div class="col-12 text-center">
                                                     <hr>
-                                                    <h5 class="d-inline">إعتقال سابق حالي</h5>
+                                                    <h5 class="d-inline">اعتقال سابق حالي</h5>
                                                     <hr>
                                                 </div>
                                                 @foreach($oldArrestColumns['prisoner'] as $index => $col)
@@ -368,7 +368,7 @@
                                             @if(isset($oldArrestColumns['confirm']))
                                                 <div class="col-12 text-center">
                                                     <hr>
-                                                    <h5 class="d-inline">إعتقال سابق جديد</h5>
+                                                    <h5 class="d-inline">اعتقال سابق جديد</h5>
                                                     <hr>
                                                 </div>
                                                 @foreach($oldArrestColumns['confirm'] as $index => $col)

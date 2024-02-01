@@ -5,7 +5,7 @@
             <!-- Copyright -->
             <div class="col-md-4 mb-3 mb-md-0" style="text-align: right;">
                 <div style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="{{asset('main/images/green.png')}}" width="80" alt="green" style="margin-bottom: 10px;">
+                    <img src="{{asset('main/images/green.webp')}}" width="80" alt="green" style="margin-bottom: 10px;">
                     <div class="text-primary-hover text-body-secondary">
                         جميع الحقوق محفوظة . فجر الحرية ©2024
                     </div>
@@ -13,7 +13,7 @@
             </div>
             <!-- Logo -->
             <div class="col-md-4 mb-3 mb-md-0 text-center">
-                <img src="{{asset('assets/images/light-logo.png')}}" width="150" alt="footer logo">
+                <img src="{{asset('assets/images/light-logo.webp')}}" width="150" alt="footer logo">
             </div>
             <!-- Social links -->
             @php

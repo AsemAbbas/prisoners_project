@@ -71,8 +71,8 @@
                                 <div class="d-flex align-items-center position-relative mt-3">
                                     <div>
                                         <ul class="nav align-items-center small">
-                                            <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('M d, Y')}}</li>
-                                            <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->format('D')}}</li>
+                                            <li class="nav-item">{{\Illuminate\Support\Carbon::parse($row->created_at)->isoFormat('D MMMM، YYYY')}}</li>
+                                            <li class="nav-item mx-1">{{\Illuminate\Support\Carbon::parse($row->created_at)->isoFormat('dddd')}}</li>
                                         </ul>
                                     </div>
                                 </div>

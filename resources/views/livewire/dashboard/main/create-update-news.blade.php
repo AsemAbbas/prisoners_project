@@ -13,7 +13,7 @@
 
 <div id="target-element">
     <div class="d-flex justify-content-center align-content-center">
-        <img src="{{asset('assets/images/logo.png')}}" width="300px" alt="logo">
+        <img src="{{asset('assets/images/logo.webp')}}" width="300px" alt="logo">
     </div>
     <div class="p-5">
         <h1 class="text-center mb-5">{{$showEdit ? 'تعديل خبر' : 'إضافة خبر'}}</h1>
@@ -67,7 +67,7 @@
                         <select wire:model="state.news_type_id"
                                 class="form-select @error('news_type_id') is-invalid @enderror"
                                 id="news_type_id">
-                            <option>إختر...</option>
+                            <option>اختر...</option>
                             @foreach($NewsTypes as $NewsType)
                                 <option value="{{$NewsType->id}}">{{$NewsType->news_type_name}}</option>
                             @endforeach

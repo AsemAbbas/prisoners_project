@@ -301,6 +301,7 @@
                                 </div>
                                 @if(isset($arrestColumns))
                                     @foreach($arrestColumns as $key => $col)
+
                                         <div class="col-md-6 mb-3">
                                             <h6>
                                                 <input type="checkbox"
@@ -478,12 +479,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                @if(!empty($oldArrestColumns['prisoner']))
+                                        @if(!empty($oldArrestColumns['prisoner']))
+                                            <div class="col-md-12">
+                                                <div class="row">
                                                     <div class="col-12 text-center">
                                                         <hr>
-                                                        <h5 class="d-inline">إعتقالات سابقة حالية</h5>
+                                                        <h5 class="d-inline">اعتقالات سابقة حالية</h5>
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['prisoner'] as $index => $row)
@@ -500,16 +501,16 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
-                                                @endif
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                @if(!empty($oldArrestColumns['prisoner_deleted']))
+                                        @endif
+                                        @if(!empty($oldArrestColumns['prisoner_deleted']))
+                                            <div class="col-md-12">
+                                                <div class="row">
                                                     <div class="col-12 text-center">
                                                         <hr>
                                                         <h5 class="d-inline">
-                                                            إعتقالات سابقة حالية
+                                                            اعتقالات سابقة حالية
                                                             <span class="text-danger d-block mt-2">(سيتم إزالتها)</span>
                                                         </h5>
                                                         <hr>
@@ -528,17 +529,17 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
-                                                @endif
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                @if(!empty($oldArrestColumns['suggestion']))
+                                        @if(!empty($oldArrestColumns['suggestion']))
+                                            <div class="col-md-12">
+                                                <div class="row">
                                                     <div class="col-12 text-center">
                                                         <hr>
-                                                        <h5 class="d-inline">إعتقالات سابقة مقترحة</h5>
+                                                        <h5 class="d-inline">اعتقالات سابقة مقترحة</h5>
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['suggestion'] as $index => $row)
@@ -555,16 +556,16 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
-                                                @endif
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                @if(!empty($oldArrestColumns['suggestion_accepted']))
+                                        @endif
+                                        @if(!empty($oldArrestColumns['suggestion_accepted']))
+                                            <div class="col-md-12">
+                                                <div class="row">
                                                     <div class="col-12 text-center">
                                                         <hr>
                                                         <h5 class="d-inline">
-                                                            إعتقالات سابقة مقترحة
+                                                            اعتقالات سابقة مقترحة
                                                             <span
                                                                 class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                         </h5>
@@ -584,25 +585,25 @@
                                                             </a>
                                                         </div>
                                                     @endforeach
-                                                @endif
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
                     @else
                         <div class="col-lg-12">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <hr>
-                                    <h5>بيانات الأسير</h5>
-                                    <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
-                                           wire:model.live="SelectAllPrisoners">
-                                    <label for="selectAllCheckbox">تحديد الكل</label>
-                                    <hr>
-                                </div>
-                                @if(isset($prisonerColumns))
+                            @if(isset($prisonerColumns))
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <hr>
+                                        <h5>بيانات الأسير</h5>
+                                        <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
+                                               wire:model.live="SelectAllPrisoners">
+                                        <label for="selectAllCheckbox">تحديد الكل</label>
+                                        <hr>
+                                    </div>
                                     @foreach($prisonerColumns as $key => $col)
                                         <div class="col-md-6 mb-3">
                                             <h6>
@@ -618,19 +619,20 @@
                                             @enderror
                                         </div>
                                     @endforeach
-                                @endif
-                            </div>
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <hr>
-                                    <h5>بيانات الإعتقال</h5>
-                                    <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
-                                           wire:model.live="SelectAllPrisonersArrest">
-                                    <label for="selectAllCheckbox">تحديد الكل</label>
-                                    <hr>
                                 </div>
-                                @if(isset($arrestColumns))
+                            @endif
+                            @if(isset($arrestColumns))
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <hr>
+                                        <h5>بيانات الإعتقال</h5>
+                                        <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
+                                               wire:model.live="SelectAllPrisonersArrest">
+                                        <label for="selectAllCheckbox">تحديد الكل</label>
+                                        <hr>
+                                    </div>
                                     @foreach($arrestColumns as $key => $col)
+
                                         <div class="col-md-6 mb-3">
                                             <h6>
                                                 <input type="checkbox"
@@ -645,8 +647,8 @@
                                             @enderror
                                         </div>
                                     @endforeach
-                                @endif
-                            </div>
+                                </div>
+                            @endif
                             @if(!empty($familyIDNumberColumns))
                                 <div class="row">
                                     <div class="col-12 text-center">
@@ -728,12 +730,12 @@
                                 </div>
                             @endif
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        @if(isset($oldArrestColumns['suggestion']))
+                                @if(isset($oldArrestColumns['suggestion']))
+                                    <div class="col-md-12">
+                                        <div class="row">
                                             <div class="col-12 text-center">
                                                 <hr>
-                                                <h5 class="d-inline">إعتقالات سابقة مقترحة</h5>
+                                                <h5 class="d-inline">اعتقالات سابقة مقترحة</h5>
                                                 <hr>
                                             </div>
                                             @foreach($oldArrestColumns['suggestion'] as $index => $row)
@@ -750,16 +752,16 @@
                                                     </a>
                                                 </div>
                                             @endforeach
-                                        @endif
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        @if(isset($oldArrestColumns['suggestion_accepted']))
+                                @endif
+                                @if(isset($oldArrestColumns['suggestion_accepted']))
+                                    <div class="col-md-12">
+                                        <div class="row">
                                             <div class="col-12 text-center">
                                                 <hr>
                                                 <h5 class="d-inline">
-                                                    إعتقالات سابقة مقترحة
+                                                    اعتقالات سابقة مقترحة
                                                     <span
                                                         class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                 </h5>
@@ -779,9 +781,10 @@
                                                     </a>
                                                 </div>
                                             @endforeach
-                                        @endif
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
+
                             </div>
                         </div>
                     @endif

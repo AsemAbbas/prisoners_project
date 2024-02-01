@@ -1,5 +1,5 @@
 @section('title')
-    فجر الحرية | قائمة الإحصائيات
+    فجر الحرية | قائمة الاحصائيات
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -46,7 +46,7 @@
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">لوحة التحكم</a></li>
-                <li class="breadcrumb-item active" aria-current="page">قائمة الإحصائيات</li>
+                <li class="breadcrumb-item active" aria-current="page">قائمة الاحصائيات</li>
             </ol>
         </nav>
     </div>
@@ -57,7 +57,7 @@
                 <div>
                     <a class="btn btn-primary mb-2" wire:click="addNew"
                        target="_blank">
-                        إضافة إحصائية
+                        إضافة احصائية
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                              fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -70,7 +70,7 @@
                 </div>
                 <div>
                     <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الإحصائيات...">
+                           placeholder="البحث في قائمة الاحصائيات...">
                     <label class="btn btn-info" for="Search">
                         البحث
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -88,10 +88,10 @@
                     <thead>
                     <tr style="font-size: 16px">
                         <th>#</th>
-                        <th>نوع الإحصائية</th>
-                        <th>مجموع الإحصائية</th>
-                        <th>ترتيب الإحصائية</th>
-                        <th>صورة الإحصائية</th>
+                        <th>نوع الاحصائية</th>
+                        <th>مجموع الاحصائية</th>
+                        <th>ترتيب الاحصائية</th>
+                        <th>صورة الاحصائية</th>
                         <th>الخيارات</th>
                     </tr>
                     </thead>
@@ -162,7 +162,7 @@
             <div class="modal-content bg-white">
                 <div class="modal-header {{$showEdit ? 'bg-warning': 'bg-primary'}}" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإحصائية':'إضافة إحصائية'}}</h1>
+                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الاحصائية':'إضافة احصائية'}}</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
@@ -170,31 +170,31 @@
                     <form wire:submit.prevent="{{$showEdit ? 'updateStatistic':'createStatistic'}}">
                         <div class="row">
                             <div class="form-group col-md-12 mb-3">
-                                <label for="statistic_name">نوع الإحصائية</label>
+                                <label for="statistic_name">نوع الاحصائية</label>
                                 <input wire:model="state.statistic_type" type="text"
                                        class="form-control @error('statistic_type') is-invalid @enderror"
                                        id="statistic_type"
-                                       placeholder="نوع الإحصائية">
+                                       placeholder="نوع الاحصائية">
                                 @error('statistic_type')
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-12 mb-3">
-                                <label for="statistic_number">مجموع الإحصائية</label>
+                                <label for="statistic_number">مجموع الاحصائية</label>
                                 <input wire:model="state.statistic_number" type="text"
                                        class="form-control @error('statistic_number') is-invalid @enderror"
                                        id="statistic_number"
-                                       placeholder="مجموع الإحصائية">
+                                       placeholder="مجموع الاحصائية">
                                 @error('statistic_number')
                                 <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group col-md-12 mb-3">
-                                <label for="statistic_photo">صورة الإحصائية</label>
+                                <label for="statistic_photo">صورة الاحصائية</label>
                                 <input wire:model.live="state.statistic_photo" type="file"
                                        class="form-control @error('statistic_photo') is-invalid @enderror"
                                        id="statistic_photo"
-                                       placeholder="صورة الإحصائية">
+                                       placeholder="صورة الاحصائية">
 
                                 @if(isset($state['statistic_photo']))
                                     @if(gettype($state['statistic_photo']) !== "string")
@@ -238,12 +238,12 @@
             <div class="modal-content bg-white">
                 <div class="modal-header bg-danger" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">حذف الإحصائية</h1>
+                        id="staticBackdropLabel">حذف الاحصائية</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الإحصائية؟</h5>
+                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الاحصائية؟</h5>
                     <span class="text-danger m-3">
                         * تنبية:
                         <span class="text-dark">
@@ -289,7 +289,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حذف بيانات الإحصائية',
+                        text: 'تم حذف بيانات الاحصائية',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }
@@ -309,7 +309,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حفظ بيانات الإحصائية',
+                        text: 'تم حفظ بيانات الاحصائية',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }

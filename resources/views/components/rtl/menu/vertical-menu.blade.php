@@ -4,7 +4,7 @@
             <div class="nav-logo">
                 <div class="nav-item theme-logo">
                     <a href="{{route('main.index')}}">
-                        <img src="{{asset('assets/images/logo.png')}}"
+                        <img src="{{asset('assets/images/logo.webp')}}"
                              class="navbar-logo logo-light" alt="logo">
                     </a>
                 </div>
@@ -27,7 +27,7 @@
         <div class="profile-info">
             <div class="user-info">
                 <div class="profile-img">
-                    <img src="{{asset('assets/images/admin.png')}}" alt="avatar">
+                    <img src="{{asset('assets/images/admin.webp')}}" alt="avatar">
                 </div>
                 <div class="profile-content">
                     @guest
@@ -197,7 +197,7 @@
                                 <a href="{{route('dashboard.belongs')}}">قائمة الإنتماء</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.statistics' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.statistics')}}">قائمة الإحصائيات</a>
+                                <a href="{{route('dashboard.statistics')}}">قائمة الاحصائيات</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.social_media' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.social_media')}}">قائمة التواصل الإجتماعي</a>

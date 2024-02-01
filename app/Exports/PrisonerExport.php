@@ -33,13 +33,15 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
         $selected = $this->column;
         $ar_name = [
             'id' => 'الرقم الاساسي',
+            'full_name' => 'الاسم بالكامل',
             'identification_number' => 'رقم الهوية',
             'first_name' => 'الاسم الاول',
             'second_name' => 'اسم الاب',
             'third_name' => 'اسم الجد',
             'last_name' => 'اسم العائلة',
             'mother_name' => 'اسم الأم',
-            'nick_name' => 'الكنية',
+            'nick_name' => 'اسم آخر للعائلة',
+            'age' => 'العمر',
             'date_of_birth' => 'تاريخ الميلاد',
             'gender' => 'الجنس',
             'city_id' => 'المحافظة',
@@ -71,7 +73,7 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
             'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
             'second_phone_number' => 'رقم التواصل الإضافي',
             'second_phone_owner' => 'اسم صاحب الرقم',
-            'IsReleased' => 'مفرج عنه؟',
+            'IsReleased' => 'مفرج عنه حالياً؟',
             'email' => 'البريد الإلكتروني',
         ];
         $export = [];

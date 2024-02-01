@@ -109,7 +109,7 @@ class ListPrisonerConfirms extends Component
                     'confirm' => $this->Confirms_->mother_name ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->mother_name ?? 'لا يوجد',
                 ],
-            'الكنية:' =>
+            'اسم آخر للعائلة:' =>
                 [
                     'name' => 'nick_name',
                     'confirm' => $this->Confirms_->nick_name ?? 'لا يوجد',
@@ -318,7 +318,7 @@ class ListPrisonerConfirms extends Component
                     'confirm' => $this->Confirms_->ArrestConfirm->second_phone_owner ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->second_phone_owner ?? 'لا يوجد',
                 ],
-            'مفرج عنه؟:' =>
+            'مفرج عنه حالياً؟:' =>
                 [
                     'name' => 'IsReleased',
                     'confirm' => $this->Confirms_->ArrestConfirm->IsReleased ?? 'لا يوجد',

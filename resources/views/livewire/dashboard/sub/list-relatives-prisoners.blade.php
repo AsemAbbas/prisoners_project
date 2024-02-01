@@ -207,7 +207,7 @@
                                 <select wire:model.live="state.relationship_id"
                                         class="form-select @error('relationship_id') is-invalid @enderror"
                                         id="relationship_id">
-                                    <option>إختر...</option>
+                                    <option>اختر...</option>
                                     @foreach($Relationships as $relationship)
                                         <option value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
                                     @endforeach

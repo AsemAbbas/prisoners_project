@@ -36,12 +36,14 @@ class ListPrisoners extends Component
     public array $PrisonerColumn = [
         'id' => 'الرقم الاساسي',
         'identification_number' => 'رقم الهوية',
+        'full_name' => 'الاسم بالكامل',
         'first_name' => 'الاسم الاول',
         'second_name' => 'اسم الاب',
         'third_name' => 'اسم الجد',
         'last_name' => 'اسم العائلة',
         'mother_name' => 'اسم الأم',
-        'nick_name' => 'الكنية',
+        'nick_name' => 'اسم آخر للعائلة',
+        'age' => 'العمر',
         'date_of_birth' => 'تاريخ الميلاد',
         'gender' => 'الجنس',
         'city_id' => 'المحافظة',
@@ -75,7 +77,7 @@ class ListPrisoners extends Component
         'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
         'second_phone_number' => 'رقم التواصل الإضافي',
         'second_phone_owner' => 'اسم صاحب الرقم',
-        'IsReleased' => 'مفرج عنه؟',
+        'IsReleased' => 'مفرج عنه حالياً؟',
         'email' => 'البريد الإلكتروني',
     ];
     public array $AdvanceSearch = [];
@@ -169,7 +171,7 @@ class ListPrisoners extends Component
         }
 
         return Prisoner::query()
-            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner','FamilyIDNumber'])
+            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber'])
             ->orderByDesc('created_at')
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
@@ -354,7 +356,7 @@ class ListPrisoners extends Component
         $PrisonerTypes = PrisonerType::all();
 
         if (isset($this->ExportData['selectPrisoner']))
-            if (count(array_filter($this->ExportData['selectPrisoner'])) < 14)
+            if (count(array_filter($this->ExportData['selectPrisoner'])) < 15)
                 $this->SelectAllPrisoner = false;
             else $this->SelectAllPrisoner = true;
 
@@ -514,6 +516,8 @@ class ListPrisoners extends Component
                             $mappedData[$key] = $prisoner->Town->town_name ?? null;
                         } elseif ($key === 'prisoner_type') {
                             $mappedData[$key] = implode(',', $prisoner->PrisonerType->pluck('prisoner_type_name')->toArray()) ?? null;
+                        } elseif ($key === 'age') {
+                            $mappedData[$key] = \Carbon\Carbon::parse($prisoner->date_of_birth)->diffInYears() ?? null;
                         } else {
                             $mappedData[$key] = $prisoner->$key ?? null;
                         }

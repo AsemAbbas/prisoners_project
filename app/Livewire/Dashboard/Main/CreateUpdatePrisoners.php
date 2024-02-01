@@ -20,6 +20,7 @@ use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
 use App\Rules\PalestineIdValidationRule;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
@@ -30,11 +31,10 @@ use Livewire\Component;
 class CreateUpdatePrisoners extends Component
 {
     public array $state = [];
-    public array $old_arrests = [
-        []
-    ];
+    public array $old_arrests = [];
     public object $Prisoners_;
     public bool $showEdit = false;
+    public $old_errors = null;
 
     public function mount($prisoner = null): void
     {
@@ -90,12 +90,12 @@ class CreateUpdatePrisoners extends Component
                 "last_name" => $data['last_name'],
                 "mother_name" => $data['mother_name'],
                 "nick_name" => $data['nick_name'],
-                "date_of_birth" => $data['date_of_birth'],
+                "date_of_birth" => Carbon::parse($data['date_of_birth'])->format('d-m-Y'),
                 "gender" => $data['gender'],
                 "city_id" => $data['city_id'],
                 "town_id" => $data['town_id'],
                 "notes" => $data['notes'],
-                "arrest_start_date" => $data['arrest']['arrest_start_date'],
+                "arrest_start_date" => Carbon::parse($data['arrest']['arrest_start_date'])->format('d-m-Y'),
                 "arrest_type" => $data['arrest']['arrest_type'],
                 "judgment_in_lifetime" => $data['arrest']['judgment_in_lifetime'],
                 "judgment_in_years" => $data['arrest']['judgment_in_years'],
@@ -133,8 +133,15 @@ class CreateUpdatePrisoners extends Component
                 "daughter_arrested_id" => $daughter_arrested_ids,
             ];
 
-
-            $this->old_arrests = $data['old_arrest'];
+                foreach ($data['old_arrest'] as $old) {
+                    $this->old_arrests[] = [
+                        "id" => $old['id'],
+                        "prisoner_id" => $old['prisoner_id'],
+                        "old_arrest_start_date" => Carbon::parse($old['old_arrest_start_date'])->format('d-m-Y'),
+                        "old_arrest_end_date" => Carbon::parse($old['old_arrest_end_date'])->format('d-m-Y'),
+                        "arrested_side" => $old['arrested_side'],
+                    ];
+                }
 
             $this->showEdit = true;
         }
@@ -142,12 +149,12 @@ class CreateUpdatePrisoners extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $PrisonerTypes = PrisonerType::all();
-        $Cities = City::all();
+        $PrisonerTypes = PrisonerType::all()->sortBy('prisoner_type_name');
+        $Belongs = Belong::all()->sortBy('belong_name');
+        $Cities = City::all()->sortBy('city_name');
         $city = !empty($this->state['city_id']) ? $this->state['city_id'] : null;
-        $Towns = Town::query()->where('city_id', $city)->get();
-        $Belongs = Belong::all();
-        $Relationships = Relationship::all();
+        $Towns = Town::query()->where('city_id', $city)->orderBy('town_name')->get();
+        $Relationships = Relationship::all()->sortBy('id');
 
         return view('livewire.dashboard.main.create-update-prisoners', compact('PrisonerTypes', 'Relationships', 'Belongs', 'Cities', 'Towns'));
     }
@@ -155,12 +162,14 @@ class CreateUpdatePrisoners extends Component
     public function addOldArrest(): void
     {
         $this->old_arrests[] = [];
+        $this->old_errors = null;
         $this->dispatch('scroll-to-bottom');
     }
 
     public function removeOldArrest($index): void
     {
         unset($this->old_arrests[$index]);
+        $this->old_errors = null;
         $this->old_arrests = array_values($this->old_arrests);
     }
 
@@ -169,11 +178,36 @@ class CreateUpdatePrisoners extends Component
      */
     public function ReviewMassage(): void
     {
+        $this->oldArrestManipulateData();
+
         $this->validateData();
 
         $this->manipulateData();
 
         $this->dispatchAction();
+    }
+
+    public function oldArrestManipulateData(): void
+    {
+        foreach ($this->old_arrests as &$old) {
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === "") {
+                $old['old_arrest_start_date'] = null;
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === "") {
+                $old['old_arrest_end_date'] = null;
+            }
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] !== "") {
+                $old['old_arrest_start_date'] = Carbon::parse($old['old_arrest_start_date'])->format('Y-m-d');
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] !== "") {
+                $old['old_arrest_end_date'] = Carbon::parse($old['old_arrest_end_date'])->format('Y-m-d');
+            }
+            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر...") {
+                $old['arrested_side'] = null;
+            }
+        }
+        // Unset the reference to avoid potential issues later
+        unset($old);
     }
 
     /**
@@ -237,18 +271,19 @@ class CreateUpdatePrisoners extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable|boolean",
+            'IsReleased' => "nullable",
             'email' => "nullable",
         ]);
 
         $oldArrestsValidation = Validator::make($this->old_arrests, [
-            '*.old_arrest_start_date' => 'nullable|date',
-            '*.old_arrest_end_date' => 'nullable|date',
-            '*.arrested_side' => 'nullable|in:' . $this->subTables()['ArrestedSide'],
+            '*.old_arrest_start_date' => 'nullable|required_with:*.old_arrest_end_date,*.arrested_side',
+            '*.old_arrest_end_date' => 'nullable|required_with:*.old_arrest_start_date,*.arrested_side',
+            '*.arrested_side' => 'nullable|in:' . $this->subTables()['ArrestedSide'] . '|required_with:*.old_arrest_start_date,*.old_arrest_end_date',
         ]);
 
         if ($validation->fails() || $oldArrestsValidation->fails()) {
             $validation->validate();
+            $this->old_errors = $oldArrestsValidation->getMessageBag()->toArray();
             $oldArrestsValidation->validate();
         }
     }
@@ -274,6 +309,47 @@ class CreateUpdatePrisoners extends Component
 
     public function manipulateData(): array
     {
+
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] === "") {
+            $this->state['date_of_birth'] = null;
+        }
+
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] !== "") {
+            $this->state['date_of_birth'] = Carbon::parse($this->state['date_of_birth'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] === "") {
+            $this->state['arrest_start_date'] = null;
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] !== "") {
+            $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {
+            $this->state['gender'] = null;
+        }
+
+        if (isset($this->state['city_id']) && $this->state['city_id'] == "اختر...") {
+            $this->state['city_id'] = null;
+        }
+
+        if (isset($this->state['town_id']) && $this->state['town_id'] == "اختر...") {
+            $this->state['town_id'] = null;
+        }
+
+        if (isset($this->state['belong_id']) && $this->state['belong_id'] == "اختر...") {
+            $this->state['belong_id'] = null;
+        }
+
+        if (isset($this->state['social_type']) && $this->state['social_type'] == "اختر...") {
+            $this->state['social_type'] = null;
+        }
+
+        if (isset($this->state['education_level']) && $this->state['education_level'] == "اختر...") {
+            $this->state['education_level'] = null;
+        }
+
         if (isset($this->state['social_type']) && $this->state['social_type'] == "أعزب") {
             $this->state['wife_type'] = null;
             $this->state['number_of_children'] = null;
@@ -344,7 +420,7 @@ class CreateUpdatePrisoners extends Component
 
             $this->Done(); // Notify completion
         } catch (\Exception $e) {
-            $massage = $e->getMessage();
+//            $massage = $e->getMessage();
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
     }
@@ -394,7 +470,7 @@ class CreateUpdatePrisoners extends Component
                 ->forceDelete();
             if (!empty($prisoner_type)) {
                 // Create new records based on $prisoner_type
-                foreach ($prisoner_type as $type) {
+                foreach (array_filter($prisoner_type) as $type) {
                     PrisonersPrisonerTypes::query()->create([
                         'prisoner_type_id' => $type,
                         'prisoner_id' => $this->Prisoners_->id,
@@ -405,7 +481,7 @@ class CreateUpdatePrisoners extends Component
                 ->where('prisoner_id', $this->Prisoners_->id)
                 ->forceDelete();
             if (!empty($this->old_arrests)) {
-                foreach ($this->old_arrests as $arrest) {
+                foreach (array_filter($this->old_arrests) as $arrest) {
                     OldArrest::query()->create([
                         'old_arrest_start_date' => $arrest['old_arrest_start_date'] ?? null,
                         'old_arrest_end_date' => $arrest['old_arrest_end_date'] ?? null,
@@ -530,8 +606,7 @@ class CreateUpdatePrisoners extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
-//            abort(403, 'مشكلة في تعديل بيانات الأسير تواصل مع الدعم الفني');
+            abort(403, 'مشكلة في تعديل بيانات الأسير تواصل مع الدعم الفني');
         }
     }
 

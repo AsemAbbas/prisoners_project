@@ -8,11 +8,31 @@
     @vite(['resources/rtl/scss/dark/assets/components/list-group.scss'])
     @vite(['resources/rtl/scss/dark/assets/widgets/modules-widgets.scss'])
     @vite(['resources/rtl/scss/light/assets/elements/alert.scss'])
+    <style>
+        #suggester_phone_number::-webkit-inner-spin-button,
+        #suggester_phone_number::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        #first_phone_number::-webkit-inner-spin-button,
+        #first_phone_number::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        #second_phone_number::-webkit-inner-spin-button,
+        #second_phone_number::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+    </style>
+
 @endsection
 <div class="d-flex justify-content-center flex-column" id="target-element">
     <div class="mx-auto" style="margin-top: 20px;">
         <a href="{{route('main.index')}}">
-            <img src="{{asset('assets/images/logo.png')}}" width="350px" alt="logo">
+            <img src="{{asset('assets/images/logo.webp')}}" width="350px" alt="logo">
         </a>
     </div>
     <div class="p-5">
@@ -53,12 +73,15 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6 mb-4">
-                            <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم البيانات
-                                (*059)</label>
-                            <input wire:model="state.suggester_phone_number" type="text"
+                            <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم البيانات</label>
+                            <input wire:model="state.suggester_phone_number"
+                                   type="number"
                                    class="form-control @error('suggester_phone_number') is-invalid @enderror"
                                    id="suggester_phone_number"
-                                   placeholder="رقم هاتف مقدم البيانات (*059)">
+                                   maxlength="14"
+                                   min="0"
+                                   inputmode="numeric"
+                                   placeholder="رقم هاتف مقدم البيانات">
                             @error('suggester_phone_number')
                             <div class="error-message invalid-feedback"
                                  style="font-size: 15px">{{ $message }}</div>
@@ -70,7 +93,7 @@
                             <select wire:model.live="state.relationship_id"
                                     class="form-select @error('relationship_id') is-invalid @enderror"
                                     id="relationship_id">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach($Relationships as $relationship)
                                     <option
                                         value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
@@ -88,7 +111,7 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="first_name">الاسم الأول</label>
-                            <input wire:model="state.first_name" type="text"
+                            <input wire:model.live="state.first_name" type="text"
                                    class="form-control @error('first_name') is-invalid @enderror"
                                    id="first_name"
                                    placeholder="الاسم الأول">
@@ -99,7 +122,7 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="second_name">اسم الأب</label>
-                            <input wire:model="state.second_name" type="text"
+                            <input wire:model.live="state.second_name" type="text"
                                    class="form-control @error('second_name') is-invalid @enderror"
                                    id="second_name"
                                    placeholder="الاسم الأب">
@@ -110,7 +133,7 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="third_name">اسم الجد</label>
-                            <input wire:model="state.third_name" type="text"
+                            <input wire:model.live="state.third_name" type="text"
                                    class="form-control @error('third_name') is-invalid @enderror"
                                    id="third_name"
                                    placeholder="الاسم الجد">
@@ -121,11 +144,22 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="last_name">اسم العائلة</label>
-                            <input wire:model="state.last_name" type="text"
+                            <input wire:model.live="state.last_name" type="text"
                                    class="form-control @error('last_name') is-invalid @enderror"
                                    id="last_name"
                                    placeholder="اسم العائلة">
                             @error('last_name')
+                            <div class="error-message invalid-feedback"
+                                 style="font-size: 15px">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-6 mb-4">
+                            <label for="nick_name">اسم آخر للعائلة</label>
+                            <input wire:model="state.nick_name" type="text"
+                                   class="form-control @error('nick_name') is-invalid @enderror"
+                                   id="nick_name"
+                                   placeholder="اسم آخر للعائلة">
+                            @error('nick_name')
                             <div class="error-message invalid-feedback"
                                  style="font-size: 15px">{{ $message }}</div>
                             @enderror
@@ -142,19 +176,8 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-6 mb-4">
-                            <label for="mother_name">الكنية</label>
-                            <input wire:model="state.nick_name" type="text"
-                                   class="form-control @error('nick_name') is-invalid @enderror"
-                                   id="nick_name"
-                                   placeholder="الكنية">
-                            @error('nick_name')
-                            <div class="error-message invalid-feedback"
-                                 style="font-size: 15px">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-6 mb-4">
                             <label for="identification_number">رقم الهوية</label>
-                            <input wire:model="state.identification_number" type="text"
+                            <input wire:model.live="state.identification_number" type="text"
                                    class="form-control @error('identification_number') is-invalid @enderror"
                                    id="identification_number"
                                    maxlength="9"
@@ -166,10 +189,13 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="date_of_birth">تاريخ الميلاد</label>
-                            <input wire:model="state.date_of_birth" type="date"
+
+                            <input wire:model="state.date_of_birth"
+                                   type="text"
                                    class="form-control @error('date_of_birth') is-invalid @enderror"
-                                   id="date_of_birth"
-                                   placeholder="تاريخ الميلاد">
+                                   placeholder="سنة - شهر - يوم"
+                                   oninput="formatDate(this)">
+
                             @error('date_of_birth')
                             <div class="error-message invalid-feedback"
                                  style="font-size: 15px">{{ $message }}</div>
@@ -180,7 +206,7 @@
                             <select wire:model.live="state.gender"
                                     class="form-select @error('gender') is-invalid @enderror"
                                     id="gender">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach(\App\Enums\Gender::cases() as $row)
                                     <option value="{{$row->value}}">{{$row->value}}</option>
                                 @endforeach
@@ -195,7 +221,7 @@
                             <select wire:model.live="state.city_id"
                                     class="form-select @error('city_id') is-invalid @enderror"
                                     id="city_id">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach($Cities as $city)
                                     <option value="{{$city->id}}">{{$city->city_name}}</option>
                                 @endforeach
@@ -211,7 +237,7 @@
                                     @endif
                                     class="form-select @error('town_id') is-invalid @enderror"
                                     id="town_id">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach($Towns as $town)
                                     <option value="{{$town->id}}">{{$town->town_name}}</option>
                                 @endforeach
@@ -226,7 +252,7 @@
                             <select wire:model.live="state.belong_id"
                                     class="form-select @error('belong_id') is-invalid @enderror"
                                     id="belong_id">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach($Belongs as $row)
                                     <option value="{{$row->id}}">{{$row->belong_name}}</option>
                                 @endforeach
@@ -238,9 +264,12 @@
                         </div>
                         <div class="form-group col-md-12 mb-4">
                             <label for="arrest_start_date">تاريخ الإعتقال</label>
-                            <input wire:model="state.arrest_start_date" type="date"
+                            <input wire:model="state.arrest_start_date"
+                                   type="text"
                                    class="form-control @error('arrest_start_date') is-invalid @enderror"
-                                   id="arrest_start_date">
+
+                                   placeholder="سنة - شهر - يوم"
+                                   oninput="formatDate(this)">
                             @error('arrest_start_date')
                             <div class="error-message invalid-feedback"
                                  style="font-size: 15px">{{ $message }}</div>
@@ -251,7 +280,7 @@
                             <select wire:model.live="state.arrest_type"
                                     class="form-select @error('arrest_type') is-invalid @enderror"
                                     id="arrest_type">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach(\App\Enums\ArrestType::cases() as $row)
                                     <option value="{{$row->value}}">{{$row->value}}</option>
                                 @endforeach
@@ -322,7 +351,7 @@
                                 <select wire:model.live="state.social_type"
                                         class="form-select @error('social_type') is-invalid @enderror"
                                         id="social_type">
-                                    <option>إختر...</option>
+                                    <option>اختر...</option>
                                     @foreach(\App\Enums\SocialType::cases() as $row)
                                         <option value="{{$row->value}}">{{$row->value}}</option>
                                     @endforeach
@@ -332,7 +361,7 @@
                                      style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
-                            @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','إختر...']))
+                            @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','اختر...']))
                                 <div
                                     class="form-group @if($state['social_type'] == "مطلق") col-md-12 @else col-md-6 @endif mb-4">
                                     <label for="number_of_children">عدد الأبناء</label>
@@ -384,7 +413,7 @@
                                                  data-bs-target="#defaultSpecialCase"
                                                  aria-expanded="false"
                                                  aria-controls="defaultSpecialCase">
-                                                <p class="p-0 m-0">إختر...</p>
+                                                <p class="p-0 m-0">اختر...</p>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                      height="24"
                                                      viewBox="0 0 24 24" fill="none"
@@ -490,7 +519,7 @@
                                                          data-bs-target="#defaultFamilyArrested"
                                                          aria-expanded="false"
                                                          aria-controls="defaultFamilyArrested">
-                                                        <p class="p-0 m-0">إختر...</p>
+                                                        <p class="p-0 m-0">اختر...</p>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                              height="24"
                                                              viewBox="0 0 24 24" fill="none"
@@ -834,19 +863,12 @@
                                 </div>
                             @endif
                         @endif
-                        <div class="form-group col-md-6 mb-4 text-center" style="margin-top: 35px;">
-                            <label class="form-check-label" style="font-size: 18px" for="form-check-dark">مفرج عنه؟</label>
-                            <input class="form-check-input border"
-                                   wire:model.live="state.IsReleased"
-                                   type="checkbox"
-                                   id="form-check-dark">
-                        </div>
-                        <div class="form-group col-md-6 mb-4">
+                        <div class="form-group col-md-12 mb-4">
                             <label for="education_level">المستوى التعليمي</label>
                             <select wire:model.live="state.education_level"
                                     class="form-select @error('education_level') is-invalid @enderror"
                                     id="education_level">
-                                <option>إختر...</option>
+                                <option>اختر...</option>
                                 @foreach(\App\Enums\EducationLevel::cases() as $row)
                                     <option value="{{$row->value}}">{{$row->value}}</option>
                                 @endforeach
@@ -858,9 +880,12 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="first_phone_number">رقم التواصل (واتس/تلجرام)</label>
-                            <input wire:model="state.first_phone_number" type="text"
+                            <input wire:model="state.first_phone_number" type="number"
                                    class="form-control @error('first_phone_number') is-invalid @enderror"
                                    id="first_phone_number"
+                                   maxlength="14"
+                                   min="0"
+                                   inputmode="numeric"
                                    placeholder="رقم التواصل مع الأهل">
                             @error('first_phone_number')
                             <div class="error-message invalid-feedback"
@@ -880,9 +905,12 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="second_phone_number">رقم التواصل الإضافي</label>
-                            <input wire:model="state.second_phone_number" type="text"
+                            <input wire:model="state.second_phone_number" type="number"
                                    class="form-control @error('second_phone_number') is-invalid @enderror"
                                    id="second_phone_number"
+                                   maxlength="14"
+                                   min="0"
+                                   inputmode="numeric"
                                    placeholder="رقم التواصل مع الأهل">
                             @error('second_phone_number')
                             <div class="error-message invalid-feedback"
@@ -921,11 +949,43 @@
                             }else $identification_number = null;
                         @endphp
                         <div class="form-group col-md-6 mb-4">
-                            <label for="email">إرفاق ملفات</label>
-                            <a class="btn btn-link d-block py-2" target="_blank"
-                               href="https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform?entry.1999411339=<?php echo $full_name; ?>&entry.1095886086=<?php echo $identification_number; ?>">
-                                الرابط الخاص بك
-                            </a>
+                            <label for="email">إرفاق ملفات (صورة الهوية وأوراق الصليب)</label>
+
+                            @if(isset($full_name) && isset($identification_number))
+                                <a class="btn btn-link d-block"
+                                   style="padding:12px 0;"
+                                   href="https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform?entry.1999411339=<?php echo $full_name; ?>&entry.1095886086=<?php echo $identification_number; ?>">
+                                    الرابط الخاص بك
+                                </a>
+                            @else
+                                <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">
+                                    الرابط الخاص بك
+                                </a>
+                                <span class="text-warning">عليك تعبئة الاسم رباعي و رقم الهوية ليعمل الرابط</span>
+                            @endif
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4" style="margin-top: 35px;">
+                            <h6 class="text-dark">مفرج عنه حالياً؟</h6>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       wire:model.live="state.IsReleased"
+                                       type="radio"
+                                       id="is-released-yes"
+                                       name="is-released"
+                                       value="true">
+                                <label class="form-check-label" for="is-released-yes"
+                                       style="font-size: 18px">نعم</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       wire:model.live="state.IsReleased"
+                                       type="radio"
+                                       id="is-released-no"
+                                       name="is-released"
+                                       value="false">
+                                <label class="form-check-label" for="is-released-no" style="font-size: 18px">لا</label>
+                            </div>
                         </div>
                         <div class="form-group col-md-12 mb-4">
                             <label for="notes">ملاحظات</label>
@@ -940,7 +1000,7 @@
                         </div>
                         <div class="col-md-12 mb-3 text-center">
                             <hr>
-                            <h1>إعتقالات سابقة (إن وجد)</h1>
+                            <h1>اعتقالات سابقة (إن وجد)</h1>
                             <hr>
                         </div>
                         @foreach($old_arrests as $key => $old_arrest)
@@ -951,7 +1011,7 @@
                                             data-bs-target="#panelsStayOpen-collapse_{{$key}}"
                                             aria-expanded="true"
                                             aria-controls="panelsStayOpen-collapse_{{$key}}">
-                                        إعتقال سابق {{$key + 1}}
+                                        اعتقال سابق {{$key + 1}}
                                         <a class="btn btn-danger mx-4"
                                            wire:click="removeOldArrest({{ $key }})">إزالة</a>
                                     </button>
@@ -965,28 +1025,48 @@
                                             <div class="form-group col-md-6 mb-4">
                                                 <label style="font-weight: bold" for="old_arrest_start_date">بداية
                                                     الإعتقال</label>
+
+
                                                 <input wire:model="old_arrests.{{$key}}.old_arrest_start_date"
-                                                       type="date"
+                                                       type="text"
                                                        class="form-control"
-                                                       id="old_arrest_start_date">
+
+                                                       placeholder="سنة - شهر - يوم"
+                                                       oninput="formatDate(this)">
+
+
+                                                @if(isset($old_errors) && isset($old_errors[$key.".old_arrest_start_date"]))
+                                                    <h6 class="text-danger error-message">{{ $old_errors[$key.".old_arrest_start_date"][0] }}</h6>
+                                                @endif
                                             </div>
                                             <div class="form-group col-md-6 mb-4">
                                                 <label style="font-weight: bold" for="old_arrest_end_date">نهاية
                                                     الإعتقال</label>
                                                 <input wire:model="old_arrests.{{$key}}.old_arrest_end_date"
-                                                       type="date"
+                                                       type="text"
                                                        class="form-control"
-                                                       id="old_arrest_end_date">
+                                                       placeholder="سنة - شهر - يوم"
+                                                       oninput="formatDate(this)">
+
+
+                                                @if(isset($old_errors) && isset($old_errors[$key.".old_arrest_end_date"]))
+                                                    <h6 class="text-danger error-message">{{ $old_errors[$key.".old_arrest_end_date"][0] }}</h6>
+                                                @endif
                                             </div>
                                             <div class="form-group col-md-12 mb-4">
                                                 <label style="font-weight: bold" for="arrested_side">جهة
                                                     الإعتقال</label>
-                                                <select id="arrested_side" wire:model="old_arrests.{{$key}}.arrested_side" class="form-select">
-                                                    <option>إختر...</option>
+                                                <select id="arrested_side"
+                                                        wire:model="old_arrests.{{$key}}.arrested_side"
+                                                        class="form-select">
+                                                    <option>اختر...</option>
                                                     @foreach(\App\Enums\ArrestedSide::cases() as $row)
                                                         <option value="{{$row->value}}">{{$row->value}}</option>
                                                     @endforeach
                                                 </select>
+                                                @if(isset($old_errors) && isset($old_errors[$key.".arrested_side"]))
+                                                    <h6 class="text-danger error-message">{{ $old_errors[$key.".arrested_side"][0] }}</h6>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -994,7 +1074,7 @@
                             </div>
                         @endforeach
                         <div class="d-flex justify-content-center align-content-center mb-5">
-                            <a class="btn btn-primary mx-auto" wire:click="addOldArrest">إضافة إعتقال سابق
+                            <a class="btn btn-primary mx-auto" wire:click="addOldArrest">إضافة اعتقال سابق
                                 آخر</a>
                         </div>
                     </div>
@@ -1061,6 +1141,17 @@
     <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
     @vite(['resources/rtl/assets/js/custom.js'])
     <script>
+
+        function formatDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 4) {
+                value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
+            } else if (value.length > 2) {
+                value = value.substring(0, 2) + '-' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
         window.addEventListener('ReviewMassage', event => {
             $('#review').modal('show');
         })
@@ -1079,7 +1170,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'شكراً لك سيتم مراجعة البيانات خلال 24 ساعة',
+                        text: 'شكراً لك سيتم مراجعة البيانات',
                         icon: 'success',
                         confirmButtonText: 'تم',
                     }).then((result) => {
@@ -1094,7 +1185,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'شكراً لك سيتم مراجعة البيانات خلال 24 ساعة',
+                        text: 'شكراً لك سيتم مراجعة البيانات',
                         icon: 'success',
                         confirmButtonText: 'تم',
                     }).then((result) => {

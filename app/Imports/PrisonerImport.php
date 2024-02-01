@@ -76,6 +76,7 @@ class PrisonerImport implements
         $Arrest = Arrest::query()->create([
             'prisoner_id' => $Prisoner->id ?? null,
             'arrest_start_date' => !empty($row['arrest_start_date']) ? Date::excelToDateTimeObject($row['arrest_start_date']) : null,
+            'arrest_end_date' => !empty($row['arrest_end_date']) ? Date::excelToDateTimeObject($row['arrest_end_date']) : null,
             'arrest_type' => $row['arrest_type'] ?? null,
             'judgment_in_lifetime' => $row['judgment_in_lifetime'] ?? null,
             'judgment_in_years' => $row['judgment_in_years'] ?? null,
@@ -182,6 +183,7 @@ class PrisonerImport implements
             'notes' => 'nullable',
             'prisoner_type' => 'nullable',
             'arrest_start_date' => 'nullable',
+            'arrest_end_date' => 'nullable',
             'arrest_type' => 'nullable',
             'judgment_in_lifetime' => 'nullable',
             'judgment_in_years' => 'nullable',

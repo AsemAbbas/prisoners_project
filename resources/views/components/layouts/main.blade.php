@@ -73,7 +73,7 @@
     </script>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
+    <link rel="shortcut icon" href="{{asset('assets/images/logo.webp')}}">
 
     <!-- Plugins CSS -->
     <link rel="stylesheet" type="text/css" href="{{asset('main/vendor/font-awesome/css/all.min.css')}}">

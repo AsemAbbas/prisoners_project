@@ -33,6 +33,8 @@ class CreateUpdateSuggestions extends Component
     public array $old_arrests = [
         []
     ];
+
+    public $old_errors = null;
     public object $Prisoners_;
     public bool $showEdit = false;
 
@@ -89,7 +91,7 @@ class CreateUpdateSuggestions extends Component
                 "suggester_identification_number" => $data['suggester_identification_number'] ?? null,
                 "suggester_phone_number" => $data['suggester_phone_number'] ?? null,
                 "relationship_id" => $data['relationship_id'] ?? null,
-                "identification_number" => $data['identification_number'] ?? null,
+                "identification_number" => null,
                 "first_name" => $data['first_name'] ?? null,
                 "second_name" => $data['second_name'] ?? null,
                 "third_name" => $data['third_name'] ?? null,
@@ -147,25 +149,26 @@ class CreateUpdateSuggestions extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $Belongs = Belong::all();
-        $Cities = City::all();
+        $Belongs = Belong::all()->sortBy('belong_name');
+        $Cities = City::all()->sortBy('city_name');
         $city = !empty($this->state['city_id']) ? $this->state['city_id'] : null;
-        $Towns = Town::query()->where('city_id', $city)->get();
-        $PrisonerTypes = PrisonerType::all();
-        $Relationships = Relationship::all();
-        return view('livewire.dashboard.main.create-update-suggestions', compact('Belongs', 'PrisonerTypes', 'Cities', 'Towns', 'Relationships'));
+        $Towns = Town::query()->where('city_id', $city)->orderBy('town_name')->get();
+        $Relationships = Relationship::all()->sortBy('id');
+        return view('livewire.dashboard.main.create-update-suggestions', compact('Belongs', 'Cities', 'Towns', 'Relationships'));
 
     }
 
     public function addOldArrest(): void
     {
         $this->old_arrests[] = [];
+        $this->old_errors = null;
         $this->dispatch('scroll-to-bottom');
     }
 
     public function removeOldArrest($index): void
     {
         unset($this->old_arrests[$index]);
+        $this->old_errors = null;
         $this->old_arrests = array_values($this->old_arrests);
     }
 
@@ -174,11 +177,30 @@ class CreateUpdateSuggestions extends Component
      */
     public function ReviewMassage(): void
     {
+        $this->oldArrestManipulateData();
+
         $this->validateData();
 
         $this->manipulateData();
 
         $this->dispatchAction();
+    }
+
+    public function oldArrestManipulateData(): void
+    {
+        foreach ($this->old_arrests as &$old){
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === ""){
+                $old['old_arrest_start_date'] = null;
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === ""){
+                $old['old_arrest_end_date'] = null;
+            }
+            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر..."){
+                $old['arrested_side'] = null;
+            }
+        }
+        unset($old);
+
     }
 
     /**
@@ -245,18 +267,18 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable|boolean",
+            'IsReleased' => "nullable",
             'email' => "nullable",
         ]);
-
         $oldArrestsValidation = Validator::make($this->old_arrests, [
-            '*.old_arrest_start_date' => 'nullable|date',
-            '*.old_arrest_end_date' => 'nullable|date',
-            '*.arrested_side' => "nullable|in:" . $this->subTables()['ArrestedSide'],
+            '*.old_arrest_start_date' => 'nullable|required_with:*.old_arrest_end_date,*.arrested_side',
+            '*.old_arrest_end_date' => 'nullable|required_with:*.old_arrest_start_date,*.arrested_side',
+            '*.arrested_side' => 'nullable|in:' . $this->subTables()['ArrestedSide'] . '|required_with:*.old_arrest_start_date,*.old_arrest_end_date',
         ]);
 
         if ($validation->fails() || $oldArrestsValidation->fails()) {
             $validation->validate();
+            $this->old_errors = $oldArrestsValidation->getMessageBag()->toArray();
             $oldArrestsValidation->validate();
         }
     }
@@ -282,6 +304,40 @@ class CreateUpdateSuggestions extends Component
 
     public function manipulateData(): array
     {
+
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] == "") {
+            $this->state['date_of_birth'] = null;
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] == "") {
+            $this->state['arrest_start_date'] = null;
+        }
+
+        if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {
+            $this->state['gender'] = null;
+        }
+
+        if (isset($this->state['city_id']) && $this->state['city_id'] == "اختر...") {
+            $this->state['city_id'] = null;
+        }
+
+        if (isset($this->state['town_id']) && $this->state['town_id'] == "اختر...") {
+            $this->state['town_id'] = null;
+        }
+
+        if (isset($this->state['belong_id']) && $this->state['belong_id'] == "اختر...") {
+            $this->state['belong_id'] = null;
+        }
+
+        if (isset($this->state['social_type']) && $this->state['social_type'] == "اختر...") {
+            $this->state['social_type'] = null;
+        }
+
+        if (isset($this->state['education_level']) && $this->state['education_level'] == "اختر...") {
+            $this->state['education_level'] = null;
+        }
+
+
         if (isset($this->state['social_type']) && $this->state['social_type'] == "أعزب") {
             $this->state['wife_type'] = null;
             $this->state['number_of_children'] = null;
@@ -341,7 +397,6 @@ class CreateUpdateSuggestions extends Component
 
             $this->Done();
         } catch (\Exception $e) {
-            dd($e);
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
     }
@@ -521,9 +576,9 @@ class CreateUpdateSuggestions extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-//            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني");
-            $massage = $e->getMessage();
-            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني \n$massage");
+            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني");
+//            $massage = $e->getMessage();
+//            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني \n$massage");
         }
     }
 

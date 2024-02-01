@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('prisoner_id')->nullable()->constrained()->cascadeOnDelete();
             $table->date('arrest_start_date')->index()->nullable();
+            $table->date('arrest_end_date')->index()->nullable();
             $table->string('arrest_type')->index()->nullable();//enum
             $table->string('judgment_in_lifetime')->index()->nullable();//الحكم بالمؤبدات
             $table->string('judgment_in_years')->index()->nullable();//الحكم بالسنوات

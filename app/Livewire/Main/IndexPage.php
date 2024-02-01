@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Main;
 
+use App\Models\City;
 use App\Models\News;
 use App\Models\Prisoner;
 use App\Models\SocialMedia;
 use App\Models\Statistic;
+use App\Models\Town;
 use App\Rules\PalestineIdValidationRule;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,8 +22,12 @@ class IndexPage extends Component
         'second_name' => '',
         'last_name' => '',
     ];
-    public ?object $Prisoners = null;
 
+    public array $CitySearch = [
+        'city_id' =>'',
+        'town_id' =>'',
+    ];
+    public ?object $Prisoners = null;
 
     public ?string $error_ms = null;
 
@@ -65,9 +71,9 @@ class IndexPage extends Component
                 ->where('identification_number', $this->search['identification_number'])
                 ->orWhere(function ($q) {
                     $q->where('first_name', $this->search['first_name'])
-                        ->where('second_name', $this->search['second_name'])
+                        ->where('second_name', 'like', '%' . $this->search['second_name'] . '%')
                         ->where(function ($q) {
-                            $q->where('last_name', $this->search['last_name'])
+                            $q->where('last_name', 'like', '%' . $this->search['last_name'] . '%')
                                 ->orWhere('nick_name', 'like', '%' . $this->search['last_name'] . '%');
                         });
                 })
@@ -83,7 +89,6 @@ class IndexPage extends Component
         }
 
     }
-
 
     private function replaceHamza($text): array|string
     {
@@ -102,6 +107,11 @@ class IndexPage extends Component
         ];
 
         return str_replace($diacritics, '', $text);
+    }
+
+    public function showSearchCityPrisoners(): void
+    {
+        $this->dispatch('show_city_prisoners_modal');
     }
 
     public function showDetails(): void
@@ -123,17 +133,22 @@ class IndexPage extends Component
             ->orderBy('order_by')
             ->get();
         $SocialMedia = SocialMedia::all();
-        return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia'))
+
+        $Cities = City::all()->sortBy('city_name');
+        $Towns = Town::query()->where('city_id',$this->CitySearch['city_id'])->orderBy('town_name')->get();
+
+        $CityPrisoners = Prisoner::query()
+            ->where('city_id',$this->CitySearch['city_id'])
+            ->where('town_id',$this->CitySearch['town_id'])
+            ->orderBy('first_name')
+            ->paginate(15);
+
+        return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia','CityPrisoners','Towns','Cities'))
             ->layout('components.layouts.main');
     }
 
-    private function replaceSpace($text): array|string
+    public function updatedCitySearch(): void
     {
-        return str_replace(' ', '', $text);
-    }
-
-    private function replaceAlefMaksura($text): array|string
-    {
-        return str_replace('ى', 'ي', $text);
+        $this->resetPage();
     }
 }

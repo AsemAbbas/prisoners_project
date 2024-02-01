@@ -59,7 +59,7 @@
 {{--                        <div>--}}
 {{--                            <a class="btn btn-primary mb-2" wire:click="addNew"--}}
 {{--                               target="_blank">--}}
-{{--                                إضافة إعتقال--}}
+{{--                                إضافة اعتقال--}}
 {{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"--}}
 {{--                                     fill="none"--}}
 {{--                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"--}}
@@ -171,7 +171,7 @@
 {{--            <div class="modal-content bg-white">--}}
 {{--                <div class="modal-header {{$showEdit ? 'bg-warning': 'bg-primary'}}" style="margin: 5px;">--}}
 {{--                    <h1 class="modal-title fs-5 text-white"--}}
-{{--                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإعتقال':'إضافة إعتقال'}}</h1>--}}
+{{--                        id="staticBackdropLabel">{{$showEdit ? 'تعديل الإعتقال':'إضافة اعتقال'}}</h1>--}}
 {{--                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"--}}
 {{--                            aria-label="Close"></button>--}}
 {{--                </div>--}}
@@ -201,7 +201,7 @@
 {{--                                <select wire:model.live="state.arrest_type"--}}
 {{--                                        class="form-select @error('arrest_type') is-invalid @enderror"--}}
 {{--                                        id="arrest_type">--}}
-{{--                                    <option>إختر...</option>--}}
+{{--                                    <option>اختر...</option>--}}
 {{--                                    @foreach(\App\Enums\ArrestType::cases() as $row)--}}
 {{--                                        <option value="{{$row->value}}">{{$row->value}}</option>--}}
 {{--                                    @endforeach--}}
@@ -247,7 +247,7 @@
 {{--                                <select wire:model.live="state.belong_id"--}}
 {{--                                        class="form-select @error('belong_id') is-invalid @enderror"--}}
 {{--                                        id="belong_id">--}}
-{{--                                    <option>إختر...</option>--}}
+{{--                                    <option>اختر...</option>--}}
 {{--                                    @foreach($Belongs as $row)--}}
 {{--                                        <option value="{{$row->id}}">{{$row->belong_name}}</option>--}}
 {{--                                    @endforeach--}}
@@ -261,7 +261,7 @@
 {{--                                <select wire:model.live="state.social_type"--}}
 {{--                                        class="form-select @error('social_type') is-invalid @enderror"--}}
 {{--                                        id="social_type">--}}
-{{--                                    <option>إختر...</option>--}}
+{{--                                    <option>اختر...</option>--}}
 {{--                                    @foreach(\App\Enums\SocialType::cases() as $row)--}}
 {{--                                        <option value="{{$row->value}}">{{$row->value}}</option>--}}
 {{--                                    @endforeach--}}
@@ -270,7 +270,7 @@
 {{--                                <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>--}}
 {{--                                @enderror--}}
 {{--                            </div>--}}
-{{--                            @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','إختر...']))--}}
+{{--                            @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','اختر...']))--}}
 {{--                                <div class="form-group col-md-12 mb-4">--}}
 {{--                                    <label for="number_of_children">عدد الأبناء</label>--}}
 {{--                                    <input wire:model="state.number_of_children" type="text"--}}

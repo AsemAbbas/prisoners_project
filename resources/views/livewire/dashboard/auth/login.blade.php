@@ -57,7 +57,7 @@
                         <form wire:submit.prevent="login">
                             <div class="row">
                                 <div class="col-md-12 mb-3 text-center">
-                                    <img src="{{ asset('assets/images/logo.png') }}" alt="شعار" width="200">
+                                    <img src="{{ asset('assets/images/logo.webp') }}" alt="شعار" width="200">
                                 </div>
 
                                 <div class="col-md-12">

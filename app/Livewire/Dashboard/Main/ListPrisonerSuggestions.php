@@ -179,7 +179,7 @@ class ListPrisonerSuggestions extends Component
                     'suggestion' => $this->Suggestions_->mother_name ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->mother_name ?? 'لا يوجد',
                 ],
-            'الكنية:' =>
+            'اسم آخر للعائلة:' =>
                 [
                     'name' => 'nick_name',
                     'suggestion' => $this->Suggestions_->nick_name ?? 'لا يوجد',
@@ -217,6 +217,15 @@ class ListPrisonerSuggestions extends Component
                 ],
         ];
 
+        if (isset($this->Suggestions_->ArrestSuggestion->arrest_type) && $this->Suggestions_->ArrestSuggestion->arrest_type === "موقوف") {
+            $judgment_in_lifetime = "الحكم المتوقع مؤبدات:";
+            $judgment_in_years = "الحكم المتوقع سنوات:";
+            $judgment_in_months = "الحكم المتوقع شهور:";
+        }else{
+            $judgment_in_lifetime = "الحكم مؤبدات:";
+            $judgment_in_years = "الحكم سنوات:";
+            $judgment_in_months = "الحكم شهور:";
+        }
 
         $this->arrestColumns = [
             'تاريخ الإعتقال:' =>
@@ -231,20 +240,20 @@ class ListPrisonerSuggestions extends Component
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->arrest_type ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->arrest_type ?? 'لا يوجد',
                 ],
-            'الحكم مؤبدات:' =>
+            $judgment_in_lifetime =>
                 [
                     'name' => 'judgment_in_lifetime',
                     'suggestion' => !empty($this->Suggestions_->ArrestSuggestion->judgment_in_lifetime) ? $this->Suggestions_->ArrestSuggestion->judgment_in_lifetime : 'لا يوجد',
                     'prisoner' => !empty($this->Prisoner_->Arrest->judgment_in_lifetime) ? $this->Prisoner_->Arrest->judgment_in_lifetime : 'لا يوجد',
                 ],
-            'الحكم سنوات:' =>
+            $judgment_in_years =>
                 [
                     'name' => 'judgment_in_years',
                     'suggestion' => !empty($this->Suggestions_->ArrestSuggestion->judgment_in_years) ? $this->Suggestions_->ArrestSuggestion->judgment_in_years : 'لا يوجد',
                     'prisoner' => !empty($this->Prisoner_->Arrest->judgment_in_years) ? $this->Prisoner_->Arrest->judgment_in_years : 'لا يوجد',
 
                 ],
-            'الحكم أشهر:' =>
+            $judgment_in_months =>
                 [
                     'name' => 'judgment_in_months',
                     'suggestion' => !empty($this->Suggestions_->ArrestSuggestion->judgment_in_months) ? $this->Suggestions_->ArrestSuggestion->judgment_in_months : 'لا يوجد',
@@ -365,11 +374,11 @@ class ListPrisonerSuggestions extends Component
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->second_phone_owner ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->second_phone_owner ?? 'لا يوجد',
                 ],
-            'مفرج عنه؟:' =>
+            'مفرج عنه حالياً؟:' =>
                 [
                     'name' => 'IsReleased',
-                    'suggestion' => $this->Suggestions_->ArrestSuggestion->IsReleased ?? 'لا يوجد',
-                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ?? 'لا يوجد',
+                    'suggestion' => $this->Suggestions_->ArrestSuggestion->IsReleased ? 'نعم' : 'لا',
+                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ? 'نعم' : 'لا',
                 ],
             'البريد الإلكتروني:' =>
                 [

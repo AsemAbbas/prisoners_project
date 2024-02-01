@@ -167,11 +167,13 @@
                     <thead>
                     <tr style="font-size: 16px">
                         <th>#</th>
+                        <th style="min-width: 180px;font-weight: bold">الرقم الأساسي</th>
                         <th style="min-width: 180px;font-weight: bold">اسم الأسير</th>
                         <th style="min-width: 180px;font-weight: bold">رقم الهوية</th>
                         <th style="min-width: 180px;font-weight: bold">تاريخ الميلاد</th>
                         <th style="min-width: 180px;font-weight: bold">الجنس</th>
                         <th style="min-width: 180px;font-weight: bold">المحافظة</th>
+                        <th style="min-width: 180px;font-weight: bold">البلدة</th>
                         {{--                        @auth--}}
                         {{--                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))--}}
                         {{--                                <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>--}}
@@ -188,11 +190,13 @@
                                     {{$Prisoners->firstItem() + $key}}
                                 </a>
                             </td>
+                            <td>{{$row->id}}</td>
                             <td>{{$row->full_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->identification_number ?? 'لا يوجد'}}</td>
                             <td>{{$row->date_of_birth . ' (' . \Carbon\Carbon::parse($row->date_of_birth)->diffInYears() .' سنة)'  ?? 'لا يوجد'}}</td>
                             <td>{{$row->gender ?? 'لا يوجد'}}</td>
                             <td>{{$row->City->city_name ?? 'لا يوجد'}}</td>
+                            <td>{{$row->Town->town_name ?? 'لا يوجد'}}</td>
                             @auth
                                 {{--                                <td>--}}
                                 {{--                                    <a href="{{route('dashboard.arrests',$row)}}" class="btn btn-dark-soft"--}}
@@ -200,7 +204,7 @@
                                 {{--                                        @if(count($row->Arrest) > 0)--}}
                                 {{--                                            الاعتقال ({{count($row->Arrest)}})--}}
                                 {{--                                        @else--}}
-                                {{--                                            أضف إعتقال--}}
+                                {{--                                            أضف اعتقال--}}
                                 {{--                                        @endif--}}
                                 {{--                                    </a>--}}
                                 {{--                                </td>--}}
@@ -366,7 +370,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultGender" aria-expanded="false"
                                                      aria-controls="defaultGender">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                          stroke-width="2" stroke-linecap="round"
@@ -412,7 +416,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultSocialType" aria-expanded="false"
                                                      aria-controls="defaultSocialType">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                          stroke-width="2" stroke-linecap="round"
@@ -459,7 +463,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultCity" aria-expanded="false"
                                                      aria-controls="defaultCity">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                          stroke-width="2" stroke-linecap="round"
@@ -506,7 +510,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultTown" aria-expanded="false"
                                                      aria-controls="defaultTown">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                          height="24"
                                                          viewBox="0 0 24 24" fill="none"
@@ -562,7 +566,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultBelong" aria-expanded="false"
                                                      aria-controls="defaultBelong">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                          stroke-width="2" stroke-linecap="round"
@@ -608,7 +612,7 @@
                                                      data-bs-toggle="collapse"
                                                      data-bs-target="#defaultPrisonerType" aria-expanded="false"
                                                      aria-controls="defaultPrisonerType">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                          stroke-width="2" stroke-linecap="round"
@@ -658,7 +662,7 @@
                                                      data-bs-target="#defaultSpecialCase"
                                                      aria-expanded="false"
                                                      aria-controls="defaultSpecialCase">
-                                                    <p class="p-0 m-0">إختر...</p>
+                                                    <p class="p-0 m-0">اختر...</p>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                          height="24"
                                                          viewBox="0 0 24 24" fill="none"
@@ -1305,7 +1309,7 @@
                                                                      data-bs-target="#defaultGender"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultGender">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1358,7 +1362,7 @@
                                                                      data-bs-target="#defaultSocialType"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultSocialType">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1410,7 +1414,7 @@
                                                                      data-bs-toggle="collapse"
                                                                      data-bs-target="#defaultCity" aria-expanded="false"
                                                                      aria-controls="defaultCity">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1461,7 +1465,7 @@
                                                                      data-bs-toggle="collapse"
                                                                      data-bs-target="#defaultTown" aria-expanded="false"
                                                                      aria-controls="defaultTown">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1518,7 +1522,7 @@
                                                                      data-bs-target="#defaultBelong"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultBelong">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1571,7 +1575,7 @@
                                                                      data-bs-target="#defaultPrisonerType"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultPrisonerType">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1624,7 +1628,7 @@
                                                                      data-bs-target="#defaultSpecialCase"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultSpecialCase">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1685,7 +1689,7 @@
                                                                      data-bs-target="#defaultPrisonerData"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultPrisonerData">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"
@@ -1751,7 +1755,7 @@
                                                                      data-bs-target="#defaultArrestData"
                                                                      aria-expanded="false"
                                                                      aria-controls="defaultArrestData">
-                                                                    <p class="p-0 m-0">إختر...</p>
+                                                                    <p class="p-0 m-0">اختر...</p>
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                          height="24"
                                                                          viewBox="0 0 24 24" fill="none"

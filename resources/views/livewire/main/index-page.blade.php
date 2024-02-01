@@ -1,5 +1,5 @@
 @section('title')
-    فجر الحرية | الرئيسية
+    فجر الحرية
 @endsection
 @section('style')
     <style>
@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                        background-color: #022d4f;
+                                         background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -38,13 +38,13 @@
             <div class="row">
                 <div class="col-12">
                     <div class="p-3 p-sm-4 rounded-3 position-relative overflow-hidden"
-                         style="background-image:url('{{asset('main/images/search_bg.jpg')}}');background-repeat: no-repeat;background-size:cover;background-position:center;">
+                         style="background-image:url('{{asset('main/images/search_bg.webp')}}');background-repeat: no-repeat;background-size:cover;background-position:center;">
                         <div class="row">
                             <div class="col-md-8 col-lg-6 mx-auto text-center py-5 position-relative"
                                  style="direction: rtl">
                                 <!-- Title -->
                                 <h2 class="display-6 text-white"
-                                    style="font-family: 'Changa', sans-serif !important;font-size: 30px">الإستعلام عن
+                                    style="font-family: 'Changa', sans-serif !important;font-size: 30px">الاستعلام عن
                                     أسير</h2>
                                 <p class="text-white">البحث عن طريق رقم الهوية أو الاسم</p>
                                 <!-- Form -->
@@ -53,6 +53,7 @@
                                     <div class="col-sm-12">
                                         <input type="text" class="form-control text-input"
                                                style="background-color:#fff;color: black"
+                                               maxlength="9"
                                                wire:model="search.identification_number" placeholder="رقم الهوية">
                                     </div>
                                     <div class="col-sm-12 mt-3 text-white">
@@ -76,7 +77,7 @@
                                                placeholder="اسم العائلة">
                                     </div>
                                     <div class="col-sm-12 mt-4" id="Statistics">
-                                        <button type="submit" style="background-color:#fff;color: black"
+                                        <button type="submit" style="background-color:#fff;color: black;width: 200px"
                                                 class="btn m-0">بحث
                                         </button>
                                     </div>
@@ -91,6 +92,12 @@
                                                    style="font-size: 18px">إقتراح إضافة</a>
                                             @endif
                                         @endif
+                                    </div>
+                                    <div class="col-sm-12 mt-4">
+                                        <a style="background-color:#fff;color: black;width: 200px;"
+                                           wire:click="showSearchCityPrisoners"
+                                           class="btn m-0 d-block mx-auto">بحث عن أسماء مناطق
+                                        </a>
                                     </div>
                                 </form>
                             </div>
@@ -107,25 +114,25 @@
                 <div>
                     <h4 class="mb-3 text-center"
                         style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
-                        الإحصائيات</h4>
+                        الاحصائيات</h4>
                     <!-- Category item -->
                     <div class="row">
                         @foreach($Statistics as $row)
                             <div
-                                    class="@if($row->statistic_type === "الأسرى الإجمالي") col-lg-12 @endif col-lg-4 mx-auto">
+                                class="@if($row->statistic_type === "إجمالي الأسرى في سجون الإحتلال") col-lg-12 @endif col-lg-4 mx-auto">
                                 <div class="text-center mb-3 position-relative overflow-hidden"
-                                     style="border-radius: 10px!important;@if($row->statistic_type === "الأسرى الإجمالي") background-image:url('{{asset('main/images/total_statistic_bg.jpg')}}'); @else background-image:url('{{asset('main/images/statistic_bg.jpg')}}'); @endif background-repeat: no-repeat;background-size:cover;background-position:center;">
+                                     style="border-radius: 10px!important;@if($row->statistic_type === "إجمالي الأسرى في سجون الإحتلال") background-image:url('{{asset('main/images/total_statistic_bg.webp')}}'); @else background-image:url('{{asset('main/images/statistic_bg.webp')}}'); @endif background-repeat: no-repeat;background-size:cover;background-position:center;">
                                     <div class="p-3">
                                         <p class="fw-bold h5 text-white"
-                                           style="font-weight:50!important;font-family: 'Changa', sans-serif !important; font-size: 17px; @if($row->statistic_type === 'الأسرى الإجمالي') color: rgba(9,30,70,0.81)!important;font-weight:bold!important;font-size: 18px; @endif">
+                                           style="font-weight:50!important;font-family: 'Changa', sans-serif !important; font-size: 17px; @if($row->statistic_type === 'إجمالي الأسرى في سجون الإحتلال') color: rgba(9,30,70,0.81)!important;font-weight:bold!important;font-size: 18px; @endif">
                                             {{$row->statistic_type}}
                                         </p>
                                         <p class="fw-bold text-white counter text-shadow"
                                            data-target="{{$row->statistic_number}}"
-                                           style="font-weight: bold!important;font-family: 'Changa', sans-serif !important; font-size: 40px; color: rgb(255,196,62)!important; @if($row->statistic_type === 'الأسرى الإجمالي')color: rgba(9,30,70,0.81)!important;  font-size: 80px; @endif">
+                                           style="font-weight: bold!important;font-family: 'Changa', sans-serif !important; font-size: 40px; color: rgb(255,196,62)!important; @if($row->statistic_type === 'إجمالي الأسرى في سجون الإحتلال')color: rgba(9,30,70,0.81)!important;  font-size: 80px; @endif">
                                             {{$row->statistic_number}}
                                         </p>
-                                        @if($row->statistic_type !== "الأسرى الإجمالي")
+                                        @if($row->statistic_type !== "إجمالي الأسرى في سجون الإحتلال")
                                             <img width="80"
                                                  style="opacity: 0.6;position: fixed;top: 35px;left: 30px;z-index: -1;background-color:#fff;border-radius: 20px;padding: 15px"
                                                  src="{{asset('storage/statistic_photo/'.$row->statistic_photo)}}"
@@ -161,7 +168,7 @@
                                         <a href="{{ route('news.index',$row->NewsType->news_type_name)}}"
                                            class="badge text-bg-danger mb-2"
                                            style="background-color:{{$row->NewsType->news_type_color}}!important;"><i
-                                                    class="fas fa-circle me-2 small fw-bold"></i>{{$row->NewsType->news_type_name}}
+                                                class="fas fa-circle me-2 small fw-bold"></i>{{$row->NewsType->news_type_name}}
                                         </a>
                                         <!-- Title -->
                                         <h2 class="card-title"
@@ -183,22 +190,19 @@
                                     </div>
                                     <!-- Detail -->
                                     @if(isset($row->news_short_description))
-                                        <div class="col-md-6 col-lg-4">
+                                        <div class="col-md-6 col-lg-3">
                                             <p class="description" id="newsDescription">
-                                                    <?php
-                                                    $description = $row->news_short_description; // Assuming $row contains the news data
-                                                    if (strlen($description) > 1500 && (strpos($_SERVER['HTTP_USER_AGENT'], 'Mobile') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Tablet') !== false)) {
-                                                        echo substr($description, 0, 500) . '...'; // Show 500 characters for smaller screens
-                                                    } else {
-                                                        echo substr($description, 0, 800) . '...'; // Show 1500 characters for medium/large screens
-                                                    }
-                                                    ?>
+                                                {{ mb_substr($row->news_short_description, 0, 380, 'UTF-8') }}
+                                                @if(mb_strlen($row->news_short_description, 'UTF-8') > 380)
+                                                    ...
+                                                @endif
                                             </p>
                                         </div>
                                     @endif
                                     <!-- Image -->
-                                    <div class="col-md-6 col-lg-3">
-                                        <img class="rounded-3" src="{{asset('storage/news_photo/'.$row->news_photo)}}"
+                                    <div class="col-md-6 col-lg-4">
+                                        <img class="rounded-3" width="100%"
+                                             src="{{asset('storage/news_photo/'.$row->news_photo)}}"
                                              alt="Card image">
                                     </div>
                                 </div>
@@ -225,10 +229,10 @@
                     <div class="d-flex justify-content-center mb-4">
                         <img class="navbar-brand-item light-mode-item"
                              style="width: 300px!important; height: 100%!important;"
-                             src="{{asset('assets/images/logo.png')}}" alt="logo">
+                             src="{{asset('assets/images/logo.webp')}}" alt="logo">
                         <img class="navbar-brand-item dark-mode-item"
                              style="width: 300px!important; height: 100%!important;"
-                             src="{{asset('assets/images/light-logo.png')}}" alt="logo">
+                             src="{{asset('assets/images/light-logo.webp')}}" alt="logo">
                     </div>
                     <div class="d-flex justify-content-center mb-4">
                         <h1 style="font-family: 'Changa', sans-serif !important;font-size: 35px">
@@ -246,7 +250,9 @@
                                                     style="font-family: 'Changa', sans-serif !important;font-size: 25px">
                                                     <a wire:click="{{$show ? 'hideDetails' : 'showDetails'}}"
                                                        class="btn-link text-reset stretched-link">
-                                                        {{$prisoner->full_name}} @if(!empty($prisoner->nick_name)) ({{$prisoner->nick_name}}) @endif
+                                                        {{$prisoner->full_name}} @if(!empty($prisoner->nick_name))
+                                                            ({{$prisoner->nick_name}})
+                                                        @endif
                                                     </a>
                                                 </h2>
                                             </div>
@@ -275,7 +281,7 @@
                                                             <!-- Blog list table START -->
                                                             <div class="table-responsive border-0 mb-4">
                                                                 <table
-                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center" style="font-weight: bold">
@@ -334,7 +340,7 @@
                                                             </div>
                                                             <div class="table-responsive border-0">
                                                                 <table
-                                                                        class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">
@@ -349,6 +355,10 @@
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
                                                                             الحكم
+                                                                        </th>
+                                                                        <th style="width: 180px;" scope="col"
+                                                                            class="border-0">
+                                                                            مفرج عنه حالياً؟
                                                                         </th>
                                                                     </tr>
                                                                     </thead>
@@ -367,6 +377,13 @@
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             {{$prisoner->Arrest->judgment ?? 'لا يوجد'}}
+                                                                        </td>
+                                                                        <td style="font-size: 18px!important;font-weight: bold;">
+                                                                            @if(isset($prisoner->Arrest->IsReleased) && $prisoner->Arrest->IsReleased == 1)
+                                                                                نعم
+                                                                            @else
+                                                                                لا
+                                                                            @endif
                                                                         </td>
                                                                         <!-- Table data -->
                                                                     </tr>
@@ -398,15 +415,136 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" dir="rtl" id="searchCityPrisoners" tabindex="-1" aria-hidden="false" wire:ignore.self>
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <!-- Modal header -->
+                <div class="modal-header border-0 pt-sm-5 pe-sm-5">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center mb-4">
+                        <img class="navbar-brand-item light-mode-item"
+                             style="width: 300px!important; height: 100%!important;"
+                             src="{{asset('assets/images/logo.webp')}}" alt="logo">
+                        <img class="navbar-brand-item dark-mode-item"
+                             style="width: 300px!important; height: 100%!important;"
+                             src="{{asset('assets/images/light-logo.webp')}}" alt="logo">
+                    </div>
+                    <div class="col mb-3">
+                        <h4 class="mb-3 text-center"
+                            style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
+                            بحث في المناطق</h4>
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto">
+                            <label for="city_id">بحث حسب المحاظة</label>
+                            <select class="form-select" id="city_id" wire:model.live="CitySearch.city_id">
+                                <option>اختر...</option>
+                                @foreach($Cities as $city)
+                                    <option value="{{$city->id}}">{{$city->city_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto">
+                            <label for="town_id">بحث حسب البلدة</label>
+                            <select class="form-select" id="town_id" @if(count($Towns) == 0) disabled
+                                    @endif wire:model.live="CitySearch.town_id">
+                                <option>اختر...</option>
+                                @foreach($Towns as $town)
+                                    <option value="{{$town->id}}">{{$town->town_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-5">
+                            @if($CityPrisoners)
+                                <div class="table-responsive border-0 mb-4">
+                                    <table class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                        <!-- Table head -->
+                                        <thead class="table-primary">
+                                        <tr class="text-center" style="font-weight: bold">
+                                            <th style="width: 180px;" scope="col" class="border-0">
+                                                اسم الاسير
+                                            </th>
+                                            <th style="width: 180px;" scope="col" class="border-0">
+                                                حالة البيانات
+                                            </th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody class="border-top-0">
+                                        @forelse($CityPrisoners as $prisoner)
+
+                                            @php
+                                                $check_one = (bool)$prisoner->Arrest->arrest_start_date;
+                                                $check_two = (bool)$prisoner->identification_number;
+                                                $check_three = !($prisoner->Arrest->arrest_type == "محكوم" && $prisoner->Arrest->judgment == null);
+                                                $check_four = (bool)$prisoner->first_name;
+                                                $check_six = (bool)$prisoner->second_name;
+                                                $check_seven = (bool)$prisoner->last_name;
+
+                                                if (!$check_one || !$check_two || !$check_three || !$check_four || !$check_six || !$check_seven) {
+                                                    $data_status = "غير مكتمل";
+                                                } else {
+                                                    $data_status = "مكتمل";
+                                                }
+                                            @endphp
+                                            <tr class="text-center">
+                                                <td style="font-size: 18px!important;font-weight: bold;">
+                                                    {{$prisoner->full_name ?? 'لا يوجد'}}
+                                                </td>
+                                                <td style="font-size: 18px!important;font-weight: bold;">
+                                                    <span
+                                                        class="@if($data_status === "غير مكتمل") text-danger @else text-success @endif">{{$data_status}}</span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr class="text-center">
+                                                <td colspan="2">عليك اختيار منطقة وبلدة</td>
+                                            </tr>
+                                        @endforelse
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex justify-content-center mt-3"> <!-- Add text-center class here -->
+                                        {{$CityPrisoners->links()}}
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @section('script')
     <script>
         window.addEventListener('show_prisoners_modal', event => {
             $('#searchPrisonersModal').modal('show');
         })
+
+        window.addEventListener('show_city_prisoners_modal', event => {
+            $('#searchCityPrisoners').modal('show');
+        })
+
         $(document).ready(function () {
-            var counterStarted = false;
-            $(window).scroll(function () {
+            var isMobile = window.innerWidth <= 768;
+
+            $('.counter').each(function () {
+                var target = $(this);
+                var targetPosition = target.offset().top;
+                var windowHeight = $(window).height();
+                var initialNumber = isMobile ? 0 : parseInt(target.attr('data-target'));
+                var scrollPosition = $(window).scrollTop();
+
+                if (scrollPosition > targetPosition - windowHeight && !target.hasClass('counted')) {
+                    target.addClass('counted');
+                    startCounting(target, initialNumber);
+                }
+            });
+
+            $(window).on('scroll', function () {
                 $('.counter').each(function () {
                     var target = $(this);
                     var targetPosition = target.offset().top;
@@ -414,28 +552,28 @@
                     var scrollPosition = $(window).scrollTop();
 
                     if (scrollPosition > targetPosition - windowHeight && !target.hasClass('counted')) {
-                        target.addClass('counted'); // تجنب إعادة تشغيل العداد مرة أخرى
-                        startCounting(target);
+                        target.addClass('counted');
+                        startCounting(target, 0);
                     }
                 });
             });
-
-            function startCounting(target) {
-                var targetNumber = parseInt(target.attr('data-target'));
-                var duration = 3000;
-                var start = 0;
-                var increment = targetNumber / (duration / 10);
-
-                var timer = setInterval(function () {
-                    start += increment;
-                    target.text(Math.floor(start));
-
-                    if (start >= targetNumber) {
-                        clearInterval(timer);
-                        target.text(targetNumber);
-                    }
-                }, 0);
-            }
         });
+
+        function startCounting(target, initialNumber) {
+            var targetNumber = parseInt(target.attr('data-target'));
+            var duration = 3000;
+            var start = initialNumber;
+            var increment = (targetNumber - initialNumber) / (duration / 10);
+
+            var timer = setInterval(function () {
+                start += increment;
+                target.text(Math.floor(start));
+
+                if ((increment > 0 && start >= targetNumber) || (increment < 0 && start <= targetNumber)) {
+                    clearInterval(timer);
+                    target.text(targetNumber);
+                }
+            }, 0);
+        }
     </script>
 @endsection
