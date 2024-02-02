@@ -24,8 +24,9 @@ class IndexPage extends Component
     ];
 
     public array $CitySearch = [
-        'city_id' =>'',
-        'town_id' =>'',
+        'city_id' => '',
+        'town_id' => '',
+        'prisoner_name' => '',
     ];
     public ?object $Prisoners = null;
 
@@ -49,21 +50,6 @@ class IndexPage extends Component
     public function SearchPrisoners(): void
     {
         $this->validate();
-        // Replace 'أ' with 'ا' in Arabic names
-        $this->search['first_name'] = $this->replaceHamza($this->search['first_name']);
-        $this->search['second_name'] = $this->replaceHamza($this->search['second_name']);
-        $this->search['last_name'] = $this->replaceHamza($this->search['last_name']);
-
-
-        // Replace 'ة' with 'ه' in Arabic names
-        $this->search['first_name'] = $this->replaceTaMarbuta($this->search['first_name']);
-        $this->search['second_name'] = $this->replaceTaMarbuta($this->search['second_name']);
-        $this->search['last_name'] = $this->replaceTaMarbuta($this->search['last_name']);
-
-        // Replace 'بدون الحركات' with 'الحركات' in Arabic names
-        $this->search['first_name'] = $this->removeDiacritics($this->search['first_name']);
-        $this->search['second_name'] = $this->removeDiacritics($this->search['second_name']);
-        $this->search['last_name'] = $this->removeDiacritics($this->search['last_name']);
 
         if (!empty(array_filter($this->search))) {
             $this->Prisoners = Prisoner::query()
@@ -88,25 +74,6 @@ class IndexPage extends Component
             }
         }
 
-    }
-
-    private function replaceHamza($text): array|string
-    {
-        return str_replace('أ', 'ا', $text);
-    }
-
-    private function replaceTaMarbuta($text): array|string
-    {
-        return str_replace('ة', 'ه', $text);
-    }
-
-    function removeDiacritics($text): array|string
-    {
-        $diacritics = [
-            'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ّ', 'ْ', 'ٓ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', '۟', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ࣧ', '࣪', 'ࣱ', 'ࣲ', 'ࣳ', 'ࣴ', 'ࣵ', 'ࣶ', 'ࣷ', 'ࣸ', 'ࣹ', 'ࣻ', 'ࣼ', 'ࣽ', 'ࣾ', 'ؐ', 'ؑ', 'ؒ', 'ؓ', 'ؔ', 'ؕ', 'ؖ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ'
-        ];
-
-        return str_replace($diacritics, '', $text);
     }
 
     public function showSearchCityPrisoners(): void
@@ -135,15 +102,33 @@ class IndexPage extends Component
         $SocialMedia = SocialMedia::all();
 
         $Cities = City::all()->sortBy('city_name');
-        $Towns = Town::query()->where('city_id',$this->CitySearch['city_id'])->orderBy('town_name')->get();
+        $Towns = Town::query()->where('city_id', $this->CitySearch['city_id'])->orderBy('town_name')->get();
 
         $CityPrisoners = Prisoner::query()
-            ->where('city_id',$this->CitySearch['city_id'])
-            ->where('town_id',$this->CitySearch['town_id'])
+            ->whereHas('Arrest',function ($q){
+                $q->where('is_released',false);
+            })
+            ->where('city_id', $this->CitySearch['city_id'])
+            ->where('town_id', $this->CitySearch['town_id'])
+            ->when(!empty($this->CitySearch['prisoner_name']), function ($query) {
+                $searchTerms = explode(' ', $this->CitySearch['prisoner_name']);
+                $query->where(function ($subQuery) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        $subQuery->where(function ($nameSubQuery) use ($term) {
+                            $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
+                                ->orWhere('second_name', 'LIKE', '%' . $term . '%')
+                                ->orWhere('third_name', 'LIKE', '%' . $term . '%')
+                                ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+                        });
+                    }
+                });
+            })
             ->orderBy('first_name')
             ->paginate(15);
 
-        return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia','CityPrisoners','Towns','Cities'))
+
+
+        return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia', 'CityPrisoners', 'Towns', 'Cities'))
             ->layout('components.layouts.main');
     }
 

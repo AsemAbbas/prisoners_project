@@ -73,7 +73,7 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
             'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
             'second_phone_number' => 'رقم التواصل الإضافي',
             'second_phone_owner' => 'اسم صاحب الرقم',
-            'IsReleased' => 'مفرج عنه حالياً؟',
+            'is_released' => 'مفرج عنه حالياً؟',
             'email' => 'البريد الإلكتروني',
         ];
         $export = [];

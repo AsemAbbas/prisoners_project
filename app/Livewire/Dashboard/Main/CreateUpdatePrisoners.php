@@ -119,7 +119,7 @@ class CreateUpdatePrisoners extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'],
                 "second_phone_owner" => $data['arrest']['second_phone_owner'],
                 "second_phone_number" => $data['arrest']['second_phone_number'],
-                "IsReleased" => (boolean)$data['arrest']['IsReleased'],
+                "is_released" => (boolean)$data['arrest']['is_released'],
                 "email" => $data['arrest']['email'],
                 "prisoner_type" => array_fill_keys(array_column($data['prisoner_type'], 'id'), true),
 
@@ -221,14 +221,15 @@ class CreateUpdatePrisoners extends Component
         $rule = $this->showEdit
             ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
             : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
-        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
-            $judgment_in_lifetime_rule = ["nullable", "integer"];
-            $judgment_in_years_rule = ["nullable", "integer"];
-            $judgment_in_months_rule = ["nullable", "integer"];
-        } else {
+        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم" || $this->state['arrest_type'] == "موقوف")) {
             $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
             $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
             $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
+
+        } else {
+            $judgment_in_lifetime_rule = ["nullable", "integer"];
+            $judgment_in_years_rule = ["nullable", "integer"];
+            $judgment_in_months_rule = ["nullable", "integer"];
         }
 
         $validation = Validator::make($this->state, [
@@ -271,7 +272,7 @@ class CreateUpdatePrisoners extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable",
+            'is_released' => "nullable",
             'email' => "nullable",
         ]);
 
@@ -400,18 +401,6 @@ class CreateUpdatePrisoners extends Component
     public function ConfirmMassage(): void
     {
         try {
-            if (isset($this->state)) {
-                $nameFields = ['first_name', 'second_name', 'third_name', 'last_name'];
-
-                foreach ($nameFields as $field) {
-                    if (isset($this->state[$field]) && !empty($this->state[$field])) {
-                        $this->state[$field] = $this->replaceHamza($this->state[$field]);
-                        $this->state[$field] = $this->replaceTaMarbuta($this->state[$field]);
-                        $this->state[$field] = $this->removeDiacritics($this->state[$field]);
-                    }
-                }
-            }
-
             if ($this->showEdit) {
                 $this->updatePrisoner(); // Update prisoner data
             } else {
@@ -423,25 +412,6 @@ class CreateUpdatePrisoners extends Component
 //            $massage = $e->getMessage();
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
-    }
-
-    private function replaceHamza($text): array|string
-    {
-        return str_replace('أ', 'ا', $text);
-    }
-
-    private function replaceTaMarbuta($text): array|string
-    {
-        return str_replace('ة', 'ه', $text);
-    }
-
-    function removeDiacritics($text): array|string
-    {
-        $diacritics = [
-            'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ّ', 'ْ', 'ٓ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', '۟', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ࣧ', '࣪', 'ࣱ', 'ࣲ', 'ࣳ', 'ࣴ', 'ࣵ', 'ࣶ', 'ࣷ', 'ࣸ', 'ࣹ', 'ࣻ', 'ࣼ', 'ࣽ', 'ࣾ', 'ؐ', 'ؑ', 'ؒ', 'ؓ', 'ؔ', 'ؕ', 'ؖ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ'
-        ];
-
-        return str_replace($diacritics, '', $text);
     }
 
     private function updatePrisoner(): void
@@ -521,7 +491,7 @@ class CreateUpdatePrisoners extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'IsReleased' => (boolean)$this->state['IsReleased'] ?? null,
+                'is_released' => (boolean)$this->state['is_released'] ?? null,
 
                 'email' => $this->state['email'] ?? null,
             ]);
@@ -678,7 +648,7 @@ class CreateUpdatePrisoners extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'IsReleased' => (boolean)$this->state['IsReleased'] ?? null,
+                'is_released' => (boolean)$this->state['is_released'] ?? null,
 
                 'email' => $this->state['email'] ?? null,
             ]);

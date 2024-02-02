@@ -140,7 +140,6 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div id="News"></div>
                             </div>
                         @endforeach
                     </div>
@@ -151,7 +150,7 @@
     </section>
 
     @if(count($News->where('on_slider')->take(2)) > 0)
-        <section class="pt-0">
+        <section class="pt-0" id="News">
             <div class="container">
                 <div class="row">
                     <h4 class="mb-3 text-center"
@@ -200,11 +199,13 @@
                                         </div>
                                     @endif
                                     <!-- Image -->
-                                    <div class="col-md-6 col-lg-4">
-                                        <img class="rounded-3" width="100%"
-                                             src="{{asset('storage/news_photo/'.$row->news_photo)}}"
-                                             alt="Card image">
-                                    </div>
+                                    @if(isset($row->news_photo))
+                                        <div class="col-md-6 col-lg-4">
+                                            <img class="rounded-3" width="100%"
+                                                 src="{{asset('storage/news_photo/'.$row->news_photo)}}"
+                                                 alt="Card image">
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -325,7 +326,11 @@
                                                                         </td>
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
-                                                                            {{$prisoner->date_of_birth ?? 'لا يوجد'}}
+                                                                            @if(isset($prisoner->date_of_birth))
+                                                                                {{\Carbon\Carbon::parse($prisoner->date_of_birth)->format('m-d')}}
+                                                                            @else
+                                                                                لا يوجد
+                                                                            @endif
                                                                         </td>
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
@@ -379,7 +384,7 @@
                                                                             {{$prisoner->Arrest->judgment ?? 'لا يوجد'}}
                                                                         </td>
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
-                                                                            @if(isset($prisoner->Arrest->IsReleased) && $prisoner->Arrest->IsReleased == 1)
+                                                                            @if(isset($prisoner->Arrest->is_released) && $prisoner->Arrest->is_released == 1)
                                                                                 نعم
                                                                             @else
                                                                                 لا
@@ -436,7 +441,7 @@
                         <h4 class="mb-3 text-center"
                             style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
                             بحث في المناطق</h4>
-                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto">
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-3">
                             <label for="city_id">بحث حسب المحاظة</label>
                             <select class="form-select" id="city_id" wire:model.live="CitySearch.city_id">
                                 <option>اختر...</option>
@@ -445,7 +450,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto">
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-3">
                             <label for="town_id">بحث حسب البلدة</label>
                             <select class="form-select" id="town_id" @if(count($Towns) == 0) disabled
                                     @endif wire:model.live="CitySearch.town_id">
@@ -454,6 +459,10 @@
                                     <option value="{{$town->id}}">{{$town->town_name}}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-3">
+                            <label for="prisoner_name">بحث عن اسم أسير</label>
+                           <input id="prisoner_name" type="search" class="form-control" @if(empty($CitySearch['town_id'])) disabled @endif wire:model.live="CitySearch.prisoner_name">
                         </div>
                     </div>
                     <div class="row align-items-center">

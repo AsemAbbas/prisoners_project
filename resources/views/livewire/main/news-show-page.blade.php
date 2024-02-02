@@ -17,16 +17,19 @@
                 <h1 style="font-family: 'Changa', sans-serif !important">{{$News->news_title}}</h1>
 
                 <!-- Podcast image -->
-                <div class="mb-3 text-center">
-                    <img class="rounded" width="100%" height="100%"
-                         src="{{asset('storage/news_photo/'.$News->news_photo)}}" alt="news_photo">
-                </div>
+                @if(isset($News->news_photo))
+                    <div class="mb-3 text-center">
+                        <img class="rounded" width="100%" height="100%"
+                             src="{{asset('storage/news_photo/'.$News->news_photo)}}" alt="news_photo">
+                    </div>
+                @endif
+
                 <!-- Podcast title -->
                 <!-- Podcast avatar -->
                 <div class="row align-items-center mb-2">
                     <div class="col-lg-6">
                         <div class="d-flex align-items-center" style="font-size: 16px">
-                            <span> <i class="bi bi-calendar-month-fill me-2"></i>{{\Illuminate\Support\Carbon::parse($News->created_at)->format('Y/m/d')}}</span>
+                            <span> <i class="bi bi-calendar4-week me-2"></i>{{\Illuminate\Support\Carbon::parse($News->created_at)->format('Y/m/d')}}</span>
                         </div>
                     </div>
                     <div class="col-lg-6">

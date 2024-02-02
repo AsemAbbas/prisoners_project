@@ -969,7 +969,7 @@
                             <h6 class="text-dark">مفرج عنه حالياً؟</h6>
                             <div class="form-check">
                                 <input class="form-check-input"
-                                       wire:model.live="state.IsReleased"
+                                       wire:model.live="state.is_released"
                                        type="radio"
                                        id="is-released-yes"
                                        name="is-released"
@@ -979,7 +979,7 @@
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input"
-                                       wire:model.live="state.IsReleased"
+                                       wire:model.live="state.is_released"
                                        type="radio"
                                        id="is-released-no"
                                        name="is-released"

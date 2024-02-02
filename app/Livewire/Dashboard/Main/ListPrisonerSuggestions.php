@@ -376,9 +376,9 @@ class ListPrisonerSuggestions extends Component
                 ],
             'مفرج عنه حالياً؟:' =>
                 [
-                    'name' => 'IsReleased',
-                    'suggestion' => $this->Suggestions_->ArrestSuggestion->IsReleased ? 'نعم' : 'لا',
-                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ? 'نعم' : 'لا',
+                    'name' => 'is_released',
+                    'suggestion' => $this->Suggestions_->ArrestSuggestion->is_released ? 'نعم' : 'لا',
+                    'prisoner' => $this->Prisoner_->Arrest->is_released ? 'نعم' : 'لا',
                 ],
             'البريد الإلكتروني:' =>
                 [
@@ -625,7 +625,7 @@ class ListPrisonerSuggestions extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable|boolean",
+            'is_released' => "nullable|boolean",
             'email' => "nullable|email",
         ])->validate();
 
@@ -679,7 +679,7 @@ class ListPrisonerSuggestions extends Component
             "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? $PrisonerArrestArray['first_phone_number'] ?? null,
             "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? $PrisonerArrestArray['second_phone_owner'] ?? null,
             "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? $PrisonerArrestArray['second_phone_number'] ?? null,
-            "IsReleased" => (boolean)$finalArrestData["IsReleased"] ?? (boolean)$Arrest["IsReleased"] ?? (boolean)$PrisonerArrestArray['IsReleased'] ?? null,
+            "is_released" => (boolean)$finalArrestData["is_released"] ?? (boolean)$Arrest["is_released"] ?? (boolean)$PrisonerArrestArray['is_released'] ?? null,
             "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? $PrisonerArrestArray['email'] ?? null,
         ]);
 

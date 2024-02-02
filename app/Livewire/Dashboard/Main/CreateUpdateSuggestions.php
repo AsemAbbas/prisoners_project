@@ -20,6 +20,7 @@ use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
 use App\Rules\PalestineIdValidationRule;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
@@ -128,7 +129,7 @@ class CreateUpdateSuggestions extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'] ?? null,
                 "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
                 "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
-                "IsReleased" => (boolean)$data['arrest']['IsReleased'] ?? null,
+                "is_released" => (boolean)$data['arrest']['is_released'] ?? null,
                 "email" => $data['arrest']['email'] ?? null,
 
                 "father_arrested_id" => $father_arrested_id,
@@ -188,14 +189,20 @@ class CreateUpdateSuggestions extends Component
 
     public function oldArrestManipulateData(): void
     {
-        foreach ($this->old_arrests as &$old){
-            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === ""){
+        foreach ($this->old_arrests as &$old) {
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === "") {
                 $old['old_arrest_start_date'] = null;
             }
-            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === ""){
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === "") {
                 $old['old_arrest_end_date'] = null;
             }
-            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر..."){
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] !== "") {
+                $old['old_arrest_start_date'] = Carbon::parse($old['old_arrest_start_date'])->format('Y-m-d');
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] !== "") {
+                $old['old_arrest_end_date'] = Carbon::parse($old['old_arrest_end_date'])->format('Y-m-d');
+            }
+            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر...") {
                 $old['arrested_side'] = null;
             }
         }
@@ -211,14 +218,15 @@ class CreateUpdateSuggestions extends Component
         $rule = $this->showEdit
             ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
             : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
-        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
-            $judgment_in_lifetime_rule = ["nullable", "integer"];
-            $judgment_in_years_rule = ["nullable", "integer"];
-            $judgment_in_months_rule = ["nullable", "integer"];
-        } else {
+        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم" || $this->state['arrest_type'] == "موقوف")) {
             $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
             $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
             $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
+
+        } else {
+            $judgment_in_lifetime_rule = ["nullable", "integer"];
+            $judgment_in_years_rule = ["nullable", "integer"];
+            $judgment_in_months_rule = ["nullable", "integer"];
         }
 
 
@@ -267,7 +275,7 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable",
+            'is_released' => "nullable",
             'email' => "nullable",
         ]);
         $oldArrestsValidation = Validator::make($this->old_arrests, [
@@ -305,12 +313,20 @@ class CreateUpdateSuggestions extends Component
     public function manipulateData(): array
     {
 
-        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] == "") {
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] === "") {
             $this->state['date_of_birth'] = null;
         }
 
-        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] == "") {
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] !== "") {
+            $this->state['date_of_birth'] = Carbon::parse($this->state['date_of_birth'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] === "") {
             $this->state['arrest_start_date'] = null;
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] !== "") {
+            $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
         }
 
         if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {
@@ -383,32 +399,12 @@ class CreateUpdateSuggestions extends Component
     public function ConfirmMassage(): void
     {
         try {
-            if (isset($this->state)) {
-                $nameFields = ['first_name', 'second_name', 'third_name', 'last_name'];
-
-                foreach ($nameFields as $field) {
-                    if (isset($this->state[$field]) && !empty($this->state[$field])) {
-                        $this->state[$field] = $this->replaceHamza($this->state[$field]);
-                        $this->state[$field] = $this->replaceTaMarbuta($this->state[$field]);
-                    }
-                }
-            }
             $this->createPrisoner();
 
             $this->Done();
         } catch (\Exception $e) {
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
-    }
-
-    private function replaceHamza($text): array|string
-    {
-        return str_replace('أ', 'ا', $text);
-    }
-
-    private function replaceTaMarbuta($text): array|string
-    {
-        return str_replace('ة', 'ه', $text);
     }
 
     private function createPrisoner(): void
@@ -482,7 +478,7 @@ class CreateUpdateSuggestions extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'IsReleased' => (boolean)$this->state['IsReleased'] ?? null,
+                'is_released' => (boolean)$this->state['is_released'] ?? null,
 
                 'email' => $this->state['email'] ?? null,
             ]);

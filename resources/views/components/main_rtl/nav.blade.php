@@ -78,7 +78,7 @@
             </div>
             <div class="nav-item dropdown ms-3">
                 <!-- Switch button -->
-                <button class="modeswitch" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                <button class="modeswitch" id="bd-theme" name="switch_theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
                         data-bs-display="static">
                     <svg class="theme-icon-active">
                         <use href="#"></use>
@@ -130,4 +130,21 @@
     </nav>
     <!-- Logo Nav END -->
 </header>
+<script>
+    // Wait for the DOM to be ready
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all the navbar links
+        var navLinks = document.querySelectorAll(".navbar-nav a.nav-link");
 
+        // Add click event listener to each link
+        navLinks.forEach(function (link) {
+            link.addEventListener("click", function () {
+                // Close the navbar by toggling the collapse class
+                var navbarCollapse = document.getElementById("navbarCollapse");
+                if (navbarCollapse.classList.contains("show")) {
+                    navbarCollapse.classList.remove("show");
+                }
+            });
+        });
+    });
+</script>

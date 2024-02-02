@@ -76,7 +76,7 @@
 //            'number_of_children' => "nullable|integer",
 //            'first_phone_number' => "nullable",
 //            'second_phone_number' => "nullable",
-//            "isReleased" => 'nullable',
+//            "is_released" => 'nullable',
 //            "notes" => 'nullable',
 //        ])->validate();
 //
@@ -138,7 +138,7 @@
 //            'number_of_children' => "nullable",
 //            'first_phone_number' => "nullable",
 //            'second_phone_number' => "nullable",
-//            "isReleased" => 'nullable',
+//            "is_released" => 'nullable',
 //            "notes" => 'nullable',
 //        ])->validate();
 //

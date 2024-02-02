@@ -77,7 +77,7 @@ class ListPrisoners extends Component
         'first_phone_owner' => 'اسم صاحب الرقم (واتس/تلجرام)',
         'second_phone_number' => 'رقم التواصل الإضافي',
         'second_phone_owner' => 'اسم صاحب الرقم',
-        'IsReleased' => 'مفرج عنه حالياً؟',
+        'is_released' => 'مفرج عنه حالياً؟',
         'email' => 'البريد الإلكتروني',
     ];
     public array $AdvanceSearch = [];
@@ -133,7 +133,7 @@ class ListPrisoners extends Component
                 'first_phone_owner' => true,
                 'second_phone_number' => true,
                 'second_phone_owner' => true,
-                'IsReleased' => true,
+                'is_released' => true,
                 'email' => true,
             ];
         } else $this->ExportData['selectArrest'] = [];
@@ -172,7 +172,7 @@ class ListPrisoners extends Component
 
         return Prisoner::query()
             ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber'])
-            ->orderByDesc('created_at')
+            ->orderBy('id','ASC')
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
                     ->orWhereNull('city_id');
@@ -306,15 +306,6 @@ class ListPrisoners extends Component
     public function updatedSearch(): void
     {
         $this->resetPage();
-    }
-
-    function removeDiacritics($text): array|string
-    {
-        $diacritics = [
-            'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ّ', 'ْ', 'ٓ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', '۟', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ࣧ', '࣪', 'ࣱ', 'ࣲ', 'ࣳ', 'ࣴ', 'ࣵ', 'ࣶ', 'ࣷ', 'ࣸ', 'ࣹ', 'ࣻ', 'ࣼ', 'ࣽ', 'ࣾ', 'ؐ', 'ؑ', 'ؒ', 'ؓ', 'ؔ', 'ؕ', 'ؖ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ'
-        ];
-
-        return str_replace($diacritics, '', $text);
     }
 
     public function updatedAdvanceSearch(): void
@@ -550,15 +541,4 @@ class ListPrisoners extends Component
         $this->dispatch('hideImportExport');
         return $Export;
     }
-
-    private function replaceHamza($text): array|string
-    {
-        return str_replace('أ', 'ا', $text);
-    }
-
-    private function replaceTaMarbuta($text): array|string
-    {
-        return str_replace('ة', 'ه', $text);
-    }
-
 }

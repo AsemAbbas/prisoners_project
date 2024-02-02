@@ -320,9 +320,9 @@ class ListPrisonerConfirms extends Component
                 ],
             'مفرج عنه حالياً؟:' =>
                 [
-                    'name' => 'IsReleased',
-                    'confirm' => $this->Confirms_->ArrestConfirm->IsReleased ?? 'لا يوجد',
-                    'prisoner' => $this->Prisoner_->Arrest->IsReleased ?? 'لا يوجد',
+                    'name' => 'is_released',
+                    'confirm' => $this->Confirms_->ArrestConfirm->is_released ?? 'لا يوجد',
+                    'prisoner' => $this->Prisoner_->Arrest->is_released ?? 'لا يوجد',
                 ],
             'البريد الإلكتروني:' =>
                 [
@@ -522,7 +522,7 @@ class ListPrisonerConfirms extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'IsReleased' => "nullable|boolean",
+            'is_released' => "nullable|boolean",
             'email' => "nullable|email",
         ])->validate();
         $finalArrestData = $validationArrest;
@@ -571,7 +571,7 @@ class ListPrisonerConfirms extends Component
                     "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                     "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                     "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                    "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                    "is_released" => (boolean) $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                     "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
                 ]);
             else Arrest::query()->create([
@@ -600,7 +600,7 @@ class ListPrisonerConfirms extends Component
                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                "is_released" => (boolean) $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
             ]);
         } else {
@@ -644,7 +644,7 @@ class ListPrisonerConfirms extends Component
                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                "IsReleased" => (boolean) $finalArrestData["IsReleased"] ?? $Arrest["IsReleased"] ?? null,
+                "is_released" => (boolean) $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
             ]);
         }

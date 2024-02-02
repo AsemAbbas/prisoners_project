@@ -3,11 +3,9 @@
 namespace App\Imports;
 
 use App\Models\Arrest;
-use App\Models\ArrestsHealths;
 use App\Models\Belong;
 use App\Models\City;
 use App\Models\FamilyIDNumber;
-use App\Models\Health;
 use App\Models\Prisoner;
 use App\Models\PrisonersPrisonerTypes;
 use App\Models\PrisonerType;
@@ -32,16 +30,6 @@ class PrisonerImport implements
 
     public function model(array $row): void
     {
-        $nameFields = ['first_name', 'second_name', 'third_name', 'last_name', 'mother_name'];
-
-        foreach ($nameFields as $field) {
-            if (!empty($row[$field])) {
-                $row[$field] = $this->replaceHamza($row[$field]);
-                $row[$field] = $this->replaceTaMarbuta($row[$field]);
-                $row[$field] = $this->removeDiacritics($row[$field]);
-            }
-        }
-
         $father_arrested = isset($row['father_arrested']) ? !empty($row['father_arrested']) : null;
         $mother_arrested = isset($row['mother_arrested']) ? !empty($row['mother_arrested']) : null;
         $husband_arrested = isset($row['husband_arrested']) ? !empty($row['husband_arrested']) : null;
@@ -70,7 +58,6 @@ class PrisonerImport implements
             'city_id' => $City ?? null,
             'town_id' => $Town ?? null,
             'notes' => $row['notes'] ?? null,
-
         ]);
 
         $Arrest = Arrest::query()->create([
@@ -100,7 +87,7 @@ class PrisonerImport implements
             'first_phone_number' => $row['first_phone_number'] ?? null,
             'second_phone_owner' => $row['second_phone_owner'] ?? null,
             'second_phone_number' => $row['second_phone_number'] ?? null,
-            'IsReleased' => isset($row['IsReleased']) && $row['IsReleased'] === 'نعم' ? true : null,
+            'is_released' => isset($row['is_released']) && $row['is_released'] == 1,
             'email' => $row['email'] ?? null,
         ]);
 
@@ -139,25 +126,6 @@ class PrisonerImport implements
             }
         }
 
-    }
-
-    private function replaceHamza($text): array|string
-    {
-        return str_replace('أ', 'ا', $text);
-    }
-
-    private function replaceTaMarbuta($text): array|string
-    {
-        return str_replace('ة', 'ه', $text);
-    }
-
-    function removeDiacritics($text): array|string
-    {
-        $diacritics = [
-            'َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ّ', 'ْ', 'ٓ', 'ٰ', 'ٔ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ', '۟', 'ۦ', 'ۧ', 'ۨ', '۪', '۫', '۬', 'ۭ', 'ࣧ', '࣪', 'ࣱ', 'ࣲ', 'ࣳ', 'ࣴ', 'ࣵ', 'ࣶ', 'ࣷ', 'ࣸ', 'ࣹ', 'ࣻ', 'ࣼ', 'ࣽ', 'ࣾ', 'ؐ', 'ؑ', 'ؒ', 'ؓ', 'ؔ', 'ؕ', 'ؖ', 'ٖ', 'ٗ', 'ٚ', 'ٛ', 'ٟ'
-        ];
-
-        return str_replace($diacritics, '', $text);
     }
 
     public function startRow(): int
@@ -206,7 +174,7 @@ class PrisonerImport implements
             'first_phone_owner' => 'nullable',
             'first_phone_number' => 'nullable',
             'second_phone_owner' => 'nullable',
-            'IsReleased' => 'nullable',
+            'is_released' => 'nullable',
             'email' => 'nullable',
         ];
     }

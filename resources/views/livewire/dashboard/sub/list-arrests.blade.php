@@ -135,7 +135,7 @@
 {{--                            <td>{{$row->number_of_children ?? 'لا يوجد'}}</td>--}}
 {{--                            <td>{{$row->first_phone_number ?? 'لا يوجد'}}</td>--}}
 {{--                            <td>{{$row->second_phone_number ?? 'لا يوجد'}}</td>--}}
-{{--                            <td>{{$row->isReleased ? 'نعم' : 'لا'}}</td>--}}
+{{--                            <td>{{$row->is_released ? 'نعم' : 'لا'}}</td>--}}
 {{--                            <td>{{$row->notes ?? 'لا يوجد'}}</td>--}}
 {{--                            @auth--}}
 {{--                                <td>--}}
@@ -332,18 +332,18 @@
 {{--                                @enderror--}}
 {{--                            </div>--}}
 {{--                            <div class="form-group col-md-12 mb-4">--}}
-{{--                                <label for="isReleased" class="d-block">تم الإفراج</label>--}}
+{{--                                <label for="is_released" class="d-block">تم الإفراج</label>--}}
 {{--                                <div class="bg-white p-2">--}}
 {{--                                    @foreach(\App\Enums\DefaultEnum::cases() as $row)--}}
 {{--                                        <div class="form-check form-check-primary form-check-inline">--}}
-{{--                                            <input class="form-check-input" type="radio" name="isReleased"--}}
-{{--                                                   wire:model="state.isReleased"--}}
-{{--                                                   value="{{$row->value}}" id="isReleased">--}}
-{{--                                            <label class="form-check-label" for="isReleased">--}}
+{{--                                            <input class="form-check-input" type="radio" name="is_released"--}}
+{{--                                                   wire:model="state.is_released"--}}
+{{--                                                   value="{{$row->value}}" id="is_released">--}}
+{{--                                            <label class="form-check-label" for="is_released">--}}
 {{--                                                {{$row->value}}--}}
 {{--                                            </label>--}}
 {{--                                        </div>--}}
-{{--                                        @error('isReleased')--}}
+{{--                                        @error('is_released')--}}
 {{--                                        <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>--}}
 {{--                                        @enderror--}}
 {{--                                    @endforeach--}}
