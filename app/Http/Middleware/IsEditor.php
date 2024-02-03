@@ -17,7 +17,7 @@ class IsEditor
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user()->user_status === "مسؤول" || Auth::user()->user_status === "مدخل بيانات")
+        if (Auth::user()->user_status === "مسؤول" || Auth::user()->user_status === "مراجع منطقة")
             return $next($request);
         else return redirect(route('page404.index'));
     }

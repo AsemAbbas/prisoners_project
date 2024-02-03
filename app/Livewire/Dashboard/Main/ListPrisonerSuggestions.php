@@ -377,8 +377,8 @@ class ListPrisonerSuggestions extends Component
             'مفرج عنه حالياً؟:' =>
                 [
                     'name' => 'is_released',
-                    'suggestion' => $this->Suggestions_->ArrestSuggestion->is_released ? 'نعم' : 'لا',
-                    'prisoner' => $this->Prisoner_->Arrest->is_released ? 'نعم' : 'لا',
+                    'suggestion' => isset($this->Suggestions_->ArrestSuggestion->is_released) && $this->Suggestions_->ArrestSuggestion->is_released ? 'نعم' : 'لا',
+                    'prisoner' => isset($this->Prisoner_->Arrest->is_released) && $this->Prisoner_->Arrest->is_released ? 'نعم' : 'لا',
                 ],
             'البريد الإلكتروني:' =>
                 [
@@ -778,7 +778,7 @@ class ListPrisonerSuggestions extends Component
                     $q->where('suggestion_status', 'يحتاج مراجعة');
                 else   $q->whereIn('suggestion_status', ['تم القبول', 'يحتاج مراجعة']);
             })
-            ->orderBy('suggestion_status')
+            ->orderBy('id')
             ->paginate(10);
 
         $value = !$this->Exist ? 12 : 11;

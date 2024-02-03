@@ -90,10 +90,8 @@
                         <th>#</th>
                         <th>اسم المستخدم</th>
                         <th>البريد الإلكتروني</th>
-                        <th>الحالة</th>
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                            <th>الخيارات</th>
-                        @endif
+                        <th>حالة المستخدم</th>
+                        <th>الخيارات</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -102,35 +100,16 @@
                             <td>{{$Users->firstItem() + $key}}</td>
                             <td>{{$row->name ?? 'لا يوجد'}}</td>
                             <td>{{$row->email ?? 'لا يوجد'}}</td>
+                            <td>{{$row->user_status ?? 'لا يوجد'}}</td>
                             <td>
-                                <label for="user_status" style="width: 200px;">
-                                    <select class="form-select" id="user_status"
-                                            name="user_status"
-                                            wire:change="ShowUserStatus($event.target.value,{{$row}})">
-                                        <option value="مسؤول" @if($row->user_status === "مسؤول") selected @endif>مسؤول
-                                        </option>
-                                        <option value="مدخل بيانات"
-                                                @if($row->user_status === "مدخل بيانات") selected @endif>مدخل بيانات
-                                        </option>
-                                        <option value="مراجع بيانات"
-                                                @if($row->user_status === "مراجع بيانات") selected @endif>مراجع بيانات
-                                        </option>
-                                    </select>
-                                </label>
-                            </td>
-                            <td>
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                    <a wire:click="edit({{$row}})" class="btn btn-warning"
-                                       title="Edit">
-                                        تعديل
-                                    </a>
-                                @endif
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                    <a wire:click="delete({{$row}})" class="btn btn-danger"
-                                       title="Delete">
-                                        حذف
-                                    </a>
-                                @endif
+                                <a wire:click="edit({{$row}})" class="btn btn-warning"
+                                   title="Edit">
+                                    تعديل
+                                </a>
+                                <a wire:click="delete({{$row}})" class="btn btn-danger"
+                                   title="Delete">
+                                    حذف
+                                </a>
                             </td>
                         </tr>
                     @endforeach
@@ -178,6 +157,9 @@
                                         <option value="{{$status->value}}">{{$status->value}}</option>
                                     @endforeach
                                 </select>
+                                @error('user_status')
+                                <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="form-group col-md-12 mb-3">
@@ -201,10 +183,9 @@
                                                 </div>
                                             </section>
                                         </div>
-                                        @php $city = $state['cities'] ?? [] @endphp
-                                        <div id="defaultCity" class="collapse @if(isset($city)) show @endif"
+                                        <div id="defaultCity"
+                                             class="collapse @if(isset($state) && isset($state['cities'])) show @endif"
                                              aria-labelledby="headingCity"
-
                                              wire:ignore.self
                                              data-bs-parent="#toggleCity">
                                             <div class="card-body">
@@ -239,7 +220,9 @@
                                     </div>
                                 </div>
                             </div>
-
+                            @error('cities')
+                            <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>
+                            @enderror
                             <div class="form-group col-md-12 mb-3">
                                 <label for="email">البريد الإلكتروني</label>
                                 <input wire:model="state.email" type="email"
@@ -271,37 +254,6 @@
                             <polyline points="17 21 17 13 7 13 7 21"></polyline>
                             <polyline points="7 3 7 8 15 8"></polyline>
                         </svg>
-                    </button>
-                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- UserStatus Modal -->
-    <div class="modal modal fade" id="UserStatus" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
-         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content bg-white">
-                <div class="modal-header bg-warning" style="margin: 5px;">
-                    <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">تغير حالة المستخدم</h1>
-                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h5 class="text-warning m-3">هل أنت متأكد انك تريد تغير حالة المستخدم؟</h5>
-                    <span class="text-warning m-3">
-                        * تنبية:
-                        <span class="text-dark">
-                            سيتم تغير حاله {{$UserStatus->name ?? null}}
-                            إلى {{$user_status ?? null}}
-                        </span>
-                    </span>
-                </div>
-                <div class="modal-footer d-flex justify-content-start align-items-start">
-                    <button type="submit" wire:click="changeUserStatus" class="btn btn-warning">
-                        تأكيد
                     </button>
                     <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
                 </div>
@@ -354,26 +306,6 @@
     <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
     @vite(['resources/rtl/assets/js/custom.js'])
     <script>
-        window.addEventListener('UserStatus', event => {
-            $('#UserStatus').modal('show');
-        })
-        window.addEventListener('hideUserStatus', event => {
-            $('#UserStatus').modal('hide');
-            toastr.success(event.detail.message, 'تهانينا!');
-        })
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.addEventListener('hideUserStatus', function () {
-                Swal.fire(
-                    {
-                        title: 'نجاح',
-                        text: 'تم تعديل حالة المستخدم',
-                        icon: 'success',
-                        confirmButtonText: 'تم'
-                    })
-
-            });
-        });
-
         window.addEventListener('show_delete_modal', event => {
             $('#delete').modal('show');
         })

@@ -89,7 +89,7 @@
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
                     @auth
-                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <a class="btn btn-primary mb-2" href="{{route('dashboard.prisoners.create')}}">
                                 إضافة أسير
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -104,19 +104,6 @@
                             </a>
                         @endif
                     @endauth
-                    @guest
-                        <a class="btn btn-primary mb-2" href="{{route('dashboard.suggestions.create')}}">
-                            إقتراح إضافة
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                 class="feather feather-plus-circle">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="16"></line>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                        </a>
-                    @endguest
                 </div>
                 <div>
                     <input wire:model.live="Search" type="search" id="Search"
@@ -132,7 +119,7 @@
                         </svg>
                     </label>
                     @auth
-                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
                             <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
                                 البحث المتقدم
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -144,6 +131,8 @@
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </a>
+                        @endif
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">
                                 الإستيراد والتصدير
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -167,19 +156,18 @@
                     <thead>
                     <tr style="font-size: 16px">
                         <th>#</th>
-                        <th style="min-width: 180px;font-weight: bold">الرقم الأساسي</th>
-                        <th style="min-width: 180px;font-weight: bold">اسم الأسير</th>
-                        <th style="min-width: 180px;font-weight: bold">رقم الهوية</th>
-                        <th style="min-width: 180px;font-weight: bold">تاريخ الميلاد</th>
-                        <th style="min-width: 180px;font-weight: bold">الجنس</th>
-                        <th style="min-width: 180px;font-weight: bold">المحافظة</th>
-                        <th style="min-width: 180px;font-weight: bold">البلدة</th>
-                        {{--                        @auth--}}
-                        {{--                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))--}}
-                        {{--                                <th style="min-width: 250px;font-weight: bold">أقارب معتقلون</th>--}}
-                        {{--                            @endif--}}
-                        {{--                        @endauth--}}
-                        <th style="min-width: 180px;font-weight: bold">الخيارات</th>
+                        <th style="min-width: 150px;font-weight: bold">الرقم الأساسي</th>
+                        <th style="min-width: 150px;font-weight: bold">اسم الأسير</th>
+                        <th style="min-width: 150px;font-weight: bold">رقم الهوية</th>
+                        <th style="min-width: 150px;font-weight: bold">تاريخ الميلاد</th>
+                        <th style="min-width: 150px;font-weight: bold">الجنس</th>
+                        <th style="min-width: 150px;font-weight: bold">المحافظة</th>
+                        <th style="min-width: 150px;font-weight: bold">البلدة</th>
+                        @auth
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                <th style="min-width: 180px;font-weight: bold">الخيارات</th>
+                            @endif
+                        @endauth
                     </tr>
                     </thead>
                     <tbody>
@@ -198,60 +186,16 @@
                             <td>{{$row->City->city_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->Town->town_name ?? 'لا يوجد'}}</td>
                             @auth
-                                {{--                                <td>--}}
-                                {{--                                    <a href="{{route('dashboard.arrests',$row)}}" class="btn btn-dark-soft"--}}
-                                {{--                                       data-toggle="tooltip" data-placement="top" title="show">--}}
-                                {{--                                        @if(count($row->Arrest) > 0)--}}
-                                {{--                                            الاعتقال ({{count($row->Arrest)}})--}}
-                                {{--                                        @else--}}
-                                {{--                                            أضف اعتقال--}}
-                                {{--                                        @endif--}}
-                                {{--                                    </a>--}}
-                                {{--                                </td>--}}
-                                @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
-                                    {{--                                    <td>--}}
-                                    {{--                                        <a href="{{route('dashboard.relatives_prisoners',$row)}}"--}}
-                                    {{--                                           class="btn btn-dark-soft"--}}
-                                    {{--                                           data-toggle="tooltip" data-placement="top" title="show">--}}
-                                    {{--                                            @if(count($row->RelativesPrisoner) > 0)--}}
-                                    {{--                                                أقارب معتقلون ({{count($row->RelativesPrisoner)}})--}}
-                                    {{--                                            @else--}}
-                                    {{--                                                أضف قريب--}}
-                                    {{--                                            @endif--}}
-                                    {{--                                        </a>--}}
-                                    {{--                                    </td>--}}
-                                @else
-                                    <td>
-                                        <a wire:click="show({{$row}})" class="btn btn-info">
-                                            عرض المزيد
-                                        </a>
-                                    </td>
-                                @endif
-                            @endauth
-                            @guest
-                                <td>
-                                    <a wire:click="show({{$row}})" class="btn btn-info">
-                                        عرض المزيد
-                                    </a>
-                                    <a href="{{route('dashboard.suggestions.update',$row)}}" class="btn btn-warning"
-                                       data-toggle="tooltip" data-placement="top" title="update">
-                                        إقتراح تعديل
-                                    </a>
-                                </td>
-                            @endguest
-                            @auth
-                                @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مدخل بيانات','مسؤول']))
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                                     <td>
                                         <a href="{{route('dashboard.prisoners.update',$row)}}" class="btn btn-warning"
                                            data-toggle="tooltip" data-placement="top" title="Edit">
                                             تعديل
                                         </a>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                            <a wire:click="delete({{$row}})" class="btn btn-danger"
-                                               title="Delete">
-                                                حذف
-                                            </a>
-                                        @endif
+                                        <a wire:click="delete({{$row}})" class="btn btn-danger"
+                                           title="Delete">
+                                            حذف
+                                        </a>
                                     </td>
                                 @endif
                             @endauth

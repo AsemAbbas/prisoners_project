@@ -30,20 +30,10 @@
                     <img src="{{asset('assets/images/admin.webp')}}" alt="avatar">
                 </div>
                 <div class="profile-content">
-                    @guest
-                        <h6>زائـــر كـــريم</h6>
-                        <p>مـــرحبا بك!</p>
-                    @endguest
                     @auth
                         <h6>{{\Illuminate\Support\Facades\Auth::user()->name}}</h6>
                         <p>
-                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مدخل بيانات")
-                                مدخل بيانات
-                            @elseif(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                مسؤول النظام
-                            @else
-                                مراجع بيانات
-                            @endif
+                            {{\Illuminate\Support\Facades\Auth::user()->user_status}}
                         </p>
                     @endauth
                 </div>
@@ -51,31 +41,27 @@
         </div>
         <div class="shadow-bottom border border-success"></div>
         <ul class="list-unstyled menu-categories" id="accordionExample">
-            @guest
-                <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.suggestions.create','dashboard.suggestions.update']) ? "active" : "" }}">
-                    <a href="{{route('dashboard.prisoners')}}" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                 class="feather feather-list">
-                                <line x1="8" y1="6" x2="21" y2="6"></line>
-                                <line x1="8" y1="12" x2="21" y2="12"></line>
-                                <line x1="8" y1="18" x2="21" y2="18"></line>
-                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                            </svg>
-                            <span>قائمة الأسرى</span>
-                        </div>
-                    </a>
-                </li>
-            @endguest
-
             @auth
-                <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.suggestions','dashboard.suggestions.create','dashboard.suggestions.update','dashboard.users','dashboard.news','dashboard.news.create','dashboard.news.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "active" : "" }}">
+                @php
+                    $main = [
+                        'dashboard.prisoners',
+                        'dashboard.prisoners.create',
+                        'dashboard.prisoners.update',
+                        'dashboard.suggestions',
+                        'dashboard.suggestions.create',
+                        'dashboard.suggestions.update',
+                        'dashboard.users',
+                        'dashboard.news',
+                        'dashboard.news.create',
+                        'dashboard.news.update',
+                        'dashboard.confirms',
+                        'dashboard.arrests',
+                        'dashboard.relatives_prisoners'
+                        ]
+                @endphp
+                <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),$main) ? "active" : "" }}">
                     <a href="#dashboard" data-bs-toggle="collapse"
-                       aria-expanded="{{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.suggestions','dashboard.suggestions.create','dashboard.suggestions.update','dashboard.users','dashboard.news','dashboard.news.create','dashboard.news.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "true" : "false" }}"
+                       aria-expanded="{{ in_array(Route::getCurrentRoute()->getName(),$main) ? "true" : "false" }}"
                        class="dropdown-toggle">
                         <div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -100,59 +86,48 @@
                             </svg>
                         </div>
                     </a>
-                    <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.confirms','dashboard.suggestions','dashboard.suggestions.create','dashboard.suggestions.update','dashboard.users','dashboard.news','dashboard.news.create','dashboard.news.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "show" : "" }}"
+                    <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),$main) ? "show" : "" }}"
                         id="dashboard" data-bs-parent="#accordionExample">
-                        <li class="{{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "active" : "" }}">
-                            <a href="#level-three" data-bs-toggle="collapse"
-                               aria-expanded="{{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "true" : "false" }}"
-                               class="dropdown-toggle collapsed"> قائمة الأسرى
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                     stroke-linejoin="round" class="feather feather-chevron-right">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </a>
-                            <ul class="list-unstyled sub-submenu collapse {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.prisoners','dashboard.prisoners.create','dashboard.prisoners.update','dashboard.arrests','dashboard.relatives_prisoners']) ? "show" : "" }}"
-                                id="level-three" data-bs-parent="#pages">
-                                <li>
-                                    <a class="{{Route::getCurrentRoute()->getName() === 'dashboard.prisoners' ? '':'text-dark'}}"
-                                       href="{{route('dashboard.prisoners')}}">
-                                        عرض الأسرى </a>
-                                </li>
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status !== "مراجع بيانات")
-
-                                    <li>
-                                        <a class="{{Route::getCurrentRoute()->getName() === 'dashboard.relatives_prisoners' ? '':'text-dark'}}"
-                                           href="{{route('dashboard.relatives_prisoners')}}">
-                                            عرض الأقارب </a>
-                                    </li>
-                                @endif
-
-
-                            </ul>
-                        </li>
-                        <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.suggestions' ? 'active' : '' }}">
-                            <a href="{{route('dashboard.suggestions')}}">قائمة الإقتراحات</a>
-                        </li>
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_status !== "مراجع بيانات")
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.confirms' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.confirms')}}">قائمة الإقتراحات المؤكدة</a>
+                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
+                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoners' ? 'active' : '' }}">
+                                <a href="{{route('dashboard.prisoners')}}">قائمة الأسرى</a>
+                            </li>
+                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.suggestions' ? 'active' : '' }}">
+                                <a href="{{route('dashboard.suggestions')}}">قائمة الإقتراحات</a>
                             </li>
                         @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.news' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.news')}}">قائمة الأخبار</a>
+                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.confirms' ? 'active' : '' }}">
+                                <a href="{{route('dashboard.confirms')}}">قائمة الإقتراحات المؤكدة</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.users' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.users')}}">قائمة المستخدمين</a>
                             </li>
                         @endif
+                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مسؤول','محرر أخبار']))
+                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.news' ? 'active' : '' }}">
+                                <a href="{{route('dashboard.news')}}">قائمة الأخبار</a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
-                @if(\Illuminate\Support\Facades\Auth::user()->user_status !== "مراجع بيانات")
-                    <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.cities','dashboard.belongs','dashboard.news_types','dashboard.prisoner_types','dashboard.news_types','dashboard.statistics','dashboard.social_media','dashboard.relationships','dashboard.healths']) ? "active" : "" }}">
+                @php
+                    $sub = [
+                        'dashboard.cities',
+                        'dashboard.belongs',
+                        'dashboard.news_types',
+                        'dashboard.prisoner_types',
+                        'dashboard.news_types',
+                        'dashboard.statistics',
+                        'dashboard.social_media',
+                        'dashboard.relationships',
+                        'dashboard.healths',
+                        ]
+                @endphp
+                @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['محرر أخبار','مسؤول']))
+                    <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),$sub) ? "active" : "" }}">
                         <a href="#dashboardSub" data-bs-toggle="collapse"
-                           aria-expanded="{{ in_array(Route::getCurrentRoute()->getName(),['dashboard.cities','dashboard.belongs','dashboard.news_types','dashboard.prisoner_types','dashboard.news_types','dashboard.statistics','dashboard.social_media','dashboard.relationships','dashboard.healths']) ? "true" : "false" }}"
+                           aria-expanded="{{ in_array(Route::getCurrentRoute()->getName(),$sub) ? "true" : "false" }}"
                            class="dropdown-toggle">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -179,29 +154,33 @@
                                 </svg>
                             </div>
                         </a>
-                        <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),['dashboard.cities','dashboard.belongs','dashboard.news_types','dashboard.prisoner_types','dashboard.statistics','dashboard.social_media','dashboard.relationships','dashboard.healths']) ? "show" : "" }}"
+                        <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),$sub) ? "show" : "" }}"
                             id="dashboardSub" data-bs-parent="#accordionSub">
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.cities' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.cities')}}">قائمة المحافظات</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoner_types' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.prisoner_types')}}">قائمة تصنيفات الأسرى</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.news_types' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.news_types')}}">قائمة تصنيفات الأخبار</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.relationships' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.relationships')}}">قائمة صلة القرابة</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.belongs' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.belongs')}}">قائمة الإنتماء</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.statistics' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.statistics')}}">قائمة الاحصائيات</a>
-                            </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.social_media' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.social_media')}}">قائمة التواصل الإجتماعي</a>
-                            </li>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "محرر أخبار")
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.news_types' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.news_types')}}">قائمة تصنيفات الأخبار</a>
+                                </li>
+                            @endif
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.cities' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.cities')}}">قائمة المحافظات</a>
+                                </li>
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoner_types' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.prisoner_types')}}">قائمة تصنيفات الأسرى</a>
+                                </li>
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.relationships' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.relationships')}}">قائمة صلة القرابة</a>
+                                </li>
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.belongs' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.belongs')}}">قائمة الإنتماء</a>
+                                </li>
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.statistics' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.statistics')}}">قائمة الاحصائيات</a>
+                                </li>
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.social_media' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.social_media')}}">قائمة التواصل الإجتماعي</a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endif

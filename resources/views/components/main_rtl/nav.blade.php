@@ -78,7 +78,7 @@
             </div>
             <div class="nav-item dropdown ms-3">
                 <!-- Switch button -->
-                <button class="modeswitch" id="bd-theme" name="switch_theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                <button class="modeswitch" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
                         data-bs-display="static">
                     <svg class="theme-icon-active">
                         <use href="#"></use>

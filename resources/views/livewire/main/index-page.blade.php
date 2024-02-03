@@ -442,7 +442,7 @@
                             style="font-family: 'Changa', sans-serif !important;font-size: 30px;font-weight: bolder">
                             بحث في المناطق</h4>
                         <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-3">
-                            <label for="city_id">بحث حسب المحاظة</label>
+                            <label for="city_id">بحث حسب المحافظة</label>
                             <select class="form-select" id="city_id" wire:model.live="CitySearch.city_id">
                                 <option>اختر...</option>
                                 @foreach($Cities as $city)

@@ -70,8 +70,6 @@ class ListNews extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-
-
         $NewsCount = [
             'all' => News::query()->count(),
             'on_slider' => News::query()->where('on_slider', true)->count(),
@@ -92,7 +90,7 @@ class ListNews extends Component
                 });
             })
             ->when(isset($this->sortBy), function ($q) {
-                if ($this->sortBy == "شريط الأخبار")
+                if ($this->sortBy == "الأخبار الظاهرة")
                     $q->where('on_slider', true);
                 else $q->whereIn('on_slider', [true, false]);
             });

@@ -27,11 +27,10 @@
     <style>
         @font-face {
             font-family: 'Changa';
-            src: url('{{ asset('assets/font/Changa-VariableFont_wght.ttf') }}'),
-            url('{{ asset('assets/font/Changa-VariableFont_wght.ttf') }}');
-            /* Add additional font formats if available */
-            font-weight: bold; /* Adjust the font weight as needed */
-            font-style: normal; /* Adjust the font style as needed */
+            src: url('{{ asset('main/font/Changa-VariableFont_wght.ttf') }}'),
+            url('{{ asset('main/font/Changa-VariableFont_wght.ttf') }}');
+            font-weight: 600;
+            font-style: normal;
         }
 
         body {

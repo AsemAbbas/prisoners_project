@@ -109,7 +109,7 @@
                         </div>
                         <div class="form-group col-md-6 mb-4">
                             <label for="identification_number">رقم الهوية</label>
-                            <input wire:model="state.identification_number" type="number"
+                            <input wire:model="state.identification_number" type="text"
                                    class="form-control @error('identification_number') is-invalid @enderror"
                                    id="identification_number"
                                    maxlength="9"

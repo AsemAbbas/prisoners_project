@@ -105,7 +105,7 @@ class IndexPage extends Component
         $Towns = Town::query()->where('city_id', $this->CitySearch['city_id'])->orderBy('town_name')->get();
 
         $CityPrisoners = Prisoner::query()
-            ->whereHas('Arrest',function ($q){
+          ->whereHas('Arrest',function ($q){
                 $q->where('is_released',false);
             })
             ->where('city_id', $this->CitySearch['city_id'])

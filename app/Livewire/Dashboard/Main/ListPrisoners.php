@@ -195,6 +195,9 @@ class ListPrisoners extends Component
                     ->orWhereHas('City', function ($q) {
                         $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
                     })
+                    ->orWhereHas('Town', function ($q) {
+                        $q->where('town_name', 'LIKE', '%' . $this->Search . '%');
+                    })
                     ->orWhereHas('PrisonerType', function ($q) {
                         $q->where('prisoner_type_name', 'LIKE', '%' . $this->Search . '%');
                     })

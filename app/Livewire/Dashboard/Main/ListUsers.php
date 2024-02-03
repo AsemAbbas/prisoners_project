@@ -23,7 +23,6 @@ class ListUsers extends Component
     public array $state = [];
     public bool $ShowModal = false;
 
-    public ?string $user_status = null;
     public bool $AllCities = false;
     protected string $paginationTheme = 'bootstrap';
 
@@ -66,7 +65,6 @@ class ListUsers extends Component
         if (isset($this->state['cities'])) {
             $this->state['cities'] = array_filter($this->state['cities']);
         }
-
         $UserStatus = join(",", array_column(UserStatus::cases(), 'value'));
 
         $validation = Validator::make($this->state, [
@@ -74,7 +72,7 @@ class ListUsers extends Component
             'user_status' => 'required|in:' . $UserStatus,
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
-            'cities' => 'required|array'
+            'cities' => 'nullable|array'
         ])->validate();
 
 
@@ -82,6 +80,7 @@ class ListUsers extends Component
 
         $user = User::query()->create($validation);
 
+        if (isset($validation['cities']))
         $user->City()->attach(array_keys($validation['cities']));
 
         $this->dispatch('hideForm');
@@ -103,7 +102,7 @@ class ListUsers extends Component
             'user_status' => 'required|in:' . $UserStatus,
             'email' => 'required|email|unique:users,email,' . $this->state['id'],
             'password' => 'nullable|min:8',
-            'cities' => 'required|array'
+            'cities' => 'nullable|array'
         ])->validate();
 
         if (isset($validation['password'])) {
@@ -111,7 +110,8 @@ class ListUsers extends Component
         }
         $this->Users_->update($validation);
 
-        $this->Users_->City()->sync(array_keys($validation['cities']));
+        if (isset($validation['cities']))
+            $this->Users_->City()->sync(array_keys($validation['cities']));
 
         $this->dispatch('hideForm');
     }
@@ -123,25 +123,6 @@ class ListUsers extends Component
             $cities_true = array_fill_keys($cities_ids, true);
             $this->state['cities'] = $cities_true;
         } else $this->state['cities'] = [];
-    }
-
-    public function ShowUserStatus($role, User $user): void
-    {
-        $this->UserStatus = $user;
-        $this->user_status = $role;
-        $this->dispatch('UserStatus');
-    }
-
-    public function changeUserStatus(): void
-    {
-        $UserStatus = join(",", array_column(UserStatus::cases(), 'value'));
-
-        $validation = $this->validate(['user_status' => 'required|in:' . $UserStatus]);
-        if ($validation) {
-            $this->UserStatus->update(['user_status' => $this->user_status]);
-            $this->dispatch('hideUserStatus');
-            $this->user_status = null;
-        }
     }
 
     public function updatedSearch(): void

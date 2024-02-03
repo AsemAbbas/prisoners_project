@@ -168,10 +168,9 @@
                     @this.set('state.news_long_description', contents);
                     }
                 },
-                fontNames: ['Changa', 'Arial', 'Times New Roman', 'Courier New', 'Tahoma'],
-                fontNamesIgnoreCheck: ['Changa'], // Ignore Changa from system font check
-                fontNamesFallback: ['Changa, sans-serif'] // Fallback font for Changa
-
+                fontNames: ['Changa','Dubai'],
+                fontNamesIgnoreCheck: ['Changa','Dubai'],
+                fontNamesFallback: ['Changa','Dubai']
             });
         })
     </script>

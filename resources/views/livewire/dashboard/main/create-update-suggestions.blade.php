@@ -435,7 +435,7 @@
                                         }
                                     @endphp
                                     <div id="defaultSpecialCase"
-                                         class="collapse @if(!empty($state) && !empty($state['special_case'])) show @endif"
+                                         class="collapse show"
                                          aria-labelledby="headingSpecialCase"
                                          wire:ignore.self
                                          data-bs-parent="#toggleSpecialCase">
@@ -952,9 +952,8 @@
                             <label for="email">إرفاق ملفات (صورة الهوية وأوراق الصليب)</label>
 
                             @if(isset($full_name) && isset($identification_number))
-                                <a class="btn btn-link d-block"
-                                   style="padding:12px 0;"
-                                   href="https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform?entry.1999411339=<?php echo $full_name; ?>&entry.1095886086=<?php echo $identification_number; ?>">
+                                <a class="btn btn-link d-block" style="padding:12px 0;"
+                                   wire:click="openGoogleModal('{{$full_name}}','{{$identification_number}}')">
                                     الرابط الخاص بك
                                 </a>
                             @else
@@ -1090,6 +1089,7 @@
                             <polyline points="7 3 7 8 15 8"></polyline>
                         </svg>
                     </button>
+                    <a wire:click="goToIndex" class="btn btn-dark">إغلاق</a>
                 </div>
             </form>
         </div>
@@ -1134,6 +1134,68 @@
             </div>
         </div>
     @endif
+
+
+    <div class="modal modal fade" id="googleForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+
+         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content bg-white">
+                <div class="modal-header bg-warning" style="margin: 5px;">
+                    <h1 class="modal-title fs-5 text-white"
+                        id="staticBackdropLabel">رابط إرفاق الملفات</h1>
+                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 class="text-warning text-center">تنويه!</h4>
+                    <h6 class="text-dark text-center">
+                        يطلب منك بعد إرفاق المستندات العودة لتأكيد الطلب في الصفحة الحالية
+                    </h6>
+                </div>
+                <div class="modal-footer d-flex justify-content-start align-items-start">
+                    <a target="_blank" href="{{$googleUrl}}"
+                       class="btn bg-warning">
+                        تأكيد وإنتقال
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" class="feather feather-check-circle">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </a>
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal fade" id="goToIndex" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content bg-white">
+                <div class="modal-header bg-danger" style="margin: 5px;">
+                    <h1 class="modal-title fs-5 text-white"
+                        id="staticBackdropLabel">الذهاب إلى الرئيسية</h1>
+                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 class="text-danger text-center">تنويه!</h4>
+                    <h6 class="text-dark text-center">
+                        سيتم الانتقال إلى الصفحة الرئيسية ولم يتم حفظ البيانات بعد
+                    </h6>
+                </div>
+                <div class="modal-footer d-flex justify-content-start align-items-start">
+                    <a href="{{route('main.index')}}"
+                       class="btn bg-danger">
+                        الذهاب إلى الرئيسية
+                    </a>
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إستكمال الطلب</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @section('script')
     <script src="{{asset('plugins-rtl/apex/apexcharts.min.js')}}"></script>
@@ -1141,7 +1203,6 @@
     <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
     @vite(['resources/rtl/assets/js/custom.js'])
     <script>
-
         function formatDate(input) {
             let value = input.value.replace(/\D/g, '');
             if (value.length > 4) {
@@ -1151,12 +1212,18 @@
             }
             input.value = value;
         }
-
         window.addEventListener('ReviewMassage', event => {
             $('#review').modal('show');
         })
         window.addEventListener('hideReviewMassage', event => {
             $('#review').modal('hide');
+        })
+        window.addEventListener('open_google_modal', event => {
+            $('#googleForm').modal('show');
+        })
+
+        window.addEventListener('open_go_to_index_modal', event => {
+            $('#goToIndex').modal('show');
         })
 
         document.body.addEventListener('scroll-to-top', function () {

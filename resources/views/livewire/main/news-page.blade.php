@@ -51,7 +51,7 @@
             </div>
             <div class="col-12">
                 <!-- Card item START -->
-                @foreach($News as $row)
+                @foreach($News->where('on_slider',true) as $row)
                     <div class="card border rounded-3 up-hover p-4 mb-4" style="direction: rtl">
                         <div class="row g-3">
                             <div class="col-lg-5">

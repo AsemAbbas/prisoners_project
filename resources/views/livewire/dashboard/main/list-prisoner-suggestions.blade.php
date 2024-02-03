@@ -103,19 +103,21 @@
                     <thead>
                     <tr style="font-size: 15px">
                         <th>#</th>
-                        <th style="min-width: 230px">رقم الأسير</th>
-                        <th style="min-width: 230px">اسم الأسير</th>
-                        <th style="min-width: 230px">رقم الهوية</th>
-                        <th style="min-width: 230px">اسم مقدم البيانات</th>
-                        <th style="min-width: 230px">صلة قرابة مقدم البيانات</th>
-                        <th style="min-width: 230px">حالة الطلب</th>
-                        <th style="min-width: 230px">الخيارات</th>
+{{--                        <th style="min-width: 180px">رقم أساسي</th>--}}
+                        <th style="min-width: 180px">رقم الأسير</th>
+                        <th style="min-width: 180px">اسم الأسير</th>
+                        <th style="min-width: 180px">رقم الهوية</th>
+                        <th style="min-width: 180px">اسم مقدم البيانات</th>
+                        <th style="min-width: 180px">صلة قرابة مقدم البيانات</th>
+                        <th style="min-width: 180px">حالة الطلب</th>
+                        <th style="min-width: 180px">الخيارات</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($Suggestions as $key => $row)
                         <tr>
                             <td>{{$Suggestions->firstItem() + $key}}</td>
+{{--                            <td>{{$row->id}}</td>--}}
                             <td>
                                 @if(isset($row->Prisoner->id))
                                     <a class="btn btn-link" wire:click="SearchFor({{$row->Prisoner->id}})">

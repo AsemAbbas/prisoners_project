@@ -18,7 +18,9 @@ class Login extends Component
         $this->attempts = 0;
 
         if (Auth::check()) {
-            return redirect('/dashboard/prisoners'); // Redirect authenticated users
+            if (Auth::user()->user_status === "محرر أخبار"){
+                return redirect('/dashboard/news');
+            }else return redirect('/dashboard/prisoners');
         }
     }
 
@@ -55,7 +57,11 @@ class Login extends Component
             // Remove lockout information from cache on successful login
             Cache::forget('login_locked_out_' . $this->email);
 
-            return redirect()->intended('/dashboard/prisoners');
+            if (Auth::check()) {
+                if (Auth::user()->user_status === "محرر أخبار"){
+                    return redirect()->intended('/dashboard/news');
+                }else return redirect()->intended('/dashboard/prisoners');
+            }
         } else {
             $attempts++;
 

@@ -25,6 +25,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
@@ -38,6 +39,7 @@ class CreateUpdateSuggestions extends Component
     public $old_errors = null;
     public object $Prisoners_;
     public bool $showEdit = false;
+    public $googleUrl;
 
     public function mount($suggestion = null): void
     {
@@ -129,7 +131,7 @@ class CreateUpdateSuggestions extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'] ?? null,
                 "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
                 "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
-                "is_released" => (boolean)$data['arrest']['is_released'] ?? null,
+                "is_released" => isset($data['arrest']['is_released']) ? (boolean)$data['arrest']['is_released'] : null,
                 "email" => $data['arrest']['email'] ?? null,
 
                 "father_arrested_id" => $father_arrested_id,
@@ -238,10 +240,21 @@ class CreateUpdateSuggestions extends Component
             'relationship_id' => "required",
             //Prisoner
             'identification_number' => $rule,
-            'first_name' => "required",
-            'second_name' => "nullable",
-            'third_name' => "nullable",
-            'last_name' => "required",
+            'first_name' => 'required',
+            'second_name' => 'nullable',
+            'third_name' => 'nullable',
+            'last_name' => [
+                'required',
+                Rule::unique('prisoner_suggestions')
+                    ->where(function ($query) {
+                        $query->whereRaw("CONCAT_WS(' ', first_name, second_name, third_name, last_name) = ?", [
+                            implode(' ', array_values($this->state))
+                        ]);
+                    })
+                    ->when(isset($this->state['id']), function ($query) {
+                        return $query->ignore($this->state['id'], 'id');
+                    }),
+            ],
             'mother_name' => "nullable",
             'nick_name' => "nullable",
             'date_of_birth' => "nullable",
@@ -275,8 +288,10 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable",
+            'is_released' => "nullable|boolean",
             'email' => "nullable",
+        ], [
+            'last_name.unique' => 'يوجد اسم كامل مشابه في قاعدة البيانات',
         ]);
         $oldArrestsValidation = Validator::make($this->old_arrests, [
             '*.old_arrest_start_date' => 'nullable|required_with:*.old_arrest_end_date,*.arrested_side',
@@ -396,6 +411,21 @@ class CreateUpdateSuggestions extends Component
         $this->dispatch('ReviewMassage');
     }
 
+    public function openGoogleModal($full_name, $identification_number): void
+    {
+        $url = "https://docs.google.com/forms/d/e/1FAIpQLSfmpVKLKaav-jRfpER4ntQjM1bd2hNhclDFwnuy1fRy0WiwNQ/viewform";
+        $url .= "?entry.1999411339=" . urlencode($full_name);
+        $url .= "&entry.1095886086=" . urlencode($identification_number);
+
+        $this->googleUrl = $url;
+        $this->dispatch('open_google_modal');
+    }
+
+    public function goToIndex(): void
+    {
+        $this->dispatch('open_go_to_index_modal');
+    }
+
     public function ConfirmMassage(): void
     {
         try {
@@ -431,16 +461,17 @@ class CreateUpdateSuggestions extends Component
                 'town_id' => $this->state['town_id'] ?? null,
                 'notes' => $this->state['notes'] ?? null,
             ]);
-            if (!empty($this->old_arrests)) {
-                foreach ($this->old_arrests as $arrest) {
-                    OldArrestSuggestion::query()->create([
-                        'suggestion_status' => "يحتاج مراجعة",
-                        'prisoner_id' => $this->Prisoners_->id ?? null,
-                        'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
-                        'old_arrest_start_date' => $arrest['old_arrest_start_date'] ?? null,
-                        'old_arrest_end_date' => $arrest['old_arrest_end_date'] ?? null,
-                        'arrested_side' => $arrest['arrested_side'] ?? null,
-                    ]);
+            if (!empty(array_filter($this->old_arrests))) {
+                foreach (array_filter($this->old_arrests) as $arrest) {
+                    if (!empty($arrest['old_arrest_start_date']) && !empty($arrest['old_arrest_end_date']))
+                        OldArrestSuggestion::query()->create([
+                            'suggestion_status' => "يحتاج مراجعة",
+                            'prisoner_id' => $this->Prisoners_->id ?? null,
+                            'prisoner_suggestion_id' => $PrisonerSuggestion->id ?? null,
+                            'old_arrest_start_date' => $arrest['old_arrest_start_date'] ?? null,
+                            'old_arrest_end_date' => $arrest['old_arrest_end_date'] ?? null,
+                            'arrested_side' => $arrest['arrested_side'] ?? null,
+                        ]);
                 }
             }
             $PrisonerSuggestion->ArrestSuggestion()->create([
@@ -478,7 +509,7 @@ class CreateUpdateSuggestions extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'is_released' => (boolean)$this->state['is_released'] ?? null,
+                'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : null,
 
                 'email' => $this->state['email'] ?? null,
             ]);

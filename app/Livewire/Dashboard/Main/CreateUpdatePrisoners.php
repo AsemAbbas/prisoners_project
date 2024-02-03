@@ -221,15 +221,14 @@ class CreateUpdatePrisoners extends Component
         $rule = $this->showEdit
             ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
             : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
-        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم" || $this->state['arrest_type'] == "موقوف")) {
-            $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
-            $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
-            $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
-
-        } else {
+        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
             $judgment_in_lifetime_rule = ["nullable", "integer"];
             $judgment_in_years_rule = ["nullable", "integer"];
             $judgment_in_months_rule = ["nullable", "integer"];
+        } else {
+            $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
+            $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
+            $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
         }
 
         $validation = Validator::make($this->state, [
@@ -272,7 +271,7 @@ class CreateUpdatePrisoners extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable",
+            'is_released' => "nullable|boolean",
             'email' => "nullable",
         ]);
 

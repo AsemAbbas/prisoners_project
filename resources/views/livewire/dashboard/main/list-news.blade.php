@@ -99,8 +99,8 @@
                         <div class="dropdown-menu" aria-labelledby="btndefault">
                             <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
                                     class="flaticon-home-fill-1 mr-1"></i>الكل ({{$NewsCount['all']}})</a>
-                            <a wire:click="SortBy('شريط الأخبار')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>شريط الأخبار
+                            <a wire:click="SortBy('الأخبار الظاهرة')" class="btn dropdown-item"><i
+                                    class="flaticon-home-fill-1 mr-1"></i>الأخبار الظاهرة
                                 ({{$NewsCount['on_slider']}})</a>
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                         <th>عنوان الخبر</th>
                         <th>نوع الخبر</th>
                         <th>رابط الخبر</th>
-                        <th>شريط الأخبار</th>
+                        <th>إظهار الأخبار</th>
                         <th>ترتيب الخبر</th>
                         <th>صورة الخبر</th>
                         <th>الخيارات</th>
@@ -125,7 +125,8 @@
                     @foreach($News as $key => $row)
                         <tr>
                             <td>{{$News->firstItem() + $key}}</td>
-                            <td>{{$row->news_title ?? 'لا يوجد'}}</td>
+                            <td>{{ isset($row->news_title) ? mb_substr($row->news_title, 0, 50).'...' : 'لا يوجد' }}</td>
+
                             <td>{{$row->NewsType->news_type_name ?? 'لا يوجد'}}</td>
                             <td>
                                 @if(isset($row->news_url))
@@ -159,7 +160,7 @@
                                     <label
                                         class="form-check-label mx-1 @if($row->on_slider) text-success @else text-danger @endif"
                                         for="form-check-success">
-                                        شريط الأخبار
+                                        إظهار الخبر
                                     </label>
                                 </div>
                             </td>
@@ -178,7 +179,8 @@
                                         اضغط Enter
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                              style="margin-top: 4px;"
-                                             fill="currentColor" class="bi bi-arrow-return-left text-black" viewBox="0 0 16 16">
+                                             fill="currentColor" class="bi bi-arrow-return-left text-black"
+                                             viewBox="0 0 16 16">
                                             <path fill-rule="evenodd"
                                                   d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
                                         </svg>
@@ -199,12 +201,10 @@
                                    data-toggle="tooltip" data-placement="top" title="Edit">
                                     تعديل
                                 </a>
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                    <a wire:click="delete({{$row}})" class="btn btn-danger"
-                                       title="Delete">
-                                        حذف
-                                    </a>
-                                @endif
+                                <a wire:click="delete({{$row}})" class="btn btn-danger"
+                                   title="Delete">
+                                    حذف
+                                </a>
                             </td>
                         </tr>
                     @endforeach
