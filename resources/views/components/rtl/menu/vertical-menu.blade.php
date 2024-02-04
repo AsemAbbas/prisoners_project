@@ -92,13 +92,13 @@
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoners' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.prisoners')}}">قائمة الأسرى</a>
                             </li>
-                            <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.suggestions' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.suggestions')}}">قائمة الإقتراحات</a>
+                            <li class="{{ Route::getCurrentRoute()->getName() == 'dashboard.suggestions' ? 'active' : '' }}">
+                                <a href="{{route('dashboard.suggestions')}}">قائمة الاقتراحات</a>
                             </li>
                         @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.confirms' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.confirms')}}">قائمة الإقتراحات المؤكدة</a>
+                                <a href="{{route('dashboard.confirms')}}">قائمة الاقتراحات المؤكدة</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.users' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.users')}}">قائمة المستخدمين</a>

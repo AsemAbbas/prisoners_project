@@ -15,7 +15,7 @@ class StatisticsSeeder extends Seeder
     public function run(): void
     {
         $belongs = [
-            ['order_by' => '1', 'statistic_type' => 'إجمالي الأسرى في سجون الإحتلال', 'statistic_number' => '8494'],
+            ['order_by' => '1', 'statistic_type' => 'إجمالي الأسرى في سجون الاحتلال', 'statistic_number' => '8494'],
             ['order_by' => '2', 'statistic_type' => 'الأسيرات', 'statistic_number' => '206'],
             ['order_by' => '3', 'statistic_type' => 'كبار السن (فوق 60 سنة)', 'statistic_number' => '163'],
             ['order_by' => '4', 'statistic_type' => 'الأسرى الأشبال', 'statistic_number' => '100'],

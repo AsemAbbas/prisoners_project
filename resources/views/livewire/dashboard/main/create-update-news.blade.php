@@ -10,7 +10,6 @@
     @vite(['resources/rtl/scss/light/assets/elements/alert.scss'])
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 @endsection
-
 <div id="target-element">
     <div class="d-flex justify-content-center align-content-center">
         <img src="{{asset('assets/images/logo.webp')}}" width="300px" alt="logo">

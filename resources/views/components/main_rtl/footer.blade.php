@@ -35,7 +35,7 @@
                     @endforeach
                 </ul>
                 <span class="text-white text-center d-block my-2" style="font-size: 18px">من نحن ؟</span>
-                <span class="text-white text-center">منصة إعلامية فلسطينية ، تتبع مكتب الشهداء والأسرى والجرحى في حركة المقاومة الإسلامية حماس. تهتم بقضايا الأسرى في سجون الإحتلال وتحديث بياناتهم.</span>
+                <span class="text-white text-center">منصة إعلامية فلسطينية ، تتبع مكتب الشهداء والأسرى والجرحى في حركة المقاومة الإسلامية حماس. تهتم بقضايا الأسرى في سجون الاحتلال وتحديث بياناتهم.</span>
             </div>
         </div>
         <!-- About and Newsletter END -->

@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum ArrestedSide: string
 {
-    case one = 'الإحتلال';
+    case one = 'الاحتلال';
     case two = 'السلطة';
 }

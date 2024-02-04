@@ -54,6 +54,9 @@ class IndexPage extends Component
         if (!empty(array_filter($this->search))) {
             $this->Prisoners = Prisoner::query()
                 ->with('City', 'Arrest', 'RelativesPrisoner')
+                ->whereHas('Arrest', function ($q) {
+                    $q->whereIn('is_released', [false, null]);
+                })
                 ->where('identification_number', $this->search['identification_number'])
                 ->orWhere(function ($q) {
                     $q->where('first_name', $this->search['first_name'])
@@ -105,8 +108,8 @@ class IndexPage extends Component
         $Towns = Town::query()->where('city_id', $this->CitySearch['city_id'])->orderBy('town_name')->get();
 
         $CityPrisoners = Prisoner::query()
-          ->whereHas('Arrest',function ($q){
-                $q->where('is_released',false);
+            ->whereHas('Arrest', function ($q) {
+                $q->where('is_released', false);
             })
             ->where('city_id', $this->CitySearch['city_id'])
             ->where('town_id', $this->CitySearch['town_id'])
@@ -125,7 +128,6 @@ class IndexPage extends Component
             })
             ->orderBy('first_name')
             ->paginate(15);
-
 
 
         return view('livewire.main.index-page', compact('News', 'Statistics', 'SocialMedia', 'CityPrisoners', 'Towns', 'Cities'))

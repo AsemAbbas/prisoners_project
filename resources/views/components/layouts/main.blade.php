@@ -5,12 +5,12 @@
     <!-- Meta Tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الإحتلال.">
+    <meta name="description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الاحتلال.">
     <meta name="author" content="فجر الحرية">
     <meta name="keywords" content="فلسطين, إعلام, منصة إعلامية,فجر,الحرية,حرية,أسرى,إحتلال,فجر الحرية,فجرالحرية">
 
     <meta property="og:title" content="@yield('title')">
-    <meta property="og:description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الإحتلال.">
+    <meta property="og:description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الاحتلال.">
 
     <!-- Dark mode -->
     <script>

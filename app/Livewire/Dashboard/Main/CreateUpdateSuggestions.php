@@ -25,7 +25,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
@@ -220,7 +219,7 @@ class CreateUpdateSuggestions extends Component
         $rule = $this->showEdit
             ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
             : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
-        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم" || $this->state['arrest_type'] == "موقوف")) {
+        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم")) {
             $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
             $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
             $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
@@ -243,18 +242,7 @@ class CreateUpdateSuggestions extends Component
             'first_name' => 'required',
             'second_name' => 'nullable',
             'third_name' => 'nullable',
-            'last_name' => [
-                'required',
-                Rule::unique('prisoner_suggestions')
-                    ->where(function ($query) {
-                        $query->whereRaw("CONCAT_WS(' ', first_name, second_name, third_name, last_name) = ?", [
-                            implode(' ', array_values($this->state))
-                        ]);
-                    })
-                    ->when(isset($this->state['id']), function ($query) {
-                        return $query->ignore($this->state['id'], 'id');
-                    }),
-            ],
+            'last_name' => 'required',
             'mother_name' => "nullable",
             'nick_name' => "nullable",
             'date_of_birth' => "nullable",
@@ -288,7 +276,7 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable|boolean",
+            'is_released' => "nullable|in:0,1",
             'email' => "nullable",
         ], [
             'last_name.unique' => 'يوجد اسم كامل مشابه في قاعدة البيانات',
@@ -395,10 +383,33 @@ class CreateUpdateSuggestions extends Component
             $this->state['daughter_arrested'] = null;
         }
 
-        if (isset($this->state['special_case']) && !in_array('مريض', array_filter(array_keys($this->state['special_case'])))) {
+        if (!isset($this->state['father_arrested'])) {
+            $this->state['father_arrested_id'] = null;
+        }
+        if (!isset($this->state['mother_arrested'])) {
+            $this->state['mother_arrested_id'] = null;
+        }
+        if (!isset($this->state['husband_arrested'])) {
+            $this->state['husband_arrested_id'] = null;
+        }
+        if (!isset($this->state['wife_arrested'])) {
+            $this->state['wife_arrested_id'] = null;
+        }
+        if (!isset($this->state['sister_arrested']) || $this->state['sister_arrested'] == 0) {
+            $this->state['sister_arrested_id'] = null;
+        }
+        if (!isset($this->state['brother_arrested']) || $this->state['brother_arrested'] == 0) {
+            $this->state['brother_arrested_id'] = null;
+        }
+        if (!isset($this->state['son_arrested']) || $this->state['son_arrested'] == 0) {
+            $this->state['son_arrested_id'] = null;
+        }
+        if (!isset($this->state['daughter_arrested']) || $this->state['daughter_arrested'] == 0) {
+            $this->state['daughter_arrested_id'] = null;
+        }
+        if (isset($this->state['special_case']) && !in_array('مريض / جريح', array_filter(array_keys($this->state['special_case'])))) {
             $this->state['health_note'] = null;
         }
-
         if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
             $this->state['special_case']['حامل'] = false;
         }
@@ -603,9 +614,9 @@ class CreateUpdateSuggestions extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني");
+            abort(403, "مشكلة في اقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني");
 //            $massage = $e->getMessage();
-//            abort(403, "مشكلة في إقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني \n$massage");
+//            abort(403, "مشكلة في اقتراح تعديل أو إضافة أسير تواصل مع الدعم الفني \n$massage");
         }
     }
 

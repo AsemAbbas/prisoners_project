@@ -1,5 +1,5 @@
 @section('title')
-    فجر الحرية | قائمة الإقتراحات المؤكدة
+    فجر الحرية | قائمة الاقتراحات المؤكدة
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -14,22 +14,13 @@
     @vite(['resources/rtl/scss/dark/assets/elements/alert.scss'])
     <style>
         input[type=search] {
-            width: 1px;
             box-sizing: border-box;
-            border: 0;
             font-size: 16px;
-            background-color: #fafafa;
             background-size: 35px;
             background-position: 3px 5px;
             background-repeat: no-repeat;
-            padding: 0;
-            margin-left: 0;
             -webkit-transition: width 0.4s ease-in-out;
             transition: width 0.4s ease-in-out;
-        }
-
-        /* When the input field gets focus, change its width to 100% */
-        input[type=search]:focus {
             width: 275px;
             padding: 10px 20px 5px 40px;
             margin-left: 10px;
@@ -56,7 +47,7 @@
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">لوحة التحكم</a></li>
-                <li class="breadcrumb-item active" aria-current="page">قائمة الإقتراحات المؤكدة</li>
+                <li class="breadcrumb-item active" aria-current="page">قائمة الاقتراحات المؤكدة</li>
             </ol>
         </nav>
     </div>
@@ -65,18 +56,7 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
-                    <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الإقتراحات...">
-                    <label class="btn btn-info" for="Search">
-                        البحث
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-search">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </label>
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
                     <div class="btn-group mb-2 mx-2" role="group">
                         <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
@@ -168,12 +148,12 @@
                                 <hr>
                                 <h5>
                                     @if(isset($Confirms_->prisoner_id))
-                                        إقتراح تعديل
+                                        اقتراح تعديل
                                     @else
                                         @if($Exist)
-                                            <p>إقتراح إضافة <span class="text-danger">(رقم الهوية موجود)</span></p>
+                                            <p>اقتراح إضافة <span class="text-danger">(رقم الهوية موجود)</span></p>
                                         @else
-                                            إقتراح إضافة (رقم الهوية جديد)
+                                            اقتراح إضافة (رقم الهوية جديد)
                                         @endif
                                     @endif
                                 </h5>
@@ -201,7 +181,7 @@
                             <div class="row">
                                 <div class="col-12 text-center">
                                     <hr>
-                                    <h5>بيانات الإعتقال الحالية</h5>
+                                    <h5>بيانات الاعتقال الحالية</h5>
                                     <hr>
                                 </div>
                                 @if(isset($arrestColumns))
@@ -254,7 +234,7 @@
                             <div class="row">
                                 <div class="col-12 text-center">
                                     <hr>
-                                    <h5 class="d-inline">بيانات الإعتقال المقترح</h5>
+                                    <h5 class="d-inline">بيانات الاعتقال المقترح</h5>
                                     <hr>
                                 </div>
                                 @if(isset($arrestColumns))
@@ -335,7 +315,7 @@
                                 <div class="col-12 text-center">
                                     <hr>
                                     <h5>
-                                        الإعتقالات السابقة
+                                        الاعتقالات السابقة
                                     </h5>
                                     <hr>
                                 </div>
@@ -415,7 +395,7 @@
                             <div class="row">
                                 <div class="col-12 text-center">
                                     <hr>
-                                    <h5>بيانات الإعتقال</h5>
+                                    <h5>بيانات الاعتقال</h5>
                                     <hr>
                                 </div>
                                 @if(isset($arrestColumns))
@@ -461,7 +441,7 @@
                                 <div class="row">
                                     <div class="col-12 text-center">
                                         <hr>
-                                        <h5>بيانات الإعتقالات السابقة</h5>
+                                        <h5>بيانات الاعتقالات السابقة</h5>
                                         <hr>
                                     </div>
                                     @foreach($oldArrestColumns['confirm'] as $index => $col)
@@ -512,14 +492,14 @@
             <div class="modal-content bg-white">
                 <div class="modal-header bg-danger" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">حذف الإقتراح</h1>
+                        id="staticBackdropLabel">حذف الاقتراح</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الإقتراح؟</h5>
+                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الاقتراح؟</h5>
                     <span class="text-danger m-3">
-                    * تنبية:
+                    * تنبيه:
                         <span class="text-dark">
                         سيتم حذف {{$Confirms_->full_name ?? null}}
                         </span>
@@ -563,7 +543,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حذف بيانات الإقتراح',
+                        text: 'تم حذف بيانات الاقتراح',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }
@@ -581,7 +561,7 @@
             document.body.addEventListener('create_massage', function () {
                 Swal.fire({
                     title: 'نجاح',
-                    text: 'تم قبول الإقتراح',
+                    text: 'تم قبول الاقتراح',
                     icon: 'success',
                     confirmButtonText: 'تم',
                 });

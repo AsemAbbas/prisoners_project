@@ -1,5 +1,5 @@
 @section('title')
-    فجر الحرية | قائمة الإقتراحات
+    فجر الحرية | قائمة الاقتراحات
 @endsection
 @section('style')
     <link rel="stylesheet" href="{{asset('plugins-rtl/apex/apexcharts.css')}}">
@@ -14,22 +14,13 @@
     @vite(['resources/rtl/scss/dark/assets/elements/alert.scss'])
     <style>
         input[type=search] {
-            width: 1px;
             box-sizing: border-box;
-            border: 0;
             font-size: 16px;
-            background-color: #fafafa;
             background-size: 35px;
             background-position: 3px 5px;
             background-repeat: no-repeat;
-            padding: 0;
-            margin-left: 0;
             -webkit-transition: width 0.4s ease-in-out;
             transition: width 0.4s ease-in-out;
-        }
-
-        /* When the input field gets focus, change its width to 100% */
-        input[type=search]:focus {
             width: 275px;
             padding: 10px 20px 5px 40px;
             margin-left: 10px;
@@ -56,7 +47,7 @@
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">لوحة التحكم</a></li>
-                <li class="breadcrumb-item active" aria-current="page">قائمة الإقتراحات</li>
+                <li class="breadcrumb-item active" aria-current="page">قائمة الاقتراحات</li>
             </ol>
         </nav>
     </div>
@@ -65,18 +56,7 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
-                    <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الإقتراحات...">
-                    <label class="btn btn-info" for="Search">
-                        البحث
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-search">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </label>
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
                     <div class="btn-group mb-2 mx-2" role="group">
                         <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
@@ -88,12 +68,11 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btndefault">
                             <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>الكل ({{$SuggestionCount['all']}})</a>
-                            <a wire:click="SortBy('يحتاج مراجعة')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>يحتاج مراجعة
-                                ({{$SuggestionCount['needReview']}})</a>
-                            <a wire:click="SortBy('تم القبول')" class="btn dropdown-item"><i
-                                    class="flaticon-gear-fill mr-1"></i>تم القبول ({{$SuggestionCount['accepted']}})</a>
+                                    class="flaticon-home-fill-1 mr-1"></i>الكل</a>
+                            <a wire:click="SortBy('التعديلات')" class="btn dropdown-item"><i
+                                    class="flaticon-home-fill-1 mr-1"></i>التعديلات</a>
+                            <a wire:click="SortBy('الإضافات')" class="btn dropdown-item"><i
+                                    class="flaticon-gear-fill mr-1"></i>الاضافات</a>
                         </div>
                     </div>
                 </div>
@@ -101,23 +80,22 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center">
                     <thead>
-                    <tr style="font-size: 15px">
+                    <tr>
                         <th>#</th>
-{{--                        <th style="min-width: 180px">رقم أساسي</th>--}}
-                        <th style="min-width: 180px">رقم الأسير</th>
-                        <th style="min-width: 180px">اسم الأسير</th>
-                        <th style="min-width: 180px">رقم الهوية</th>
-                        <th style="min-width: 180px">اسم مقدم البيانات</th>
-                        <th style="min-width: 180px">صلة قرابة مقدم البيانات</th>
-                        <th style="min-width: 180px">حالة الطلب</th>
-                        <th style="min-width: 180px">الخيارات</th>
+                        <th>رقم الأسير</th>
+                        <th>اسم الأسير</th>
+                        <th>رقم الهوية</th>
+                        <th>مقدم البيانات</th>
+                        <th>صلة القرابة</th>
+                        <th>حالة الطلب</th>
+                        <th>تاريخ الطلب</th>
+                        <th>الخيارات</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($Suggestions as $key => $row)
                         <tr>
                             <td>{{$Suggestions->firstItem() + $key}}</td>
-{{--                            <td>{{$row->id}}</td>--}}
                             <td>
                                 @if(isset($row->Prisoner->id))
                                     <a class="btn btn-link" wire:click="SearchFor({{$row->Prisoner->id}})">
@@ -127,7 +105,17 @@
                                     لا يوجد
                                 @endif
                             </td>
-                            <td>{{$row->Prisoner->full_name ?? $row->full_name}}</td>
+                            <td>
+                                @if(isset($row->Prisoner->full_name))
+                                    <a class="btn" wire:click="SearchFor('{{$row->Prisoner->full_name}}')">
+                                        {{$row->Prisoner->full_name}}
+                                    </a>
+                                @else
+                                    <a class="btn" wire:click="SearchFor('{{$row->full_name}}')">
+                                        {{$row->full_name}}
+                                    </a>
+                                @endif
+                            </td>
                             <td>{{$row->Prisoner->identification_number ?? $row->identification_number}}</td>
                             <td>{{$row->suggester_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->Relationship->relationship_name ?? 'لا يوجد'}}</td>
@@ -137,6 +125,9 @@
                                 @else
                                     <p class="text-success">إضافة</p>
                                 @endif
+                            </td>
+                            <td>
+                                {{ \Illuminate\Support\Carbon::parse($row->created_at)->format('Y-m-d | h:i A') }}
                             </td>
                             <td>
                                 <a wire:click="Accept({{$row}})"
@@ -184,12 +175,12 @@
                                 <hr>
                                 <h5>
                                     @if(isset($Suggestions_->prisoner_id))
-                                        إقتراح تعديل
+                                        اقتراح تعديل
                                     @else
                                         @if($Exist)
-                                            <p>إقتراح إضافة <span class="text-danger">(رقم الهوية موجود)</span></p>
+                                            <p>اقتراح إضافة <span class="text-danger">(رقم الهوية موجود)</span></p>
                                         @else
-                                            إقتراح إضافة (رقم الهوية جديد)
+                                            اقتراح إضافة (رقم الهوية جديد)
                                         @endif
                                     @endif
                                 </h5>
@@ -237,7 +228,7 @@
                             <div class="row">
                                 <div class="col-12 text-center">
                                     <hr>
-                                    <h5>بيانات الإعتقال الحالية</h5>
+                                    <h5>بيانات الاعتقال الحالية</h5>
                                     <hr>
                                 </div>
                                 @if(isset($arrestColumns))
@@ -298,7 +289,7 @@
                                     <hr>
                                     <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
                                            wire:model.live="SelectAllPrisonersArrest">
-                                    <h5 class="d-inline">بيانات الإعتقال المقترح</h5>
+                                    <h5 class="d-inline">بيانات الاعتقال المقترح</h5>
                                     <hr>
                                 </div>
                                 @if(isset($arrestColumns))
@@ -474,9 +465,9 @@
                                 <div class="col-12 text-center">
                                     <hr>
                                     <h5>
-                                        الإعتقالات السابقة
+                                        الاعتقالات السابقة
                                     </h5>
-                                    <span class="text-danger" style="font-size: 17px">عليك تحديد الإعتقالات المقترحة التي تريد أن يتم إضافتها</span>
+                                    <span class="text-danger" style="font-size: 17px">عليك تحديد الاعتقالات المقترحة التي تريد أن يتم إضافتها</span>
                                     <hr>
                                 </div>
                                 <div class="row">
@@ -490,13 +481,16 @@
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['prisoner'] as $index => $row)
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
+                                                            <h5 class="">{{$row['arrested_side']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-3 mb-3">
                                                             <a wire:click="removeFromPrisonerList({{$row['id']}})"
                                                                class="btn btn-danger">
                                                                 إزالة
@@ -518,13 +512,16 @@
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['prisoner_deleted'] as $index => $row)
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
+                                                            <h5 class="">{{$row['arrested_side']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-3 mb-3">
                                                             <a wire:click="removeFromPrisonerDeletedList({{$row['id']}})"
                                                                class="btn btn-warning">
                                                                 تراجع
@@ -545,13 +542,16 @@
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['suggestion'] as $index => $row)
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
+                                                            <h5 class="">{{$row['arrested_side']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-3 mb-3">
                                                             <a wire:click="addToSuggestionAcceptedList({{$row['id']}})"
                                                                class="btn btn-success">
                                                                 قبول
@@ -574,13 +574,16 @@
                                                         <hr>
                                                     </div>
                                                     @foreach($oldArrestColumns['suggestion_accepted'] as $index => $row)
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
                                                             <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                         </div>
-                                                        <div class="col-md-4 mb-3">
+                                                        <div class="col-md-3 mb-3">
+                                                            <h5 class="">{{$row['arrested_side']}}</h5>
+                                                        </div>
+                                                        <div class="col-md-3 mb-3">
                                                             <a wire:click="removeFromSuggestionAcceptedList({{$row['id']}})"
                                                                class="btn btn-warning">
                                                                 تراجع
@@ -627,7 +630,7 @@
                                 <div class="row">
                                     <div class="col-12 text-center">
                                         <hr>
-                                        <h5>بيانات الإعتقال</h5>
+                                        <h5>بيانات الاعتقال</h5>
                                         <input type="checkbox" id="selectAllCheckbox" name="selectAllCheckbox"
                                                wire:model.live="SelectAllPrisonersArrest">
                                         <label for="selectAllCheckbox">تحديد الكل</label>
@@ -741,13 +744,16 @@
                                                 <hr>
                                             </div>
                                             @foreach($oldArrestColumns['suggestion'] as $index => $row)
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                 </div>
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                 </div>
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
+                                                    <h5 class="">{{$row['arrested_side']}}</h5>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
                                                     <a wire:click="addToSuggestionAcceptedList({{$row['id']}})"
                                                        class="btn btn-success">
                                                         قبول
@@ -770,13 +776,16 @@
                                                 <hr>
                                             </div>
                                             @foreach($oldArrestColumns['suggestion_accepted'] as $index => $row)
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <h5 class="">{{$row['old_arrest_start_date']}}</h5>
                                                 </div>
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
                                                     <h5 class="">{{$row['old_arrest_end_date']}}</h5>
                                                 </div>
-                                                <div class="col-md-4 mb-3">
+                                                <div class="col-md-3 mb-3">
+                                                    <h5 class="">{{$row['arrested_side']}}</h5>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
                                                     <a wire:click="removeFromSuggestionAcceptedList({{$row['id']}})"
                                                        class="btn btn-warning">
                                                         تراجع
@@ -821,14 +830,14 @@
             <div class="modal-content bg-white">
                 <div class="modal-header bg-danger" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">حذف الإقتراح</h1>
+                        id="staticBackdropLabel">حذف الاقتراح</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الإقتراح؟</h5>
+                    <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الاقتراح؟</h5>
                     <span class="text-danger m-3">
-                    * تنبية:
+                    * تنبيه:
                         <span class="text-dark">
                         سيتم حذف {{$Suggestions_->full_name ?? null}}
                         </span>
@@ -872,7 +881,7 @@
                 Swal.fire(
                     {
                         title: 'نجاح',
-                        text: 'تم حذف بيانات الإقتراح',
+                        text: 'تم حذف بيانات الاقتراح',
                         icon: 'success',
                         confirmButtonText: 'تم'
                     }
@@ -890,7 +899,7 @@
             document.body.addEventListener('create_massage', function () {
                 Swal.fire({
                     title: 'نجاح',
-                    text: 'تم قبول الإقتراح',
+                    text: 'تم قبول الاقتراح',
                     icon: 'success',
                     confirmButtonText: 'تم',
                 });

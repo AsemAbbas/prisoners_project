@@ -172,138 +172,141 @@ class ListPrisoners extends Component
 
         return Prisoner::query()
             ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber'])
-            ->orderBy('id','ASC')
+            ->orderBy('id', 'ASC')
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
                     ->orWhereNull('city_id');
             })
-            ->when(isset($this->Search), function ($query) {
-                $searchTerms = explode(' ', $this->Search);
-                $query->where(function ($subQuery) use ($searchTerms) {
-                    foreach ($searchTerms as $term) {
-                        $subQuery->where(function ($nameSubQuery) use ($term) {
-                            $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('second_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('third_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+            ->where(function ($q) {
+                $q->when(isset($this->Search), function ($query) {
+                    $searchTerms = explode(' ', $this->Search);
+                    $query->where(function ($subQuery) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $subQuery->where(function ($nameSubQuery) use ($term) {
+                                $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('second_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('third_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+                            });
+                        }
+                    })
+                        ->orWhere('identification_number', 'LIKE', $this->Search)
+                        ->orWhere('id', 'LIKE', $this->Search)
+                        ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhereHas('City', function ($q) {
+                            $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('Town', function ($q) {
+                            $q->where('town_name', 'LIKE', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('PrisonerType', function ($q) {
+                            $q->where('prisoner_type_name', 'LIKE', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('Arrest', function ($q) {
+                            $q->where('arrest_type', 'LIKE', '%' . $this->Search . '%');
+                            $q->orWhere('social_type', 'LIKE', '%' . $this->Search . '%');
+                            $q->orWhere('wife_type', 'LIKE', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('Arrest.Belong', function ($q) {
+                            $q->where('belong_name', 'LIKE', '%' . $this->Search . '%');
                         });
-                    }
-                })
-                    ->orWhere('identification_number', 'LIKE', $this->Search)
-                    ->orWhere('id', 'LIKE', $this->Search)
-                    ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhereHas('City', function ($q) {
-                        $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Town', function ($q) {
-                        $q->where('town_name', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('PrisonerType', function ($q) {
-                        $q->where('prisoner_type_name', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Arrest', function ($q) {
-                        $q->where('arrest_type', 'LIKE', '%' . $this->Search . '%');
-                        $q->orWhere('social_type', 'LIKE', '%' . $this->Search . '%');
-                        $q->orWhere('wife_type', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Arrest.Belong', function ($q) {
-                        $q->where('belong_name', 'LIKE', '%' . $this->Search . '%');
-                    });
-            })
-            ->when(isset($this->AdvanceSearch), function ($query) {
-                $query->when(isset($this->AdvanceSearch['dob_from']) && isset($this->AdvanceSearch['dob_to']), function ($subQuery) {
-                    $subQuery->whereBetween('date_of_birth', [$this->AdvanceSearch['dob_from'], $this->AdvanceSearch['dob_to']]);
                 });
-                $query->when(isset($this->AdvanceSearch['doa_from']) && isset($this->AdvanceSearch['doa_to']), function ($subQuery) {
+                $q->when(isset($this->AdvanceSearch), function ($query) {
+                    $query->when(isset($this->AdvanceSearch['dob_from']) && isset($this->AdvanceSearch['dob_to']), function ($subQuery) {
+                        $subQuery->whereBetween('date_of_birth', [$this->AdvanceSearch['dob_from'], $this->AdvanceSearch['dob_to']]);
+                    });
+                    $query->when(isset($this->AdvanceSearch['doa_from']) && isset($this->AdvanceSearch['doa_to']), function ($subQuery) {
 
-                    $subQuery->whereHas('LastArrest', function ($q) {
-                        $q->whereBetween('arrest_start_date', [
-                            $this->AdvanceSearch['doa_from'],
-                            $this->AdvanceSearch['doa_to']
-                        ]);
+                        $subQuery->whereHas('LastArrest', function ($q) {
+                            $q->whereBetween('arrest_start_date', [
+                                $this->AdvanceSearch['doa_from'],
+                                $this->AdvanceSearch['doa_to']
+                            ]);
+                        });
                     });
-                });
-                $query->when(isset($this->AdvanceSearch['judgment_in_lifetime_from']) && isset($this->AdvanceSearch['judgment_in_lifetime_to']), function ($subQuery) {
-                    $subQuery->whereHas('Arrest', function ($q) {
-                        $q->whereRaw(
-                            "CAST(judgment_in_lifetime AS UNSIGNED) BETWEEN ? AND ?",
-                            [
-                                (int)$this->AdvanceSearch['judgment_in_lifetime_from'],
-                                (int)$this->AdvanceSearch['judgment_in_lifetime_to']
-                            ]
-                        );
+                    $query->when(isset($this->AdvanceSearch['judgment_in_lifetime_from']) && isset($this->AdvanceSearch['judgment_in_lifetime_to']), function ($subQuery) {
+                        $subQuery->whereHas('Arrest', function ($q) {
+                            $q->whereRaw(
+                                "CAST(judgment_in_lifetime AS UNSIGNED) BETWEEN ? AND ?",
+                                [
+                                    (int)$this->AdvanceSearch['judgment_in_lifetime_from'],
+                                    (int)$this->AdvanceSearch['judgment_in_lifetime_to']
+                                ]
+                            );
+                        });
                     });
-                });
-                $query->when(isset($this->AdvanceSearch['judgment_in_years_from']) && isset($this->AdvanceSearch['judgment_in_years_to']), function ($subQuery) {
-                    $subQuery->whereHas('Arrest', function ($q) {
-                        $q->whereRaw(
-                            "CAST(judgment_in_years AS UNSIGNED) BETWEEN ? AND ?",
-                            [
-                                (int)$this->AdvanceSearch['judgment_in_years_from'],
-                                (int)$this->AdvanceSearch['judgment_in_years_to']
-                            ]
-                        );
+                    $query->when(isset($this->AdvanceSearch['judgment_in_years_from']) && isset($this->AdvanceSearch['judgment_in_years_to']), function ($subQuery) {
+                        $subQuery->whereHas('Arrest', function ($q) {
+                            $q->whereRaw(
+                                "CAST(judgment_in_years AS UNSIGNED) BETWEEN ? AND ?",
+                                [
+                                    (int)$this->AdvanceSearch['judgment_in_years_from'],
+                                    (int)$this->AdvanceSearch['judgment_in_years_to']
+                                ]
+                            );
+                        });
                     });
-                });
-                $query->when(!empty($this->AdvanceSearch['gender']), function ($subQuery) {
-                    $filteredGender = array_filter($this->AdvanceSearch['gender']);
-                    if (!empty($filteredGender)) {
-                        $subQuery->whereIn('gender', array_keys($filteredGender));
-                    }
-                });
-                $query->when(!empty($this->AdvanceSearch['city']), function ($subQuery) {
-                    $filteredCity = array_filter($this->AdvanceSearch['city']);
-                    if (!empty($filteredCity)) {
-                        $subQuery->whereIn('city_id', array_keys($filteredCity));
-                    }
-                });
-                $query->when(!empty($this->AdvanceSearch['town']), function ($subQuery) {
-                    $filteredTown = array_filter($this->AdvanceSearch['town']);
-                    if (!empty($filteredTown)) {
-                        $subQuery->whereIn('town_id', array_keys($filteredTown));
-                    }
-                });
-                $query->when(!empty($this->AdvanceSearch['prisoner_type']), function ($subQuery) {
-                    $filteredPrisonerType = array_filter($this->AdvanceSearch['prisoner_type']);
-                    if (!empty($filteredPrisonerType)) {
-                        $subQuery->where(function ($query) use ($filteredPrisonerType) {
-                            foreach ($filteredPrisonerType as $key => $case) {
-                                $query->orWhereHas('PrisonerType', function ($query) use ($key) {
-                                    $query->where('prisoner_type_id', $key);
-                                });
-                            }
-                        });
-                    }
-                });
-                $query->when(isset($this->AdvanceSearch['belong']), function ($subQuery) {
-                    $filteredBelong = array_filter($this->AdvanceSearch['belong']);
-                    if (!empty($filteredBelong)) {
-                        $subQuery->whereHas('Arrest', function ($q) use ($filteredBelong) {
-                            $q->whereIn('belong_id', array_keys($filteredBelong));
-                        });
-                    }
-                });
-                $query->when(isset($this->AdvanceSearch['social_type']), function ($subQuery) {
-                    $filteredSocialType = array_filter($this->AdvanceSearch['social_type']);
-                    if (!empty($filteredSocialType)) {
-                        $subQuery->whereHas('Arrest', function ($q) use ($filteredSocialType) {
-                            $q->whereIn('social_type', array_keys($filteredSocialType));
-                        });
-                    }
-                });
-                $query->when(isset($this->AdvanceSearch['special_case']), function ($subQuery) {
-                    $filteredSpecialCase = array_filter($this->AdvanceSearch['special_case']);
-                    if (!empty($filteredSpecialCase)) {
-                        $subQuery->where(function ($query) use ($filteredSpecialCase) {
-                            foreach ($filteredSpecialCase as $key => $case) {
-                                $query->orWhereHas('Arrest', function ($query) use ($key) {
-                                    $query->where('special_case', 'LIKE', '%' . $key . '%');
-                                });
-                            }
-                        });
-                    }
+                    $query->when(!empty($this->AdvanceSearch['gender']), function ($subQuery) {
+                        $filteredGender = array_filter($this->AdvanceSearch['gender']);
+                        if (!empty($filteredGender)) {
+                            $subQuery->whereIn('gender', array_keys($filteredGender));
+                        }
+                    });
+                    $query->when(!empty($this->AdvanceSearch['city']), function ($subQuery) {
+                        $filteredCity = array_filter($this->AdvanceSearch['city']);
+                        if (!empty($filteredCity)) {
+                            $subQuery->whereIn('city_id', array_keys($filteredCity));
+                        }
+                    });
+                    $query->when(!empty($this->AdvanceSearch['town']), function ($subQuery) {
+                        $filteredTown = array_filter($this->AdvanceSearch['town']);
+                        if (!empty($filteredTown)) {
+                            $subQuery->whereIn('town_id', array_keys($filteredTown));
+                        }
+                    });
+                    $query->when(!empty($this->AdvanceSearch['prisoner_type']), function ($subQuery) {
+                        $filteredPrisonerType = array_filter($this->AdvanceSearch['prisoner_type']);
+                        if (!empty($filteredPrisonerType)) {
+                            $subQuery->where(function ($query) use ($filteredPrisonerType) {
+                                foreach ($filteredPrisonerType as $key => $case) {
+                                    $query->orWhereHas('PrisonerType', function ($query) use ($key) {
+                                        $query->where('prisoner_type_id', $key);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    $query->when(isset($this->AdvanceSearch['belong']), function ($subQuery) {
+                        $filteredBelong = array_filter($this->AdvanceSearch['belong']);
+                        if (!empty($filteredBelong)) {
+                            $subQuery->whereHas('Arrest', function ($q) use ($filteredBelong) {
+                                $q->whereIn('belong_id', array_keys($filteredBelong));
+                            });
+                        }
+                    });
+                    $query->when(isset($this->AdvanceSearch['social_type']), function ($subQuery) {
+                        $filteredSocialType = array_filter($this->AdvanceSearch['social_type']);
+                        if (!empty($filteredSocialType)) {
+                            $subQuery->whereHas('Arrest', function ($q) use ($filteredSocialType) {
+                                $q->whereIn('social_type', array_keys($filteredSocialType));
+                            });
+                        }
+                    });
+                    $query->when(isset($this->AdvanceSearch['special_case']), function ($subQuery) {
+                        $filteredSpecialCase = array_filter($this->AdvanceSearch['special_case']);
+                        if (!empty($filteredSpecialCase)) {
+                            $subQuery->where(function ($query) use ($filteredSpecialCase) {
+                                foreach ($filteredSpecialCase as $key => $case) {
+                                    $query->orWhereHas('Arrest', function ($query) use ($key) {
+                                        $query->where('special_case', 'LIKE', '%' . $key . '%');
+                                    });
+                                }
+                            });
+                        }
+                    });
                 });
             });
+
     }
 
     public function updatedSearch(): void

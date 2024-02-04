@@ -75,6 +75,7 @@ class ListPrisonerSuggestions extends Component
                 'third_name' => true,
                 'last_name' => true,
                 'mother_name' => true,
+                'nick_name' => true,
                 'date_of_birth' => true,
                 'gender' => true,
                 'city_id' => true,
@@ -113,6 +114,7 @@ class ListPrisonerSuggestions extends Component
                 'first_phone_number' => true,
                 'second_phone_owner' => true,
                 'second_phone_number' => true,
+                'is_released' => true,
                 'email' => true,
             ];
         } else  $this->selectAcceptedArrest = [];
@@ -221,20 +223,20 @@ class ListPrisonerSuggestions extends Component
             $judgment_in_lifetime = "الحكم المتوقع مؤبدات:";
             $judgment_in_years = "الحكم المتوقع سنوات:";
             $judgment_in_months = "الحكم المتوقع شهور:";
-        }else{
+        } else {
             $judgment_in_lifetime = "الحكم مؤبدات:";
             $judgment_in_years = "الحكم سنوات:";
             $judgment_in_months = "الحكم شهور:";
         }
 
         $this->arrestColumns = [
-            'تاريخ الإعتقال:' =>
+            'تاريخ الاعتقال:' =>
                 [
                     'name' => 'arrest_start_date',
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->arrest_start_date ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->arrest_start_date ?? 'لا يوجد',
                 ],
-            'نوع الإعتقال:' =>
+            'نوع الاعتقال:' =>
                 [
                     'name' => 'arrest_type',
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->arrest_type ?? 'لا يوجد',
@@ -374,7 +376,7 @@ class ListPrisonerSuggestions extends Component
                     'suggestion' => $this->Suggestions_->ArrestSuggestion->second_phone_owner ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->Arrest->second_phone_owner ?? 'لا يوجد',
                 ],
-            'مفرج عنه حالياً؟:' =>
+            'مفرج عنه حالياً ؟:' =>
                 [
                     'name' => 'is_released',
                     'suggestion' => isset($this->Suggestions_->ArrestSuggestion->is_released) && $this->Suggestions_->ArrestSuggestion->is_released ? 'نعم' : 'لا',
@@ -574,8 +576,6 @@ class ListPrisonerSuggestions extends Component
         $PrisonerArray = isset($this->Prisoner_) ? $this->Prisoner_->toArray() : null;
         $SuggestionsArrestArray = isset($this->Suggestions_->ArrestSuggestion) ? $this->Suggestions_->ArrestSuggestion->toArray() : null;
         $PrisonerArrestArray = isset($this->Prisoner_->Arrest) ? $this->Prisoner_->Arrest->toArray() : null;
-        $PrisonerOldArrestArray = isset($this->Prisoner_->OldArrest) ? $this->Prisoner_->OldArrest->toArray() : null;
-        $SuggestionsOldArrestArray = isset($this->Suggestions_->OldArrestSuggestion) ? $this->Suggestions_->OldArrestSuggestion->toArray() : null;
 
         $validation = Validator::make($SuggestionsArray, [
             'identification_number' => "nullable",
@@ -625,7 +625,7 @@ class ListPrisonerSuggestions extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable|boolean",
+            'is_released' => "nullable|in:0,1",
             'email' => "nullable|email",
         ])->validate();
 
@@ -651,6 +651,17 @@ class ListPrisonerSuggestions extends Component
             'town_id' => $finalData['town_id'] ?? $PrisonerArray['town_id'] ?? null,
             'notes' => $finalData['notes'] ?? $PrisonerArray['notes'] ?? null,
         ]);
+
+        $is_released = null;
+
+        if (isset($finalArrestData["is_released"])) {
+            $is_released = (boolean)$finalArrestData["is_released"];
+        } elseif (isset($Arrest["is_released"])) {
+            $is_released = (boolean)$Arrest["is_released"];
+        } elseif (isset($PrisonerArrestArray['is_released'])) {
+            $is_released = (boolean)$PrisonerArrestArray['is_released'];
+        }
+
         ArrestConfirm::query()->create([
             'confirm_status' => "يحتاج مراجعة",
             "prisoner_id" => $SuggestionsArrestArray['prisoner_id'] ?? null,
@@ -679,7 +690,7 @@ class ListPrisonerSuggestions extends Component
             "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? $PrisonerArrestArray['first_phone_number'] ?? null,
             "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? $PrisonerArrestArray['second_phone_owner'] ?? null,
             "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? $PrisonerArrestArray['second_phone_number'] ?? null,
-            "is_released" => (boolean)$finalArrestData["is_released"] ?? (boolean)$Arrest["is_released"] ?? (boolean)$PrisonerArrestArray['is_released'] ?? null,
+            "is_released" => $is_released,
             "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? $PrisonerArrestArray['email'] ?? null,
         ]);
 
@@ -770,16 +781,7 @@ class ListPrisonerSuggestions extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $Suggestions = $this->getSuggestionsProperty()
-            ->when(isset($this->sortBy), function ($q) {
-                if ($this->sortBy == "تم القبول")
-                    $q->where('suggestion_status', "تم القبول");
-                elseif ($this->sortBy == "يحتاج مراجعة")
-                    $q->where('suggestion_status', 'يحتاج مراجعة');
-                else   $q->whereIn('suggestion_status', ['تم القبول', 'يحتاج مراجعة']);
-            })
-            ->orderBy('id')
-            ->paginate(10);
+        $Suggestions = $this->getSuggestionsProperty()->paginate(10);
 
         $value = !$this->Exist ? 12 : 11;
 
@@ -810,77 +812,96 @@ class ListPrisonerSuggestions extends Component
                     else $ASOAStatus = false;
                 }
             }
-
-        $SuggestionCount = [
-            'all' => PrisonerSuggestion::query()->count(),
-            'accepted' => PrisonerSuggestion::query()->where('suggestion_status', 'تم القبول')->count(),
-            'needReview' => PrisonerSuggestion::query()->where('suggestion_status', 'يحتاج مراجعة')->count(),
-        ];
-
-        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'SuggestionCount', 'ASOAStatus', 'APOAStatus'));
+        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'ASOAStatus', 'APOAStatus'));
     }
 
-    public function getSuggestionsProperty()
+    public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder
     {
         $CurrentUserCities = User::query()
             ->where('id', Auth::user()->id)
-            ->with('City')->first()->toArray()['city'] ?? [];
+            ->with('City')
+            ->first()
+            ->toArray()['city'] ?? [];
+
         $cityIdArray = [];
         foreach ($CurrentUserCities as $subArray) {
             if (isset($subArray['pivot']['city_id'])) {
                 $cityIdArray[] = $subArray['pivot']['city_id'];
             }
         }
+
         return PrisonerSuggestion::query()
             ->with(['City', 'Relationship'])
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
                     ->orWhereNull('city_id');
             })
-            ->when(isset($this->Search), function ($query) {
-                $searchTerms = explode(' ', $this->Search);
-                $query->where(function ($subQuery) use ($searchTerms) {
-                    foreach ($searchTerms as $term) {
-                        $subQuery->where(function ($nameSubQuery) use ($term) {
-                            $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('second_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('third_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('last_name', 'LIKE', '%' . $term . '%');
-                        });
-                    }
-                })
-                    ->orWhereHas('Prisoner', function ($subQuery_) use ($searchTerms) {
-                        foreach ($searchTerms as $term_) {
-                            $subQuery_->where(function ($nameSubQuery_) use ($term_) {
-                                $nameSubQuery_->where('first_name', 'LIKE', '%' . $term_ . '%')
-                                    ->orWhere('second_name', 'LIKE', '%' . $term_ . '%')
-                                    ->orWhere('third_name', 'LIKE', '%' . $term_ . '%')
-                                    ->orWhere('last_name', 'LIKE', '%' . $term_ . '%');
+            ->where('suggestion_status', 'يحتاج مراجعة')
+            ->where(function ($q) {
+                $q->when(isset($this->Search), function ($query) {
+                    $searchTerms = explode(' ', $this->Search);
+                    $query->where(function ($subQuery) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $subQuery->where(function ($nameSubQuery) use ($term) {
+                                $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('second_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('third_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
                             });
                         }
+
+                        // City name search within the city_id check
+                        $subQuery->orWhereHas('City', function ($q) use ($searchTerms) {
+                            foreach ($searchTerms as $term) {
+                                $q->where('city_name', 'like', '%' . $term . '%');
+                            }
+                        });
                     })
-                    ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('suggester_identification_number', 'LIKE', $this->Search)
-                    ->orWhere('identification_number', 'LIKE', $this->Search)
-                    ->orWhereHas('Prisoner', function ($q) {
-                        $q->where('identification_number', 'LIKE', $this->Search);
-                    })
-                    ->orWhereHas('Prisoner', function ($q) {
-                        $q->where('id', 'LIKE', $this->Search);
-                    })
-                    ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhereHas('City', function ($q) {
-                        $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
-                    })
-                    ->orWhereHas('Relationship', function ($q) {
-                        $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
-                    });
+                        ->orWhereHas('Prisoner', function ($subQuery_) use ($searchTerms) {
+                            foreach ($searchTerms as $term_) {
+                                $subQuery_->where(function ($nameSubQuery_) use ($term_) {
+                                    $nameSubQuery_->where('first_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('second_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('third_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('last_name', 'LIKE', '%' . $term_ . '%');
+                                });
+                            }
+                        })
+                        ->orWhereHas('Prisoner', function ($q) {
+                            $q->where('identification_number', 'LIKE', $this->Search);
+                        })
+                        ->orWhereHas('Prisoner', function ($q) {
+                            $q->where('id', 'LIKE', $this->Search);
+                        })
+                        ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhere('suggester_identification_number', 'LIKE', $this->Search)
+                        ->orWhere('identification_number', 'LIKE', $this->Search)
+                        ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhereHas('City', function ($q) {
+                            $q->where('city_name', 'like', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('Relationship', function ($q) {
+                            $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
+                        });
+                });
+                $q->when(isset($this->sortBy), function ($query) {
+                    if ($this->sortBy === "الإضافات") {
+                        $query->whereNull('prisoner_id');
+                    } elseif ($this->sortBy === "التعديلات") {
+                        $query->whereNotNull('prisoner_id');
+                    } else {
+                        $query->whereNull('prisoner_id')->orWhereNotNull('prisoner_id');
+                    }
+                });
             });
+
     }
 
-    public function SearchFor($prisoner_id): void
+    public function SearchFor($search): void
     {
-        $this->Search = $prisoner_id;
+        $this->resetPage();
+        $this->sortBy = null;
+        $this->Search = $search;
     }
 
     public function SortBy($sort): void
@@ -894,6 +915,4 @@ class ListPrisonerSuggestions extends Component
     {
         $this->moveItem($this->familyIDNumberColumns['prisoner'], $this->familyIDNumberColumns['prisoner_deleted'], $id);
     }
-
-
 }

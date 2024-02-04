@@ -119,7 +119,7 @@ class CreateUpdatePrisoners extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'],
                 "second_phone_owner" => $data['arrest']['second_phone_owner'],
                 "second_phone_number" => $data['arrest']['second_phone_number'],
-                "is_released" => (boolean)$data['arrest']['is_released'],
+                "is_released" => $data['arrest']['is_released'],
                 "email" => $data['arrest']['email'],
                 "prisoner_type" => array_fill_keys(array_column($data['prisoner_type'], 'id'), true),
 
@@ -219,16 +219,17 @@ class CreateUpdatePrisoners extends Component
             $this->state['prisoner_type'] = array_filter($this->state['prisoner_type']) ?? null;
 
         $rule = $this->showEdit
-            ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
-            : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
-        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
-            $judgment_in_lifetime_rule = ["nullable", "integer"];
-            $judgment_in_years_rule = ["nullable", "integer"];
-            $judgment_in_months_rule = ["nullable", "integer"];
-        } else {
+            ? ["required", "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
+            : ["required", "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
+        if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم")) {
             $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
             $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
             $judgment_in_months_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_lifetime"];
+
+        } else {
+            $judgment_in_lifetime_rule = ["nullable", "integer"];
+            $judgment_in_years_rule = ["nullable", "integer"];
+            $judgment_in_months_rule = ["nullable", "integer"];
         }
 
         $validation = Validator::make($this->state, [
@@ -271,7 +272,7 @@ class CreateUpdatePrisoners extends Component
             'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable|boolean",
+            'is_released' => "nullable|in:0,1",
             'email' => "nullable",
         ]);
 
@@ -381,7 +382,7 @@ class CreateUpdatePrisoners extends Component
             $this->state['daughter_arrested'] = null;
         }
 
-        if (isset($this->state['special_case']) && !in_array('مريض', array_filter(array_keys($this->state['special_case'])))) {
+        if (isset($this->state['special_case']) && !in_array('مريض / جريح', array_filter(array_keys($this->state['special_case'])))) {
             $this->state['health_note'] = null;
         }
 

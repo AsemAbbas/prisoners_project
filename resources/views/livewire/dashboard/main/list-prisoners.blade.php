@@ -14,22 +14,13 @@
 
     <style>
         input[type=search] {
-            width: 1px;
             box-sizing: border-box;
-            border: 0;
             font-size: 16px;
-            background-color: #fafafa;
             background-size: 35px;
             background-position: 3px 5px;
             background-repeat: no-repeat;
-            padding: 0;
-            margin-left: 0;
             -webkit-transition: width 0.4s ease-in-out;
             transition: width 0.4s ease-in-out;
-        }
-
-        /* When the input field gets focus, change its width to 100% */
-        input[type=search]:focus {
             width: 275px;
             padding: 10px 20px 5px 40px;
             margin-left: 10px;
@@ -106,18 +97,7 @@
                     @endauth
                 </div>
                 <div>
-                    <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الأسرى...">
-                    <label class="btn btn-info" for="Search">
-                        البحث
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-search">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </label>
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
                     @auth
                         @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
                             <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
@@ -244,7 +224,7 @@
                                 <hr>
                             </div>
                             <div class="form-group col-md-12 mb-4 text-center">
-                                <h3>تاريخ الإعتقال <span class="text-secondary" style="font-size: 18px">(إختياري)</span>
+                                <h3>تاريخ الاعتقال <span class="text-secondary" style="font-size: 18px">(إختياري)</span>
                                 </h3>
                             </div>
                             <div class="form-group col-md-6 mb-4">
@@ -749,7 +729,7 @@
                                         <path
                                             d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"/>
                                     </svg>
-                                    <h6>تاريخ الإعتقال:</h6>
+                                    <h6>تاريخ الاعتقال:</h6>
                                     <h4>{{$Prisoners_->Arrest->arrest_start_date ?? 'لا يوجد'}}</h4>
                                 </div>
                                 @if(isset($Prisoners_->Arrest->arrest_start_date))
@@ -783,7 +763,7 @@
                                         <path fill-rule="evenodd"
                                               d="M1.114 8.063V7.9c1.005-.102 1.497-.615 1.497-1.6V4.503c0-1.094.39-1.538 1.354-1.538h.273V2h-.376C2.25 2 1.49 2.759 1.49 4.352v1.524c0 1.094-.376 1.456-1.49 1.456v1.299c1.114 0 1.49.362 1.49 1.456v1.524c0 1.593.759 2.352 2.372 2.352h.376v-.964h-.273c-.964 0-1.354-.444-1.354-1.538V9.663c0-.984-.492-1.497-1.497-1.6ZM14.886 7.9v.164c-1.005.103-1.497.616-1.497 1.6v1.798c0 1.094-.39 1.538-1.354 1.538h-.273v.964h.376c1.613 0 2.372-.759 2.372-2.352v-1.524c0-1.094.376-1.456 1.49-1.456v-1.3c-1.114 0-1.49-.362-1.49-1.456V4.352C14.51 2.759 13.75 2 12.138 2h-.376v.964h.273c.964 0 1.354.444 1.354 1.538V6.3c0 .984.492 1.497 1.497 1.6M7.5 11.5V9.207l-1.621 1.621-.707-.707L6.792 8.5H4.5v-1h2.293L5.172 5.879l.707-.707L7.5 6.792V4.5h1v2.293l1.621-1.621.707.707L9.208 7.5H11.5v1H9.207l1.621 1.621-.707.707L8.5 9.208V11.5z"/>
                                     </svg>
-                                    <h6>نوع الإعتقال:</h6>
+                                    <h6>نوع الاعتقال:</h6>
                                     <h4>{{$Prisoners_->Arrest->arrest_type ?? 'لا يوجد'}}</h4>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -980,7 +960,7 @@
                             </div>
                             <div class="col-md-12 mb-3 text-center">
                                 <hr>
-                                <h3>الإعتقالات السابقة</h3>
+                                <h3>الاعتقالات السابقة</h3>
                                 <hr>
                             </div>
                             @if(count($Prisoners_->OldArrest) > 0)
@@ -989,11 +969,11 @@
                                         <hr>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h6>بداية الإعتقال:</h6>
+                                                <h6>بداية الاعتقال:</h6>
                                                 <h4>{{$arrest->old_arrest_start_date ?? 'لا يوجد'}}</h4>
                                             </div>
                                             <div class="col-md-6">
-                                                <h6>نهاية الإعتقال:</h6>
+                                                <h6>نهاية الاعتقال:</h6>
                                                 <h4>{{$arrest->old_arrest_end_date ?? 'لا يوجد'}}</h4>
                                             </div>
                                         </div>
@@ -1181,7 +1161,7 @@
                                                 <hr>
                                             </div>
                                             <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>تاريخ الإعتقال <span class="text-danger" style="font-size: 18px">(إختياري)</span>
+                                                <h3>تاريخ الاعتقال <span class="text-danger" style="font-size: 18px">(إختياري)</span>
                                                 </h3>
                                             </div>
                                             <div class="form-group col-md-6 mb-4">
@@ -1687,7 +1667,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col-md-12 mb-4">
-                                                <label for="ArrestData">بيانات الإعتقال</label>
+                                                <label for="ArrestData">بيانات الاعتقال</label>
                                                 <div id="toggleArrestData" class="ArrestData">
                                                     <div class="card">
                                                         <div class="card-header" id="headingArrestData"
@@ -1788,7 +1768,7 @@
                 <div class="modal-body">
                     <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف الأسير؟</h5>
                     <span class="text-danger m-3">
-                        * تنبية:
+                        * تنبيه:
                         <span class="text-dark">
                             سيتم حذف {{$Prisoners_->full_name ?? null}}
                         </span>

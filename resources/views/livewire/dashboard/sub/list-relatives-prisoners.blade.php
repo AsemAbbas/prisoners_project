@@ -15,22 +15,13 @@
 
     <style>
         input[type=search] {
-            width: 1px;
             box-sizing: border-box;
-            border: 0;
             font-size: 16px;
-            background-color: #fafafa;
             background-size: 35px;
             background-position: 3px 5px;
             background-repeat: no-repeat;
-            padding: 0;
-            margin-left: 0;
             -webkit-transition: width 0.4s ease-in-out;
             transition: width 0.4s ease-in-out;
-        }
-
-        /* When the input field gets focus, change its width to 100% */
-        input[type=search]:focus {
             width: 275px;
             padding: 10px 20px 5px 40px;
             margin-left: 10px;
@@ -74,18 +65,8 @@
                     @endif
                 @endauth
                 <div>
-                    <input wire:model.live="Search" type="search" id="Search"
-                           placeholder="البحث في قائمة الأقارب المعتقلين...">
-                    <label class="btn btn-info" for="Search">
-                        البحث
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-search">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </label>
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
+
                 </div>
             </div>
             <div class="table-responsive">
@@ -251,7 +232,7 @@
                 <div class="modal-body">
                     <h5 class="text-danger m-3">هل أنت متأكد انك تريد حذف القريب المعتقل؟</h5>
                     <span class="text-danger m-3">
-                        * تنبية:
+                        * تنبيه:
                         <span class="text-dark">سيتم حذف القريب المعتقل</span>
                     </span>
                 </div>

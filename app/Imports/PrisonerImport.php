@@ -174,7 +174,7 @@ class PrisonerImport implements
             'first_phone_owner' => 'nullable',
             'first_phone_number' => 'nullable',
             'second_phone_owner' => 'nullable',
-            'is_released' => 'nullable',
+            'is_released' => 'nullable|in:0,1',
             'email' => 'nullable',
         ];
     }

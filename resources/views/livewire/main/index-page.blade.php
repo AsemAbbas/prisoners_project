@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                                         background-color: #022d4f;
+                                          background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -77,7 +77,8 @@
                                                placeholder="اسم العائلة">
                                     </div>
                                     <div class="col-sm-12 mt-4" id="Statistics">
-                                        <button type="submit" style="background-color:#fff;color: black;width: 200px"
+                                        <button wire:click="SearchPrisoners" type="submit"
+                                                style="background-color:#fff;color: black;width: 200px"
                                                 class="btn m-0">بحث
                                         </button>
                                     </div>
@@ -89,7 +90,7 @@
                                             @if($errors->first() === "لا يوجد بيانات مشابهة")
                                                 <a href="{{route('dashboard.suggestions.create')}}"
                                                    class="btn btn-warning mt-2"
-                                                   style="font-size: 18px">إقتراح إضافة</a>
+                                                   style="font-size: 18px">اقتراح إضافة</a>
                                             @endif
                                         @endif
                                     </div>
@@ -119,20 +120,20 @@
                     <div class="row">
                         @foreach($Statistics as $row)
                             <div
-                                class="@if($row->statistic_type === "إجمالي الأسرى في سجون الإحتلال") col-lg-12 @endif col-lg-4 mx-auto">
+                                class="@if($row->statistic_type === "إجمالي الأسرى في سجون الاحتلال") col-lg-12 @endif col-lg-4 mx-auto">
                                 <div class="text-center mb-3 position-relative overflow-hidden"
-                                     style="border-radius: 10px!important;@if($row->statistic_type === "إجمالي الأسرى في سجون الإحتلال") background-image:url('{{asset('main/images/total_statistic_bg.webp')}}'); @else background-image:url('{{asset('main/images/statistic_bg.webp')}}'); @endif background-repeat: no-repeat;background-size:cover;background-position:center;">
+                                     style="border-radius: 10px!important;@if($row->statistic_type === "إجمالي الأسرى في سجون الاحتلال") background-image:url('{{asset('main/images/total_statistic_bg.webp')}}'); @else background-image:url('{{asset('main/images/statistic_bg.webp')}}'); @endif background-repeat: no-repeat;background-size:cover;background-position:center;">
                                     <div class="p-3">
                                         <p class="fw-bold h5 text-white"
-                                           style="font-weight:50!important;font-family: 'Changa', sans-serif !important; font-size: 17px; @if($row->statistic_type === 'إجمالي الأسرى في سجون الإحتلال') color: rgba(9,30,70,0.81)!important;font-weight:bold!important;font-size: 18px; @endif">
+                                           style="font-weight:50!important;font-family: 'Changa', sans-serif !important; font-size: 17px; @if($row->statistic_type === 'إجمالي الأسرى في سجون الاحتلال') color: rgba(9,30,70,0.81)!important;font-weight:bold!important;font-size: 18px; @endif">
                                             {{$row->statistic_type}}
                                         </p>
                                         <p class="fw-bold text-white counter text-shadow"
                                            data-target="{{$row->statistic_number}}"
-                                           style="font-weight: bold!important;font-family: 'Changa', sans-serif !important; font-size: 40px; color: rgb(255,196,62)!important; @if($row->statistic_type === 'إجمالي الأسرى في سجون الإحتلال')color: rgba(9,30,70,0.81)!important;  font-size: 80px; @endif">
+                                           style="font-weight: bold!important;font-family: 'Changa', sans-serif !important; font-size: 40px; color: rgb(255,196,62)!important; @if($row->statistic_type === 'إجمالي الأسرى في سجون الاحتلال')color: rgba(9,30,70,0.81)!important;  font-size: 80px; @endif">
                                             {{$row->statistic_number}}
                                         </p>
-                                        @if($row->statistic_type !== "إجمالي الأسرى في سجون الإحتلال")
+                                        @if($row->statistic_type !== "إجمالي الأسرى في سجون الاحتلال")
                                             <img width="80"
                                                  style="opacity: 0.6;position: fixed;top: 35px;left: 30px;z-index: -1;background-color:#fff;border-radius: 20px;padding: 15px"
                                                  src="{{asset('storage/statistic_photo/'.$row->statistic_photo)}}"
@@ -327,7 +328,7 @@
                                                                         <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             @if(isset($prisoner->date_of_birth))
-                                                                                {{\Carbon\Carbon::parse($prisoner->date_of_birth)->format('m-d')}}
+                                                                                {{\Carbon\Carbon::parse($prisoner->date_of_birth)->format('m-d').'-****'}}
                                                                             @else
                                                                                 لا يوجد
                                                                             @endif
@@ -351,11 +352,11 @@
                                                                     <tr class="text-center">
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0 rounded-start">
-                                                                            تاريخ الإعتقال
+                                                                            تاريخ الاعتقال
                                                                         </th>
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
-                                                                            نوع الإعتقال
+                                                                            نوع الاعتقال
                                                                         </th>
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
@@ -407,7 +408,7 @@
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <a href="{{route('dashboard.suggestions.update',$prisoner->id)}}"
-                                               class="btn btn-danger">إقترح تعديل</a>
+                                               class="btn btn-danger">استعراض / تعديل كامل البيانات</a>
                                         </div>
                                     @endif
                                 @empty
@@ -462,7 +463,9 @@
                         </div>
                         <div class="col-lg-8 col-md-9 col-sm-12 mx-auto mb-3">
                             <label for="prisoner_name">بحث عن اسم أسير</label>
-                           <input id="prisoner_name" type="search" class="form-control" @if(empty($CitySearch['town_id'])) disabled @endif wire:model.live="CitySearch.prisoner_name">
+                            <input id="prisoner_name" type="search" class="form-control"
+                                   @if(empty($CitySearch['town_id'])) disabled
+                                   @endif wire:model.live="CitySearch.prisoner_name">
                         </div>
                     </div>
                     <div class="row align-items-center">
@@ -484,28 +487,13 @@
 
                                         <tbody class="border-top-0">
                                         @forelse($CityPrisoners as $prisoner)
-
-                                            @php
-                                                $check_one = (bool)$prisoner->Arrest->arrest_start_date;
-                                                $check_two = (bool)$prisoner->identification_number;
-                                                $check_three = !($prisoner->Arrest->arrest_type == "محكوم" && $prisoner->Arrest->judgment == null);
-                                                $check_four = (bool)$prisoner->first_name;
-                                                $check_six = (bool)$prisoner->second_name;
-                                                $check_seven = (bool)$prisoner->last_name;
-
-                                                if (!$check_one || !$check_two || !$check_three || !$check_four || !$check_six || !$check_seven) {
-                                                    $data_status = "غير مكتمل";
-                                                } else {
-                                                    $data_status = "مكتمل";
-                                                }
-                                            @endphp
                                             <tr class="text-center">
                                                 <td style="font-size: 18px!important;font-weight: bold;">
                                                     {{$prisoner->full_name ?? 'لا يوجد'}}
                                                 </td>
                                                 <td style="font-size: 18px!important;font-weight: bold;">
-                                                    <span
-                                                        class="@if($data_status === "غير مكتمل") text-danger @else text-success @endif">{{$data_status}}</span>
+                                                    <a href="{{route('dashboard.suggestions.update',$prisoner->id)}}"
+                                                       class="btn btn-warning">إضافة / تعديل بيانات</a>
                                                 </td>
                                             </tr>
                                         @empty

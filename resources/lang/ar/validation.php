@@ -166,7 +166,7 @@ return [
 
         'login' => 'اسم المستخدم أو البريد الإلكتروني',
         'identification_number' => 'رقم الهوية',
-        'arrest_start_date' => 'تاريخ الإعتقال',
+        'arrest_start_date' => 'تاريخ الاعتقال',
         'release_date' => 'تاريخ الإفراج',
         'second_name' => 'اسم الأب',
         'nationality' => 'الجنسية',
@@ -205,7 +205,7 @@ return [
         'certified' => 'معتمد',
         'conversion_a_certified' => 'معتمد للتحويل',
         'affiliation_history' => 'تاريخ الإنتماء',
-        'arrest_type' => 'نوع الإعتقال',
+        'arrest_type' => 'نوع الاعتقال',
         'name' => 'الاسم',
         'username' => 'اسم المُستخدم',
         'email' => 'البريد الالكتروني',
