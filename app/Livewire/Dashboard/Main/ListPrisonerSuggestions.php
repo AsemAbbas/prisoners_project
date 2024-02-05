@@ -11,6 +11,7 @@ use App\Enums\SocialType;
 use App\Enums\SpecialCase;
 use App\Enums\SuggestionStatus;
 use App\Enums\WifeType;
+use App\Models\Arrest;
 use App\Models\ArrestConfirm;
 use App\Models\Belong;
 use App\Models\City;
@@ -46,6 +47,8 @@ class ListPrisonerSuggestions extends Component
     public bool $SelectAllPrisonersArrest = false;
 
     public ?string $Search = null;
+    public ?string $change_prisoner_id = null;
+    public ?string $prisoner_search = null;
     public ?string $sortBy = null;
     public array $selectAccepted = [];
     public array $selectAcceptedArrest = [];
@@ -60,64 +63,31 @@ class ListPrisonerSuggestions extends Component
 
     protected string $paginationTheme = 'bootstrap';
 
-    public function updatedSearch(): void
+    public function makeItMain($change_prisoner_id): void
     {
-        $this->resetPage();
-    }
+        $prisoner_id = $change_prisoner_id;
 
-    public function updatedSelectAllPrisoners(): void
-    {
-        if ($this->SelectAllPrisoners) {
-            $this->selectAccepted = [
-                'identification_number' => !$this->Exist,
-                'first_name' => true,
-                'second_name' => true,
-                'third_name' => true,
-                'last_name' => true,
-                'mother_name' => true,
-                'nick_name' => true,
-                'date_of_birth' => true,
-                'gender' => true,
-                'city_id' => true,
-                'town_id' => true,
-                'notes' => true,
-            ];
-        } else  $this->selectAccepted = [];
-    }
+        $arrest = Arrest::query()->where('prisoner_id', $prisoner_id)->first();
 
-    public function updatedSelectAllPrisonersArrest(): void
-    {
-        if ($this->SelectAllPrisonersArrest) {
-            $this->selectAcceptedArrest = [
-                'prisoner_id' => true,
-                'arrest_start_date' => true,
-                'arrest_type' => true,
-                'judgment_in_lifetime' => true,
-                'judgment_in_years' => true,
-                'judgment_in_months' => true,
-                'belong_id' => true,
-                'special_case' => true,
-                'social_type' => true,
-                'wife_type' => true,
-                'number_of_children' => true,
-                'education_level' => true,
-                'health_note' => true,
-                'father_arrested' => true,
-                'mother_arrested' => true,
-                'husband_arrested' => true,
-                'wife_arrested' => true,
-                'brother_arrested' => true,
-                'sister_arrested' => true,
-                'son_arrested' => true,
-                'daughter_arrested' => true,
-                'first_phone_owner' => true,
-                'first_phone_number' => true,
-                'second_phone_owner' => true,
-                'second_phone_number' => true,
-                'is_released' => true,
-                'email' => true,
-            ];
-        } else  $this->selectAcceptedArrest = [];
+        $suggestion_id = $this->Suggestions_->id;
+
+        if ($arrest) {
+            $arrest_id = $arrest->id;
+
+            $this->Suggestions_->update(['prisoner_id' => $prisoner_id]);
+
+            $this->Suggestions_->ArrestSuggestion->update(['prisoner_id' => $prisoner_id, 'arrest_id' => $arrest_id]);
+
+            $OldArrestSuggestion = $this->Suggestions_->OldArrestSuggestion;
+
+            $OldArrestSuggestion->each(function ($old) use ($prisoner_id) {
+                $old->update(['prisoner_id' => $prisoner_id]);
+            });
+
+            $suggestions = PrisonerSuggestion::query()->where('id', $suggestion_id)->first();
+            if (isset($suggestions))
+                $this->Accept($suggestions);
+        }
     }
 
     public function Accept(PrisonerSuggestion $prisonerSuggestion): void
@@ -131,6 +101,8 @@ class ListPrisonerSuggestions extends Component
         $this->arrestColumns = [];
         $this->oldArrestColumns = [];
 
+        $this->prisoner_search = null;
+        $this->change_prisoner_id = null;
         $this->SelectAllPrisoners = false;
         $this->SelectAllPrisonersArrest = false;
 
@@ -490,6 +462,66 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('ShowAcceptModal');
     }
 
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSelectAllPrisoners(): void
+    {
+        if ($this->SelectAllPrisoners) {
+            $this->selectAccepted = [
+                'identification_number' => !$this->Exist,
+                'first_name' => true,
+                'second_name' => true,
+                'third_name' => true,
+                'last_name' => true,
+                'mother_name' => true,
+                'nick_name' => true,
+                'date_of_birth' => true,
+                'gender' => true,
+                'city_id' => true,
+                'town_id' => true,
+                'notes' => true,
+            ];
+        } else  $this->selectAccepted = [];
+    }
+
+    public function updatedSelectAllPrisonersArrest(): void
+    {
+        if ($this->SelectAllPrisonersArrest) {
+            $this->selectAcceptedArrest = [
+                'prisoner_id' => true,
+                'arrest_start_date' => true,
+                'arrest_type' => true,
+                'judgment_in_lifetime' => true,
+                'judgment_in_years' => true,
+                'judgment_in_months' => true,
+                'belong_id' => true,
+                'special_case' => true,
+                'social_type' => true,
+                'wife_type' => true,
+                'number_of_children' => true,
+                'education_level' => true,
+                'health_note' => true,
+                'father_arrested' => true,
+                'mother_arrested' => true,
+                'husband_arrested' => true,
+                'wife_arrested' => true,
+                'brother_arrested' => true,
+                'sister_arrested' => true,
+                'son_arrested' => true,
+                'daughter_arrested' => true,
+                'first_phone_owner' => true,
+                'first_phone_number' => true,
+                'second_phone_owner' => true,
+                'second_phone_number' => true,
+                'is_released' => true,
+                'email' => true,
+            ];
+        } else  $this->selectAcceptedArrest = [];
+    }
+
     public function FamilyIdnPrisonerDeleted($index, $key): void
     {
         // Find the item in "suggestion" and move it to "suggestion_accepted"
@@ -783,8 +815,50 @@ class ListPrisonerSuggestions extends Component
     {
         $Suggestions = $this->getSuggestionsProperty()->paginate(10);
 
-        $value = !$this->Exist ? 12 : 11;
+        if (!empty($this->prisoner_search) || !empty($this->Suggestions_)) {
+            $PrisonerSearch = Prisoner::query()
+                ->where(function ($q) {
+                    if (isset($this->prisoner_search)) {
+                        $q->where(function ($q) {
+                            $searchTerms = explode(' ', $this->prisoner_search);
+                            $q->where('identification_number', $this->prisoner_search)
+                                ->orWhere(function ($subQuery) use ($searchTerms) {
+                                    foreach ($searchTerms as $term) {
+                                        $subQuery->where(function ($nameSubQuery) use ($term) {
+                                            $nameSubQuery->where('first_name', 'LIKE', $term)
+                                                ->orWhere('second_name', 'LIKE', $term)
+                                                ->orWhere('third_name', 'LIKE', $term)
+                                                ->orWhere('last_name', 'LIKE', $term);
+                                        });
+                                    }
+                                });
+                        });
+                    }
+                    if (isset($this->Suggestions_)) {
+                        $q->orWhere(function ($q) {
+                            $searchTerms_ = explode(' ', $this->Suggestions_->full_name);
+                            $q->where('identification_number', $this->Suggestions_->identification_number)
+                                ->orWhere(function ($subQuery) use ($searchTerms_) {
+                                    foreach ($searchTerms_ as $term) {
+                                        $subQuery->where(function ($nameSubQuery) use ($term) {
+                                            $nameSubQuery->where('first_name', 'LIKE', $term)
+                                                ->orWhere('second_name', 'LIKE', $term)
+                                                ->orWhere('third_name', 'LIKE', $term)
+                                                ->orWhere('last_name', 'LIKE', $term);
+                                        });
+                                    }
+                                });
+                        });
+                    }
+                })->get();
 
+            $PrisonerSearch = $PrisonerSearch->pluck('full_name', 'id');
+        } else {
+            $PrisonerSearch = null;
+        }
+
+
+        $value = !$this->Exist ? 12 : 11;
         if (count(array_filter($this->selectAccepted)) < $value)
             $this->SelectAllPrisoners = false;
         else $this->SelectAllPrisoners = true;
@@ -802,7 +876,6 @@ class ListPrisonerSuggestions extends Component
                     else $ASOAStatus = false;
                 }
             }
-
         $APOAStatus = null;
         if (isset($this->selectAcceptedPrisonerOldArrest))
             foreach ($this->selectAcceptedPrisonerOldArrest as $selected) {
@@ -812,7 +885,7 @@ class ListPrisonerSuggestions extends Component
                     else $ASOAStatus = false;
                 }
             }
-        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'ASOAStatus', 'APOAStatus'));
+        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus'));
     }
 
     public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder

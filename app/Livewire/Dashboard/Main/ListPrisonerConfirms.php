@@ -786,50 +786,43 @@ class ListPrisonerConfirms extends Component
                     ->orWhereNull('city_id');
             })
             ->when(isset($this->sortBy), function ($q) {
-            if ($this->sortBy == "تم القبول")
-                $q->where('confirm_status', "تم القبول");
-            elseif ($this->sortBy == "يحتاج مراجعة")
-                $q->where('confirm_status', 'يحتاج مراجعة');
-            else   $q->whereIn('confirm_status', ['تم القبول', 'يحتاج مراجعة']);
+            if ($this->sortBy == "الاضافات")
+                $q->whereNull('prisoner_id');
+            elseif ($this->sortBy == "التعديلات")
+                $q->whereNotNull('prisoner_id');
+            else   $q->whereNotNull('prisoner_id')->orWhereNull('prisoner_id')->where('confirm_status','يحتاج مراجعة');
         })
             ->orderBy('confirm_status')
             ->paginate(10);
 
-        $ConfirmCount = [
-            'all' => PrisonerConfirm::query()->count(),
-            'accepted' => PrisonerConfirm::query()->where('confirm_status', 'تم القبول')->count(),
-            'needReview' => PrisonerConfirm::query()->where('confirm_status', 'يحتاج مراجعة')->count(),
-        ];
+        $accepted_count = PrisonerConfirm::query()->where('confirm_status' , 'تم القبول')->count();
 
-        return view('livewire.dashboard.main.list-prisoner-confirms', compact('Confirms', 'ConfirmCount'));
+        return view('livewire.dashboard.main.list-prisoner-confirms', compact('Confirms','accepted_count'));
     }
 
-    public function getConfirmsProperty()
+    public function getConfirmsProperty(): \Illuminate\Database\Eloquent\Builder
     {
         return PrisonerConfirm::query()
             ->with(['City', 'Relationship'])
-            ->when(isset($this->Search), function ($query) {
-                $searchTerms = explode(' ', $this->Search);
-                $query->where(function ($subQuery) use ($searchTerms) {
-                    foreach ($searchTerms as $term) {
-                        $subQuery->where(function ($nameSubQuery) use ($term) {
-                            $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('second_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('third_name', 'LIKE', '%' . $term . '%')
-                                ->orWhere('last_name', 'LIKE', '%' . $term . '%');
-                        });
-                    }
-                })
-                    ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('suggester_identification_number', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('identification_number', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
-                    ->orWhereHas('City', function ($q) {
-                        $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
+            ->where('confirm_status','يحتاج مراجعة')
+            ->where(function ($q){
+                $q->when(isset($this->Search), function ($query) {
+                    $searchTerms = explode(' ', $this->Search);
+                    $query->where(function ($subQuery) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $subQuery->where(function ($nameSubQuery) use ($term) {
+                                $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('second_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('third_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+                            });
+                        }
                     })
-                    ->orWhereHas('Relationship', function ($q) {
-                        $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
-                    });
+                        ->orWhere('identification_number', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhereHas('City', function ($q) {
+                            $q->where('city_name', 'LIKE', '%' . $this->Search . '%');
+                        });
+                });
             });
     }
 

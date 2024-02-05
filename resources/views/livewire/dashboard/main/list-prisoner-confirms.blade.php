@@ -56,7 +56,8 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
+                           placeholder="البحث...">
                     <div class="btn-group mb-2 mx-2" role="group">
                         <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
@@ -68,25 +69,31 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btndefault">
                             <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>الكل ({{$ConfirmCount['all']}})</a>
-                            <a wire:click="SortBy('يحتاج مراجعة')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>يحتاج مراجعة
-                                ({{$ConfirmCount['needReview']}})</a>
-                            <a wire:click="SortBy('تم القبول')" class="btn dropdown-item"><i
-                                    class="flaticon-gear-fill mr-1"></i>تم القبول ({{$ConfirmCount['accepted']}})</a>
+                                    class="flaticon-home-fill-1 mr-1"></i>الكل</a>
+                            <a wire:click="SortBy('الاضافات')" class="btn dropdown-item"><i
+                                    class="flaticon-home-fill-1 mr-1"></i>الاضافات</a>
+                            <a wire:click="SortBy('التعديلات')" class="btn dropdown-item"><i
+                                    class="flaticon-gear-fill mr-1"></i>التعديلات</a>
                         </div>
+                    </div>
+                    <div class="mb-2 mx-2">
+                        <span class="text-success">مجموع الاقتراحات التي تم قبولها:</span>
+                        <span class="text-dark" style="font-size: 18px">
+                            {{$accepted_count}}
+                             اقتراح
+                        </span>
                     </div>
                 </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center">
                     <thead>
-                    <tr style="font-size: 15px">
+                    <tr>
                         <th>#</th>
-                        <th style="min-width: 230px">اسم الأسير</th>
-                        <th style="min-width: 230px">رقم الهوية</th>
-                        <th style="min-width: 230px">حالة الطلب</th>
-                        <th style="min-width: 230px">الخيارات</th>
+                        <th>اسم الأسير</th>
+                        <th>رقم الهوية</th>
+                        <th>حالة الطلب</th>
+                        <th>الخيارات</th>
                     </tr>
                     </thead>
                     <tbody>

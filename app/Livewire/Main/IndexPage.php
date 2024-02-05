@@ -59,12 +59,14 @@ class IndexPage extends Component
                 })
                 ->where('identification_number', $this->search['identification_number'])
                 ->orWhere(function ($q) {
-                    $q->where('first_name', $this->search['first_name'])
-                        ->where('second_name', 'like', '%' . $this->search['second_name'] . '%')
-                        ->where(function ($q) {
-                            $q->where('last_name', 'like', '%' . $this->search['last_name'] . '%')
-                                ->orWhere('nick_name', 'like', '%' . $this->search['last_name'] . '%');
-                        });
+                    if (empty($this->search['identification_number'])) {
+                        $q->where('first_name', $this->search['first_name'])
+                            ->where('second_name', 'like', '%' . $this->search['second_name'] . '%')
+                            ->where(function ($q) {
+                                $q->where('last_name', 'like', '%' . $this->search['last_name'] . '%')
+                                    ->orWhere('nick_name', 'like', '%' . $this->search['last_name'] . '%');
+                            });
+                    }
                 })
                 ->get();
 

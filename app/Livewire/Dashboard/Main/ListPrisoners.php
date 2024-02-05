@@ -89,6 +89,7 @@ class ListPrisoners extends Component
             $this->ExportData['selectPrisoner'] = [
                 'id' => true,
                 'identification_number' => true,
+                'full_name' => true,
                 'first_name' => true,
                 'second_name' => true,
                 'third_name' => true,
@@ -96,6 +97,7 @@ class ListPrisoners extends Component
                 'mother_name' => true,
                 'nick_name' => true,
                 'date_of_birth' => true,
+                'age' => true,
                 'gender' => true,
                 'city_id' => true,
                 'town_id' => true,
@@ -169,10 +171,8 @@ class ListPrisoners extends Component
                 $cityIdArray[] = $subArray['pivot']['city_id'];
             }
         }
-
         return Prisoner::query()
             ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber'])
-            ->orderBy('id', 'ASC')
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
                     ->orWhereNull('city_id');
@@ -186,7 +186,8 @@ class ListPrisoners extends Component
                                 $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
                                     ->orWhere('second_name', 'LIKE', '%' . $term . '%')
                                     ->orWhere('third_name', 'LIKE', '%' . $term . '%')
-                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('nick_name', 'LIKE', '%' . $term . '%');
                             });
                         }
                     })
@@ -304,8 +305,24 @@ class ListPrisoners extends Component
                             });
                         }
                     });
+                    $query->when(isset($this->AdvanceSearch['is_released']), function ($subQuery) {
+                        $filtered_is_released = $this->AdvanceSearch['is_released'];
+                        if (!empty($filtered_is_released)) {
+                            $subQuery->where(function ($query) use ($filtered_is_released) {
+                                $query->orWhereHas('Arrest', function ($query) {
+                                    $query->where('is_released', true);
+                                });
+                            });
+                        }
+                    });
                 });
-            });
+            })
+            ->when(empty($this->Search) && (empty($this->AdvanceSearch)), function ($query) {
+                $query->whereHas('Arrest', function ($query) {
+                    $query->where('is_released', false);
+                });
+            })
+            ->orderBy('id', 'ASC');
 
     }
 
@@ -353,7 +370,7 @@ class ListPrisoners extends Component
         $PrisonerTypes = PrisonerType::all();
 
         if (isset($this->ExportData['selectPrisoner']))
-            if (count(array_filter($this->ExportData['selectPrisoner'])) < 15)
+            if (count(array_filter($this->ExportData['selectPrisoner'])) < 16)
                 $this->SelectAllPrisoner = false;
             else $this->SelectAllPrisoner = true;
 
@@ -501,6 +518,15 @@ class ListPrisoners extends Component
                         });
                     }
                 });
+                $query->when(!empty($this->ExportData['is_released']), function ($subQuery) {
+                    $filtered_is_released = $this->ExportData['is_released'];
+                    if (!empty($filtered_is_released)) {
+                        $subQuery->whereHas('Arrest', function ($q) {
+                            $q->where('is_released', true);
+                        });
+                    }
+                });
+
             })
             ->get()
             ->map(function ($prisoner) use ($selectPrisoner, $selectArrest) {
@@ -523,6 +549,8 @@ class ListPrisoners extends Component
                     foreach ($selectArrest as $key) {
                         if ($key === 'belong_id') {
                             $mappedData[$key] = $prisoner->Arrest->Belong->belong_name ?? null;
+                        } elseif ($key === 'is_released') {
+                            $mappedData[$key] = $prisoner->Arrest->is_released ? 'نعم' : 'لا';
                         } else {
                             $mappedData[$key] = $prisoner->Arrest->$key ?? null;
                         }

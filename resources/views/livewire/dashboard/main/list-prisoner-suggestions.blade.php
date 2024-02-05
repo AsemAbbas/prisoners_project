@@ -56,7 +56,8 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
+                           placeholder="البحث...">
                     <div class="btn-group mb-2 mx-2" role="group">
                         <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
@@ -68,11 +69,11 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btndefault">
                             <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>الكل</a>
+                                        class="flaticon-home-fill-1 mr-1"></i>الكل</a>
                             <a wire:click="SortBy('التعديلات')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>التعديلات</a>
+                                        class="flaticon-home-fill-1 mr-1"></i>التعديلات</a>
                             <a wire:click="SortBy('الإضافات')" class="btn dropdown-item"><i
-                                    class="flaticon-gear-fill mr-1"></i>الاضافات</a>
+                                        class="flaticon-gear-fill mr-1"></i>الاضافات</a>
                         </div>
                     </div>
                 </div>
@@ -169,6 +170,33 @@
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="prisoner_search">بحث عن أسير</label>
+                                <input type="text" wire:model.live="prisoner_search" id="prisoner_search"
+                                       class="form-control">
+                            </div>
+                            @if (!empty($PrisonerSearch))
+                                <div class="col-md-8">
+                                    @foreach ($PrisonerSearch as $key => $prisoner)
+                                        <div class="row">
+                                            <div class="col-md-8 mb-1">
+                                                <input id="prisoner_radio_{{$key}}" class="form-inline" name="selected_prisoner" type="radio" wire:model.live="change_prisoner_id" value="{{$key}}">
+                                                <label for="prisoner_radio_{{$key}}">{{$prisoner}}</label>
+                                            </div>
+                                            @if($key == $change_prisoner_id)
+                                                <div class="col-md-4 mb-1">
+                                                    <a class="btn" wire:click="makeItMain({{$change_prisoner_id}})">تحويل الطلب</a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                        </div>
+                    </div>
                     <div class="col-lg-12 top-body mb-5 @if(isset($Suggestions_->prisoner_id)) text-center @endif">
                         <div class="row">
                             <div class="col-12 text-center">
@@ -187,22 +215,22 @@
                                 <hr>
                             </div>
                             <div
-                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>اسم مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_name ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>رقم هوية مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_identification_number ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>رقم هاتف مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->suggester_phone_number ?? 'لا يوجد'}}</h5>
                             </div>
                             <div
-                                class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
+                                    class="@if(isset($Suggestions_->prisoner_id)) col-md-3 mb-3 @else col-md-6 mb-3 @endif">
                                 <h6>صلة قرابة مقدم البيانات: </h6>
                                 <h5>{{$Suggestions_->Relationship->relationship_name ?? 'لا يوجد'}}</h5>
                             </div>
@@ -364,7 +392,7 @@
                                                             <h5 class="d-inline">
                                                                 أقارب معتقلين حالية
                                                                 <span
-                                                                    class="text-danger d-block mt-2">(سيتم إزالتها)</span>
+                                                                        class="text-danger d-block mt-2">(سيتم إزالتها)</span>
                                                             </h5>
                                                             <hr>
                                                         </div>
@@ -430,7 +458,7 @@
                                                             <h5 class="d-inline">
                                                                 أقارب معتقلين مقترحة
                                                                 <span
-                                                                    class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                                        class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                             </h5>
                                                             <hr>
                                                         </div>
@@ -569,7 +597,7 @@
                                                         <h5 class="d-inline">
                                                             اعتقالات سابقة مقترحة
                                                             <span
-                                                                class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                                    class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                         </h5>
                                                         <hr>
                                                     </div>
@@ -705,7 +733,7 @@
                                                             <h5 class="d-inline">
                                                                 أقارب معتقلين مقترحة
                                                                 <span
-                                                                    class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                                        class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                             </h5>
                                                             <hr>
                                                         </div>
@@ -771,7 +799,7 @@
                                                 <h5 class="d-inline">
                                                     اعتقالات سابقة مقترحة
                                                     <span
-                                                        class="text-success d-block mt-2">(سيتم إضافتها)</span>
+                                                            class="text-success d-block mt-2">(سيتم إضافتها)</span>
                                                 </h5>
                                                 <hr>
                                             </div>
@@ -851,7 +879,7 @@
                              class="feather feather-trash-2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path
-                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                         </svg>

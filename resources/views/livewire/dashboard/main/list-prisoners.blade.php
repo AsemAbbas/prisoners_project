@@ -97,7 +97,8 @@
                     @endauth
                 </div>
                 <div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
+                           placeholder="البحث...">
                     @auth
                         @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
                             <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
@@ -134,18 +135,19 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center">
                     <thead>
-                    <tr style="font-size: 16px">
+                    <tr>
                         <th>#</th>
-                        <th style="min-width: 150px;font-weight: bold">الرقم الأساسي</th>
-                        <th style="min-width: 150px;font-weight: bold">اسم الأسير</th>
-                        <th style="min-width: 150px;font-weight: bold">رقم الهوية</th>
-                        <th style="min-width: 150px;font-weight: bold">تاريخ الميلاد</th>
-                        <th style="min-width: 150px;font-weight: bold">الجنس</th>
-                        <th style="min-width: 150px;font-weight: bold">المحافظة</th>
-                        <th style="min-width: 150px;font-weight: bold">البلدة</th>
+                        <th>الرقم الأساسي</th>
+                        <th>اسم الأسير</th>
+                        <th>رقم الهوية</th>
+                        <th>تاريخ الميلاد</th>
+                        <th>الجنس</th>
+                        <th>المحافظة</th>
+                        <th>البلدة</th>
+                        <th>مفرج عنه حالياً؟</th>
                         @auth
                             @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                <th style="min-width: 180px;font-weight: bold">الخيارات</th>
+                                <th>الخيارات</th>
                             @endif
                         @endauth
                     </tr>
@@ -165,6 +167,13 @@
                             <td>{{$row->gender ?? 'لا يوجد'}}</td>
                             <td>{{$row->City->city_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->Town->town_name ?? 'لا يوجد'}}</td>
+                            <td>
+                                @if($row->Arrest->is_released)
+                                    نعم
+                                @else
+                                    لا
+                                @endif
+                            </td>
                             @auth
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                                     <td>
@@ -620,6 +629,19 @@
                                                             </div>
                                                         </div>
                                                     @endforeach
+                                                    <div class="col-md-4 mb-4">
+                                                        <div
+                                                            class="form-check form-check-dark form-check-inline">
+                                                            <input class="form-check-input"
+                                                                   wire:model.live="AdvanceSearch.is_released"
+                                                                   type="checkbox"
+                                                                   id="form-check-dark_is_released">
+                                                            <label class="form-check-label"
+                                                                   for="form-check-dark_is_released">
+                                                                مفرج عنه حالياً
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -792,6 +814,17 @@
                                     </svg>
                                     <h6>الإنتماء:</h6>
                                     <h4>{{$Prisoners_->Arrest->Belong->belong_name ?? 'لا يوجد'}}</h4>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                                         class="bi bi-link-45deg text-danger" viewBox="0 0 16 16">
+                                        <path
+                                            d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                                        <path
+                                            d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                                    </svg>
+                                    <h6>مفرج عنه حالياً؟ :</h6>
+                                    <h4>{{(boolean)$Prisoners_->Arrest->is_released === true ? 'نعم' : 'لا'}}</h4>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
@@ -1586,6 +1619,19 @@
                                                                             </div>
                                                                         </div>
                                                                     @endforeach
+                                                                    <div class="col-md-4 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="ExportData.is_released"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark_is_released">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark_is_released">
+                                                                                مفرج عنه حالياً
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1752,7 +1798,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Delete Modal -->
     <div class="modal modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
