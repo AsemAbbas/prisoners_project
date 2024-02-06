@@ -36,9 +36,11 @@ class CreateUpdateSuggestions extends Component
     ];
 
     public $old_errors = null;
+    public ?string $new_town_name = null;
     public object $Prisoners_;
     public bool $showEdit = false;
     public $googleUrl;
+    public ?string $new_town_id = null;
 
     public function mount($suggestion = null): void
     {
@@ -149,6 +151,16 @@ class CreateUpdateSuggestions extends Component
         }
     }
 
+    public function addNewTown(): void
+    {
+        if (!empty($this->new_town_name)) {
+            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
+            $town = Town::query()->create(['city_id' => 20, 'town_name' => $this->new_town_name]);
+            $this->state['town_id'] = (string)$town->id;
+            $this->new_town_name = null;
+        }
+    }
+
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $Belongs = Belong::all()->sortBy('belong_name');
@@ -216,6 +228,7 @@ class CreateUpdateSuggestions extends Component
      */
     private function validateData(): void
     {
+
         $rule = $this->showEdit
             ? ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
             : ["required", "min:9", "max:9", new PalestineIdValidationRule, "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
@@ -229,7 +242,6 @@ class CreateUpdateSuggestions extends Component
             $judgment_in_years_rule = ["nullable", "integer"];
             $judgment_in_months_rule = ["nullable", "integer"];
         }
-
 
         $validation = Validator::make($this->state, [
             //Suggester
@@ -245,20 +257,19 @@ class CreateUpdateSuggestions extends Component
             'last_name' => 'required',
             'mother_name' => "nullable",
             'nick_name' => "nullable",
-            'date_of_birth' => "nullable",
+            'date_of_birth' => "required",
             'gender' => "required|in:" . $this->subTables()['Gender'],
-            'city_id' => "nullable|in:" . $this->subTables()['City'],
-            'town_id' => "nullable|in:" . $this->subTables()['Town'],
-            'prisoner_type' => "nullable",
+            'city_id' => "required|in:" . $this->subTables()['City'],
+            'town_id' => "required|in:" . $this->subTables()['Town'],
             'notes' => "nullable",
             //Arrest
             "arrest_start_date" => 'required',
-            "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+            "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
             "judgment_in_lifetime" => $judgment_in_lifetime_rule,
             "judgment_in_years" => $judgment_in_years_rule,
             "judgment_in_months" => $judgment_in_months_rule,
             "education_level" => 'nullable|in:' . $this->subTables()['EducationLevel'],
-            "health_note" => 'nullable',
+            "health_note" => (isset($this->state['special_case']['مريض / جريح']) && $this->state['special_case']['مريض / جريح']) ? "required" : "nullable",
             "father_arrested" => 'nullable|boolean',
             "mother_arrested" => 'nullable|boolean',
             "husband_arrested" => 'nullable|boolean',
@@ -330,6 +341,10 @@ class CreateUpdateSuggestions extends Component
 
         if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] !== "") {
             $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['is_released']) && $this->state['is_released'] == "اختر...") {
+            $this->state['is_released'] = null;
         }
 
         if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {

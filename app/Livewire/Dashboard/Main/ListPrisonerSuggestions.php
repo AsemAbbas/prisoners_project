@@ -43,10 +43,13 @@ class ListPrisonerSuggestions extends Component
     public object $Suggestions_;
     public object $Prisoner_;
     public bool $Exist = false;
+
+    public $convert_number = null;
     public bool $SelectAllPrisoners = false;
     public bool $SelectAllPrisonersArrest = false;
 
     public ?string $Search = null;
+    public  $switch_city_id = null;
     public ?string $change_prisoner_id = null;
     public ?string $prisoner_search = null;
     public ?string $sortBy = null;
@@ -90,8 +93,34 @@ class ListPrisonerSuggestions extends Component
         }
     }
 
+    public function showNumberConverter(): void
+    {
+        $this->convert_number = null;
+        $this->dispatch('showNumberConverter');
+    }
+
+    public function switchCity(): void
+    {
+        $user_name = Auth::user()->name;
+        if (!empty($this->Prisoner_)){
+            Prisoner::query()->where('id',$this->Prisoner_->id)->update([
+                'city_id' => (int)$this->switch_city_id,
+                'admin_notes' => "تم تحويل هذا الطلب من مراجع المنطقة $user_name"
+            ]);
+        }elseif (!empty($this->Suggestions_)){
+            PrisonerSuggestion::query()->where('id',$this->Suggestions_->id)->update([
+                'city_id' => (int)$this->switch_city_id,
+                'admin_notes' => "تم تحويل هذا الطلب من مراجع المنطقة $user_name"
+            ]);
+        }
+        $suggestions = PrisonerSuggestion::query()->where('id', $this->Suggestions_->id)->first();
+        if (isset($suggestions))
+            $this->Accept($suggestions);
+    }
+
     public function Accept(PrisonerSuggestion $prisonerSuggestion): void
     {
+        $this->switch_city_id = null;
         $this->selectAccepted = [];
         $this->selectAcceptedArrest = [];
         $this->selectAcceptedSuggestionOldArrest = [];
@@ -188,6 +217,12 @@ class ListPrisonerSuggestions extends Component
                     'name' => 'notes',
                     'suggestion' => $this->Suggestions_->notes ?? 'لا يوجد',
                     'prisoner' => $this->Prisoner_->notes ?? 'لا يوجد',
+                ],
+            'ملاحظات النظام:' =>
+                [
+                    'name' => 'admin_notes',
+                    'suggestion' =>  $this->Suggestions_->admin_notes ??'لا يوجد',
+                    'prisoner' => $this->Prisoner_->admin_notes ?? 'لا يوجد',
                 ],
         ];
 
@@ -885,7 +920,9 @@ class ListPrisonerSuggestions extends Component
                     else $ASOAStatus = false;
                 }
             }
-        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus'));
+
+        $Cities = City::all();
+        return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus','Cities'));
     }
 
     public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder

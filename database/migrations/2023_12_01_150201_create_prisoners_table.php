@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->foreignId('city_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('town_id')->nullable()->constrained()->cascadeOnDelete();
             $table->text('notes')->nullable();
+            $table->text('admin_notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

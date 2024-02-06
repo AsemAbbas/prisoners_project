@@ -32,6 +32,7 @@ class ListPrisoners extends Component
 
     public bool $SelectAllPrisoner = false;
     public bool $SelectAllArrest = false;
+    public bool $IsReleased = false;
 
     public array $PrisonerColumn = [
         'id' => 'الرقم الاساسي',
@@ -308,7 +309,7 @@ class ListPrisoners extends Component
                     $query->when(isset($this->AdvanceSearch['is_released']), function ($subQuery) {
                         $filtered_is_released = $this->AdvanceSearch['is_released'];
                         if (!empty($filtered_is_released)) {
-                            $subQuery->where(function ($query) use ($filtered_is_released) {
+                            $subQuery->where(function ($query) {
                                 $query->orWhereHas('Arrest', function ($query) {
                                     $query->where('is_released', true);
                                 });
@@ -317,9 +318,14 @@ class ListPrisoners extends Component
                     });
                 });
             })
-            ->when(empty($this->Search) && (empty($this->AdvanceSearch)), function ($query) {
+            ->when(empty($this->AdvanceSearch) || empty($this->AdvanceSearch['is_released']), function ($query) {
                 $query->whereHas('Arrest', function ($query) {
                     $query->where('is_released', false);
+                });
+            })
+            ->when($this->IsReleased ,function ($q){
+                $q->whereHas('Arrest', function ($query) {
+                    $query->where('is_released', true);
                 });
             })
             ->orderBy('id', 'ASC');
@@ -363,9 +369,15 @@ class ListPrisoners extends Component
         $Prisoners = $this->getPrisonersProperty()->paginate(10);
 
         $Cities = City::all();
-        $Towns = Town::query()->when(isset($this->town_search), function ($q) {
-            $q->where('town_name', 'LIKE', '%' . $this->town_search . '%');
-        })->get();
+        $Towns = Town::query()
+            ->when(isset($this->town_search), function ($q) {
+                $q->where('town_name', 'LIKE', '%' . $this->town_search . '%');
+            })
+            ->when(!empty($this->AdvanceSearch['city']) || !empty($this->ExportData['city']), function ($q) {
+                $cities = isset($this->ExportData['city']) ? array_filter($this->ExportData['city']) : (isset($this->AdvanceSearch['city']) ? array_filter($this->AdvanceSearch['city']) : null);
+                $q->whereIn('city_id', array_keys($cities));
+            })
+            ->get();
         $Belongs = Belong::all();
         $PrisonerTypes = PrisonerType::all();
 
@@ -422,8 +434,6 @@ class ListPrisoners extends Component
                 $selectArrest = array_filter(array_keys($this->ExportData['selectArrest'])) ?? null;
             }
         }
-
-
         $Prisoner = Prisoner::query()
             ->with('Arrest', 'Town', 'City', 'PrisonerType', 'RelativesPrisoner')
             ->when(isset($this->ExportData), function ($query) use ($selectArrest, $selectPrisoner) {

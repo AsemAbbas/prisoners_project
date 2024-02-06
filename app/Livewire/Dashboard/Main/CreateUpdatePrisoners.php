@@ -90,12 +90,12 @@ class CreateUpdatePrisoners extends Component
                 "last_name" => $data['last_name'],
                 "mother_name" => $data['mother_name'],
                 "nick_name" => $data['nick_name'],
-                "date_of_birth" => Carbon::parse($data['date_of_birth'])->format('d-m-Y'),
+                "date_of_birth" => $data['date_of_birth'],
                 "gender" => $data['gender'],
                 "city_id" => $data['city_id'],
                 "town_id" => $data['town_id'],
                 "notes" => $data['notes'],
-                "arrest_start_date" => Carbon::parse($data['arrest']['arrest_start_date'])->format('d-m-Y'),
+                "arrest_start_date" => $data['arrest']['arrest_start_date'],
                 "arrest_type" => $data['arrest']['arrest_type'],
                 "judgment_in_lifetime" => $data['arrest']['judgment_in_lifetime'],
                 "judgment_in_years" => $data['arrest']['judgment_in_years'],
@@ -241,7 +241,7 @@ class CreateUpdatePrisoners extends Component
             'last_name' => "required",
             'mother_name' => "nullable",
             'nick_name' => "nullable",
-            'date_of_birth' => "nullable",
+            'date_of_birth' => "required",
             'gender' => "required|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
             'town_id' => "nullable|in:" . $this->subTables()['Town'],
@@ -249,7 +249,7 @@ class CreateUpdatePrisoners extends Component
             'notes' => "nullable",
             //Arrest
             "arrest_start_date" => 'required',
-            "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+            "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
             "judgment_in_lifetime" => $judgment_in_lifetime_rule,
             "judgment_in_years" => $judgment_in_years_rule,
             "judgment_in_months" => $judgment_in_months_rule,
@@ -434,10 +434,10 @@ class CreateUpdatePrisoners extends Component
                 'notes' => $this->state['notes'] ?? null,
             ]);
             $prisoner_type = isset($this->state['prisoner_type']) ? array_keys(array_filter($this->state['prisoner_type'])) : null;
-            // Delete existing records associated with the prisoner
             PrisonersPrisonerTypes::query()
                 ->where('prisoner_id', $this->Prisoners_->id)
                 ->forceDelete();
+
             if (!empty($prisoner_type)) {
                 // Create new records based on $prisoner_type
                 foreach (array_filter($prisoner_type) as $type) {

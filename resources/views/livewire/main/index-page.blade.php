@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                                          background-color: #022d4f;
+                                            background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -360,7 +360,11 @@
                                                                         </th>
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
-                                                                            الحكم
+                                                                            @if(isset($prisoner->Arrest->arrest_type) && $prisoner->Arrest->arrest_type == "موقوف")
+                                                                                الحكم المتوقع
+                                                                            @else
+                                                                                الحكم
+                                                                            @endif
                                                                         </th>
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
@@ -503,8 +507,17 @@
                                         @endforelse
                                         </tbody>
                                     </table>
-                                    <div class="d-flex justify-content-center mt-3"> <!-- Add text-center class here -->
-                                        {{$CityPrisoners->links()}}
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <div>
+                                            <div class="text-center">
+                                                <a href="{{route('dashboard.suggestions.create')}}"
+                                                   class="btn btn-danger my-2"
+                                                   style="font-size: 18px">اقتراح إضافة</a>
+                                            </div>
+                                            <div class="text-center">
+                                                {{$CityPrisoners->links()}}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endif

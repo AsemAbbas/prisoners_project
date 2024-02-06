@@ -120,6 +120,7 @@ return [
 
 
         'news_title' => 'عنوان الخبر',
+        'health_note' => 'وصف الحالة المرضية',
         'news_photo' => 'صورة الخبر',
         'news_url' => 'رابط الخبر',
         'news_type_id' => 'تصنيف الخبر',

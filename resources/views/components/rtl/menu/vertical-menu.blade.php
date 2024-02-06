@@ -93,7 +93,31 @@
                                 <a href="{{route('dashboard.prisoners')}}">قائمة الأسرى</a>
                             </li>
                             <li class="{{ Route::getCurrentRoute()->getName() == 'dashboard.suggestions' ? 'active' : '' }}">
-                                <a href="{{route('dashboard.suggestions')}}">قائمة الاقتراحات</a>
+                                @auth
+                                    @php
+                                        $CurrentUserCities = \App\Models\User::query()->where('id', \Illuminate\Support\Facades\Auth::user()->id)->with('City')->first()->toArray()['city'] ?? [];
+
+                                        $cityIdArray = [];
+                                        foreach ($CurrentUserCities as $subArray) {
+                                            if (isset($subArray['pivot']['city_id'])) {
+                                                $cityIdArray[] = $subArray['pivot']['city_id'];
+                                            }
+                                        }
+
+                                        $count = \App\Models\PrisonerSuggestion::query()
+                                            ->with(['City', 'Relationship'])
+                                            ->where(function ($query) use ($cityIdArray) {
+                                                $query->whereIn('city_id', $cityIdArray)
+                                                    ->orWhereNull('city_id');
+                                            })->where('suggestion_status', 'يحتاج مراجعة')->count()
+                                    @endphp
+                                @endauth
+                                <a href="{{route('dashboard.suggestions')}}">
+                                    قائمة الاقتراحات
+                                    @if(isset($count) && $count > 0)
+                                        <span class="bg-danger" style="padding: 3px;font-size: 11px;border-radius: 50%;text-align: center;@if($count < 10) width: 25px; @endif ">{{$count}}</span>
+                                    @endif
+                                </a>
                             </li>
                         @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")

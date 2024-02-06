@@ -91,35 +91,39 @@ class ListCities extends Component
         $this->dispatch('showTowns');
     }
 
-    public
-    function confirmDelete(): void
+    public function confirmDelete(): void
     {
         $this->Cities_->delete();
         $this->dispatch('hide_delete_modal');
     }
 
-    public
-    function delete(City $city): void
+    public function delete(City $city): void
     {
         $this->Cities_ = $city;
 
         $this->dispatch('show_delete_modal');
     }
 
-    public
-    function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
+    public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $Cities = $this->getCitiesProperty()->paginate(10);
         return view('livewire.dashboard.sub.list-cities', compact('Cities'));
     }
 
-    public
-    function getCitiesProperty()
+    public function getCitiesProperty()
     {
         return City::query()
             ->with('Town')
             ->when(isset($this->Search), function ($query) {
                 $query->where('city_name', 'LIKE', '%' . $this->Search . '%');
             });
+    }
+
+    public function deleteTown($town_id,$city_id): void
+    {
+        $city = $city_id;
+        Town::query()->find($town_id)->delete();
+        $this->reset($this->Towns);
+        $this->Towns = Town::query()->where('city_id',$city)->get();
     }
 }

@@ -46,97 +46,104 @@
                             <h1>معلومات مقدم البيانات</h1>
                             <hr>
                         </div>
-                        <div class="form-group col-md-3 mb-4">
-                            <label style="font-weight: bold" for="error_suggester_name">اسم مقدم البيانات
-                                (رباعي)</label>
-                            <input wire:model="state.suggester_name" type="text"
-                                   class="form-control @error('suggester_name') is-invalid @enderror"
-                                   id="error_suggester_name"
-                                   placeholder="اسم مقدم البيانات (رباعي)">
-                            @error('suggester_name')
-                            <div class="error-message invalid-feedback"
-                                 style="font-size: 15px">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-3 mb-4">
-                            <label style="font-weight: bold" for="suggester_identification_number">رقم هوية مقدم
-                                البيانات</label>
-                            <input wire:model="state.suggester_identification_number" type="text"
-                                   class="form-control @error('suggester_identification_number') is-invalid @enderror"
-                                   id="suggester_identification_number"
-                                   maxlength="9"
-                                   placeholder="رقم هوية مقدم البيانات">
-                            @error('suggester_identification_number')
-                            <div class="error-message invalid-feedback"
-                                 style="font-size: 15px">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-3 mb-4">
-                            <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم البيانات</label>
-                            <input wire:model="state.suggester_phone_number"
-                                   type="number"
-                                   class="form-control @error('suggester_phone_number') is-invalid @enderror"
-                                   id="suggester_phone_number"
-                                   maxlength="14"
-                                   min="0"
-                                   inputmode="numeric"
-                                   placeholder="رقم هاتف مقدم البيانات">
-                            @error('suggester_phone_number')
-                            <div class="error-message invalid-feedback"
-                                 style="font-size: 15px">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-3 mb-4">
-                            <label style="font-weight: bold" for="relationship_id">صلة قرابة مقدم
-                                البيانات</label>
-                            <select wire:model.live="state.relationship_id"
-                                    class="form-select @error('relationship_id') is-invalid @enderror"
-                                    id="relationship_id">
-                                <option>اختر...</option>
-                                @foreach($Relationships as $relationship)
-                                    <option
-                                        value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
-                                @endforeach
-                            </select>
-                            @error('relationship_id')
-                            <div class="error-message invalid-feedback"
-                                 style="font-size: 15px">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                            <div class="row">
+                                <div class="form-group col-md-4 mb-4">
+                                    <label style="font-weight: bold" for="error_suggester_name">اسم مقدم البيانات
+                                        (رباعي)</label>
+                                    <input wire:model="state.suggester_name" type="text"
+                                           class="form-control @error('suggester_name') is-invalid @enderror"
+                                           id="error_suggester_name"
+                                           placeholder="اسم مقدم البيانات (رباعي)">
+                                    @error('suggester_name')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-8 mb-4">
+                                </div>
+                                <div class="form-group col-md-4 mb-4">
+                                    <label style="font-weight: bold" for="suggester_identification_number">رقم هوية مقدم
+                                        البيانات</label>
+                                    <input wire:model="state.suggester_identification_number" type="text"
+                                           class="form-control @error('suggester_identification_number') is-invalid @enderror"
+                                           id="suggester_identification_number"
+                                           maxlength="9"
+                                           placeholder="رقم هوية مقدم البيانات">
+                                    @error('suggester_identification_number')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-4 mb-4">
+                                    <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم
+                                        البيانات</label>
+                                    <input wire:model="state.suggester_phone_number"
+                                           type="number"
+                                           class="form-control @error('suggester_phone_number') is-invalid @enderror"
+                                           id="suggester_phone_number"
+                                           maxlength="14"
+                                           min="0"
+                                           inputmode="numeric"
+                                           placeholder="رقم هاتف مقدم البيانات">
+                                    @error('suggester_phone_number')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-4 mb-4">
+                                    <label style="font-weight: bold" for="relationship_id">صلة قرابة مقدم
+                                        البيانات</label>
+                                    <select wire:model.live="state.relationship_id"
+                                            class="form-select @error('relationship_id') is-invalid @enderror"
+                                            id="relationship_id">
+                                        <option>اختر...</option>
+                                        @foreach($Relationships as $relationship)
+                                            <option
+                                                value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('relationship_id')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-12 mb-3 text-center">
                             <hr>
                             <h1>بيانات الأسير/ة</h1>
                             <hr>
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                            <div class="form-group col-md-12 mb-4">
+                                <div class="row">
+                                    <div class="form-group col-md-4 mb-4">
+                                        <label for="identification_number">رقم هوية الأسير</label>
+                                        <input wire:model.live="state.identification_number" type="text"
+                                               class="form-control @error('identification_number') is-invalid @enderror"
+                                               id="identification_number"
+                                               maxlength="9"
+                                               placeholder="رقم هوية الأسير">
+                                        @error('identification_number')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    @php
+                                        if (!empty($state['identification_number'])) {
+                                            $prisoner_idn = \App\Models\Prisoner::query()
+                                                ->where('identification_number', $state['identification_number'])
+                                                ->first();
+                                        }
+                                    @endphp
+                                    @if(!empty($prisoner_idn) && !isset($Prisoners_))
+                                        <span class="text-danger">رقم الهوية لهذا الاسير مسجل سابقاً، يرجى إعادة البحث بواسطة رقم الهوية</span>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="form-group col-md-3 mb-4">
-                                    <label for="identification_number">رقم هوية الأسير</label>
-                                    <input wire:model.live="state.identification_number" type="text"
-                                           class="form-control @error('identification_number') is-invalid @enderror"
-                                           id="identification_number"
-                                           maxlength="9"
-                                           placeholder="رقم هوية الأسير">
-                                    @error('identification_number')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                @php
-                                    if (!empty($state['identification_number'])) {
-                                        $prisoner_idn = \App\Models\Prisoner::query()
-                                            ->where('identification_number', $state['identification_number'])
-                                            ->first();
-                                    }
-                                @endphp
-                                @if(!empty($prisoner_idn) && !isset($Prisoners_))
-                                    <span class="text-danger">رقم الهوية لهذا الاسير مسجل سابقاً، يرجى إعادة البحث بواسطة رقم الهوية</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="form-group col-md-12 mb-4">
-                            <div class="row">
-                                <div class="form-group col-md-2 mb-4">
                                     <label for="first_name">الاسم الأول</label>
                                     <input wire:model.live="state.first_name" type="text"
                                            class="form-control @error('first_name') is-invalid @enderror"
@@ -147,7 +154,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="second_name">اسم الأب</label>
                                     <input wire:model.live="state.second_name" type="text"
                                            class="form-control @error('second_name') is-invalid @enderror"
@@ -158,7 +165,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="third_name">اسم الجد</label>
                                     <input wire:model.live="state.third_name" type="text"
                                            class="form-control @error('third_name') is-invalid @enderror"
@@ -169,7 +176,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="last_name">اسم العائلة</label>
                                     <input wire:model.live="state.last_name" type="text"
                                            class="form-control @error('last_name') is-invalid @enderror"
@@ -180,7 +187,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="nick_name">اسم آخر للعائلة</label>
                                     <input wire:model="state.nick_name" type="text"
                                            class="form-control @error('nick_name') is-invalid @enderror"
@@ -191,7 +198,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="mother_name">اسم الأم</label>
                                     <input wire:model="state.mother_name" type="text"
                                            class="form-control @error('mother_name') is-invalid @enderror"
@@ -217,9 +224,9 @@
                                 <span class="text-danger">يوجد اسم مشابه سابقاً، يرجى التأكد من عدم التكرار</span>
                             @endif
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="date_of_birth">تاريخ الميلاد</label>
 
                                     <input wire:model="state.date_of_birth"
@@ -227,13 +234,12 @@
                                            class="form-control @error('date_of_birth') is-invalid @enderror"
                                            placeholder="سنة - شهر - يوم"
                                            oninput="formatDate(this)">
-
                                     @error('date_of_birth')
                                     <div class="error-message invalid-feedback"
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="gender">الجنس</label>
                                     <select wire:model.live="state.gender"
                                             class="form-select @error('gender') is-invalid @enderror"
@@ -248,38 +254,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
-                                    <label for="city_id">المحافظة</label>
-                                    <select wire:model.live="state.city_id"
-                                            class="form-select @error('city_id') is-invalid @enderror"
-                                            id="city_id">
-                                        <option>اختر...</option>
-                                        @foreach($Cities as $city)
-                                            <option value="{{$city->id}}">{{$city->city_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('city_id')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-2 mb-4">
-                                    <label for="town_id">البلدة</label>
-                                    <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled
-                                            @endif
-                                            class="form-select @error('town_id') is-invalid @enderror"
-                                            id="town_id">
-                                        <option>اختر...</option>
-                                        @foreach($Towns as $town)
-                                            <option value="{{$town->id}}">{{$town->town_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('town_id')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="education_level">المستوى التعليمي</label>
                                     <select wire:model.live="state.education_level"
                                             class="form-select @error('education_level') is-invalid @enderror"
@@ -294,9 +269,57 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="form-group col-md-3 mb-4">
+                                </div>
+                                <div class="form-group col-md-3 mb-4">
+                                    <label for="city_id">المحافظة</label>
+                                    <select wire:model.live="state.city_id"
+                                            class="form-select @error('city_id') is-invalid @enderror"
+                                            id="city_id">
+                                        <option>اختر...</option>
+                                        @foreach($Cities as $city)
+                                            <option value="{{$city->id}}">{{$city->city_name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('city_id')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-3 mb-4">
+                                    <label for="town_id">البلدة</label>
+                                    <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled
+                                            @endif
+                                            class="form-select @error('town_id') is-invalid @enderror"
+                                            id="town_id">
+                                        <option>اختر...</option>
+                                        @foreach($Towns as $town)
+                                            <option value="{{$town->id}}">{{$town->town_name}}</option>
+                                        @endforeach
+                                        <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                    </select>
+                                    @error('town_id')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                @if(isset($state['town_id']) && $state['town_id'] == "إضافة بلدة جديدة" && isset($state['city_id']) && $state['city_id'] == "20")
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="new_town_name">اسم البلدة</label>
+                                        <input wire:model="new_town_name" type="text"
+                                               class="form-control @error('new_town_name') is-invalid @enderror"
+                                               id="new_town_name"
+                                               placeholder="اسم البلدة">
+                                        <a class="btn btn-success" wire:click="addNewTown">إضافة</a>
+                                        @error('new_town_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
                                 <div class="form-group col-md-3 mb-4">
                                     <label for="social_type">الحالة الإجتماعية</label>
@@ -316,7 +339,7 @@
                                 @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','اختر...']))
                                     @if($state['social_type'] !== "مطلق")
                                         @if(isset($state['gender']) && $state['gender'] === 'ذكر')
-                                            <div class="form-group col-md-3 mb-4">
+                                            <div class="form-group col-md-4 mb-4">
                                                 <label for="wife_type" class="d-block">عدد الزوجات</label>
                                                 <div class="bg-white p-2 mt-1 border rounded-2">
                                                     @foreach(\App\Enums\WifeType::cases() as $row)
@@ -341,7 +364,8 @@
                                     @endif
                                     <div class="form-group col-md-3 mb-4">
                                         <label for="number_of_children">عدد الأبناء</label>
-                                        <input wire:model="state.number_of_children" type="text"
+                                        <input wire:model="state.number_of_children" type="number"
+                                               style="text-align: right"
                                                class="form-control @error('number_of_children') is-invalid @enderror"
                                                id="number_of_children"
                                                placeholder="عدد الأبناء">
@@ -353,9 +377,9 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="arrest_start_date">تاريخ الاعتقال</label>
                                     <input wire:model="state.arrest_start_date"
                                            type="text"
@@ -368,7 +392,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="belong_id">الإنتماء</label>
                                     <select wire:model.live="state.belong_id"
                                             class="form-select @error('belong_id') is-invalid @enderror"
@@ -383,7 +407,7 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-2 mb-4">
+                                <div class="form-group col-md-3 mb-4">
                                     <label for="arrest_type">نوع الاعتقال</label>
                                     <select wire:model.live="state.arrest_type"
                                             class="form-select @error('arrest_type') is-invalid @enderror"
@@ -398,8 +422,10 @@
                                          style="font-size: 15px">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="form-group col-md-3 mb-4">
+                                </div>
                                 @if(isset($state['arrest_type']) &&  in_array($state['arrest_type'],['محكوم','موقوف']))
-                                    <div class="form-group col-md-2 mb-4">
+                                    <div class="form-group col-md-3 mb-4">
                                         <label for="judgment_in_lifetime">
                                             الحكم
                                             @if($state['arrest_type'] === 'موقوف')
@@ -419,7 +445,7 @@
                                              style="font-size: 15px">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="form-group col-md-2 mb-4">
+                                    <div class="form-group col-md-3 mb-4">
                                         <label for="judgment_in_years">
                                             الحكم
                                             @if($state['arrest_type'] === 'موقوف')
@@ -438,7 +464,7 @@
                                              style="font-size: 15px">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div class="form-group col-md-2 mb-4">
+                                    <div class="form-group col-md-3 mb-4">
                                         <label for="judgment_in_months">
                                             الحكم
                                             @if($state['arrest_type'] === 'موقوف')
@@ -460,9 +486,9 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
-                                <div class="form-group col-md-4 mb-4">
+                                <div class="form-group col-md-5 mb-4">
                                     <label for="SpecialCase">حالة خاصة</label>
                                     <div id="toggleSpecialCase" class="SpecialCase">
                                         <div class="card">
@@ -554,7 +580,7 @@
                                         $data = array_filter($state['special_case']);
                                     @endphp
                                     @if(in_array("مريض / جريح",array_filter(array_keys($data))))
-                                        <div class="form-group col-md-4 mb-4">
+                                        <div class="form-group col-md-3 mb-4">
                                             <label for="health_note">وصف الحالة المرضية</label>
                                             <textarea id="health_note" rows="8"
                                                       class="form-control @error('health_note') is-invalid @enderror"
@@ -567,7 +593,7 @@
                                         </div>
                                     @endif
                                     @if(in_array("أقارب معتقلين",array_filter(array_keys($data))))
-                                        <div class="form-group col-md-4 mb-4">
+                                        <div class="form-group col-md-10 mb-4">
                                             <label for="FamilyArrested">أقارب معتقلين</label>
                                             <div id="toggleFamilyArrested" class="FamilyArrested">
                                                 <div class="card">
@@ -938,7 +964,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
                                 <div class="form-group col-md-3 mb-4">
                                     <label for="first_phone_number">رقم التواصل مع الأهل</label>
@@ -966,48 +992,48 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group col-md-12 mb-4">
-                            <div class="row">
-                                <div class="form-group col-md-3 mb-4">
-                                    <label for="second_phone_number">رقم التواصل الإضافي</label>
-                                    <input wire:model="state.second_phone_number" type="number"
-                                           class="form-control @error('second_phone_number') is-invalid @enderror"
-                                           id="second_phone_number"
-                                           maxlength="14"
-                                           min="0"
-                                           inputmode="numeric"
-                                           placeholder="رقم التواصل الإضافي">
-                                    @error('second_phone_number')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-3 mb-4">
-                                    <label for="second_phone_owner">اسم صاحب الرقم</label>
-                                    <input wire:model="state.second_phone_owner" type="text"
-                                           class="form-control @error('second_phone_owner') is-invalid @enderror"
-                                           id="second_phone_owner"
-                                           placeholder="اسم صاحب الرقم">
-                                    @error('second_phone_owner')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
+                            <div class="form-group col-md-12 mb-4">
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="second_phone_number">رقم التواصل الإضافي</label>
+                                        <input wire:model="state.second_phone_number" type="number"
+                                               class="form-control @error('second_phone_number') is-invalid @enderror"
+                                               id="second_phone_number"
+                                               maxlength="14"
+                                               min="0"
+                                               inputmode="numeric"
+                                               placeholder="رقم التواصل الإضافي">
+                                        @error('second_phone_number')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="second_phone_owner">اسم صاحب الرقم</label>
+                                        <input wire:model="state.second_phone_owner" type="text"
+                                               class="form-control @error('second_phone_owner') is-invalid @enderror"
+                                               id="second_phone_owner"
+                                               placeholder="اسم صاحب الرقم">
+                                        @error('second_phone_owner')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group col-md-12 mb-4">
-                            <div class="row">
-                                <div class="form-group col-md-6 mb-4">
-                                    <label for="email">البريد الإلكتروني</label>
-                                    <input wire:model="state.email" type="email"
-                                           class="form-control @error('email') is-invalid @enderror"
-                                           id="email"
-                                           placeholder="البريد الإلكتروني">
-                                    @error('email')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
+                            <div class="form-group col-md-12 mb-4">
+                                <div class="row">
+                                    <div class="form-group col-md-6 mb-4">
+                                        <label for="email">البريد الإلكتروني</label>
+                                        <input wire:model="state.email" type="email"
+                                               class="form-control @error('email') is-invalid @enderror"
+                                               id="email"
+                                               placeholder="البريد الإلكتروني">
+                                        @error('email')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1020,7 +1046,7 @@
                                 $identification_number = $state['identification_number'];
                             }else $identification_number = null;
                         @endphp
-                        <div class="form-group col-md-12 mb-4">
+                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
                                 <div class="form-group col-md-6 mb-4">
                                     <label>المستندات والوثائق</label>
@@ -1038,34 +1064,35 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group col-sm-12 mb-4">
-                            <div class="row">
-                                <div class="form-group col-md-6 mb-4">
-                                    <label for="is-released">مفرج عنه حاليا؟</label>
-                                    <select id="is-released" class="form-select" wire:model.live="state.is_released">
-                                        <option>اختر...</option>
-                                        <option value="1">نعم, مفرج عنه</option>
-                                        <option value="0">لا, في السجن حالياً</option>
-                                    </select>
-                                    @error('is_released')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
+                            <div class="form-group col-sm-12 mb-4">
+                                <div class="row">
+                                    <div class="form-group col-md-6 mb-4">
+                                        <label for="is-released">مفرج عنه حاليا؟</label>
+                                        <select id="is-released" class="form-select"
+                                                wire:model.live="state.is_released">
+                                            <option>اختر...</option>
+                                            <option value="1">نعم, مفرج عنه</option>
+                                            <option value="0">لا, في السجن حالياً</option>
+                                        </select>
+                                        @error('is_released')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
+                            <div class="form-group col-md-6 mb-4">
+                                <label for="notes">ملاحظات</label>
+                                <textarea id="notes" rows="3"
+                                          class="form-control @error('notes') is-invalid @enderror"
+                                          placeholder="اكتب ملاحظاتك..."
+                                          wire:model="state.notes"></textarea>
+                                @error('notes')
+                                <div class="error-message invalid-feedback"
+                                     style="font-size: 15px">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group col-md-6 mb-4">
-                        <label for="notes">ملاحظات</label>
-                        <textarea id="notes" rows="3"
-                                  class="form-control @error('notes') is-invalid @enderror"
-                                  placeholder="اكتب ملاحظاتك..."
-                                  wire:model="state.notes"></textarea>
-                        @error('notes')
-                        <div class="error-message invalid-feedback"
-                             style="font-size: 15px">{{ $message }}</div>
-                        @enderror
                     </div>
                     <div class="col-md-12 mb-3 text-center">
                         <hr>
@@ -1074,7 +1101,7 @@
                     </div>
                     @foreach($old_arrests as $key => $old_arrest)
                         <div class="col-md-12">
-                            <div class="accordion-item col-md-6 mb-4 p-0" wire:key="{{$key}}_"
+                            <div class="accordion-item col-md-6 mx-auto mb-4 p-0" wire:key="{{$key}}_"
                                  wire:ignore.self>
                                 <h2 class="accordion-header" id="panelsStayOpen-heading_{{$key}}">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -1141,44 +1168,41 @@
                         </div>
                     @endforeach
                     <div class="col-md-12">
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-primary mx-auto" wire:click="addOldArrest">إضافة اعتقال سابق
-                                    آخر</a>
-                            </div>
+                        <div class="col-md-6 text-center mx-auto">
+                            <a class="btn btn-primary mx-auto" wire:click="addOldArrest">إضافة اعتقال سابق
+                                آخر</a>
                         </div>
                     </div>
                 </div>
+                <div class="mt-5">
+                    <button type="submit" class="btn {{$showEdit ? 'btn-warning' : 'btn-primary'}}">
+                        حفظ
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" class="feather feather-save">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                    </button>
+                    <a wire:click="goToIndex" class="btn btn-dark">إغلاق</a>
+                </div>
+            </form>
         </div>
-        <div class="mt-5">
-            <button type="submit" class="btn {{$showEdit ? 'btn-warning' : 'btn-primary'}}">
-                حفظ
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round" class="feather feather-save">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-            </button>
-            <a wire:click="goToIndex" class="btn btn-dark">إغلاق</a>
-        </div>
-        </form>
-    </div>
-    @if($state)
-        <div class="modal modal fade" id="review" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
-             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
-            <div class="modal-dialog">
-                <div class="modal-content bg-white">
-                    <div class="modal-header {{$showEdit ? 'bg-warning' : 'bg-success'}}" style="margin: 5px;">
-                        <h1 class="modal-title fs-5 text-white"
-                            id="staticBackdropLabel">مراجعة البيانات</h1>
-                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 class="text-dark m-3">هل أنت متأكد من المعلومات؟</h5>
-                        <span class="text-danger m-3">
+        @if($state)
+            <div class="modal modal fade" id="review" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+                 aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+                <div class="modal-dialog">
+                    <div class="modal-content bg-white">
+                        <div class="modal-header {{$showEdit ? 'bg-warning' : 'bg-success'}}" style="margin: 5px;">
+                            <h1 class="modal-title fs-5 text-white"
+                                id="staticBackdropLabel">مراجعة البيانات</h1>
+                            <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5 class="text-dark m-3">هل أنت متأكد من المعلومات؟</h5>
+                            <span class="text-danger m-3">
                         * تنبيه:
                             <span class="text-dark">
                                     سيتم
@@ -1187,162 +1211,162 @@
                                     {{isset($state['first_name']) ? $state['first_name'] : null }} {{ isset($state['last_name']) ? $state['last_name'] : null}}
                             </span>
                         </span>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-start align-items-start">
+                            <button type="submit" wire:click="ConfirmMassage"
+                                    class="btn {{$showEdit ? 'bg-warning' : 'bg-success'}}">
+                                تأكيد
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" class="feather feather-check-circle">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        <div class="modal modal fade" id="googleForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+
+             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header bg-warning" style="margin: 5px;">
+                        <h1 class="modal-title fs-5 text-white"
+                            id="staticBackdropLabel">رابط إرفاق الملفات</h1>
+                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="text-warning text-center">تنويه!</h4>
+                        <h6 class="text-dark text-center">
+                            يرجى العودة إلى الصفحة الحالية بعد الانتهاء من إرفاق الملفات
+                        </h6>
                     </div>
                     <div class="modal-footer d-flex justify-content-start align-items-start">
-                        <button type="submit" wire:click="ConfirmMassage"
-                                class="btn {{$showEdit ? 'bg-warning' : 'bg-success'}}">
-                            تأكيد
+                        <a target="_blank" href="{{$googleUrl}}"
+                           class="btn bg-warning">
+                            تأكيد وإنتقال
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                  stroke-linejoin="round" class="feather feather-check-circle">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
-                        </button>
+                        </a>
                         <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
-    <div class="modal modal fade" id="googleForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
-
-         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content bg-white">
-                <div class="modal-header bg-warning" style="margin: 5px;">
-                    <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">رابط إرفاق الملفات</h1>
-                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h4 class="text-warning text-center">تنويه!</h4>
-                    <h6 class="text-dark text-center">
-                        يرجى العودة إلى الصفحة الحالية بعد الانتهاء من إرفاق الملفات
-                    </h6>
-                </div>
-                <div class="modal-footer d-flex justify-content-start align-items-start">
-                    <a target="_blank" href="{{$googleUrl}}"
-                       class="btn bg-warning">
-                        تأكيد وإنتقال
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                             stroke-linejoin="round" class="feather feather-check-circle">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                        </svg>
-                    </a>
-                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+        <div class="modal modal fade" id="goToIndex" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header bg-danger" style="margin: 5px;">
+                        <h1 class="modal-title fs-5 text-white"
+                            id="staticBackdropLabel">الذهاب إلى الرئيسية</h1>
+                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="text-danger text-center">تنويه!</h4>
+                        <h6 class="text-dark text-center">
+                            سيتم الخروج دون حفظ طلبك
+                        </h6>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-start align-items-start">
+                        <a href="{{route('main.index')}}"
+                           class="btn bg-danger">
+                            خروج
+                        </a>
+                        <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">استكمال الطلب</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="modal modal fade" id="goToIndex" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
-         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content bg-white">
-                <div class="modal-header bg-danger" style="margin: 5px;">
-                    <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">الذهاب إلى الرئيسية</h1>
-                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h4 class="text-danger text-center">تنويه!</h4>
-                    <h6 class="text-dark text-center">
-                        سيتم الخروج دون حفظ طلبك
-                    </h6>
-                </div>
-                <div class="modal-footer d-flex justify-content-start align-items-start">
-                    <a href="{{route('main.index')}}"
-                       class="btn bg-danger">
-                        خروج
-                    </a>
-                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">استكمال الطلب</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-</div>
-@section('script')
-    <script src="{{asset('plugins-rtl/apex/apexcharts.min.js')}}"></script>
-    @vite(['resources/rtl/assets/js/widgets/modules-widgets.js'])
-    <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
-    @vite(['resources/rtl/assets/js/custom.js'])
-    <script>
-        function formatDate(input) {
-            let value = input.value.replace(/\D/g, '');
-            if (value.length > 4) {
-                value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
-            } else if (value.length > 2) {
-                value = value.substring(0, 2) + '-' + value.substring(2, 4);
+    </div>
+    @section('script')
+        <script src="{{asset('plugins-rtl/apex/apexcharts.min.js')}}"></script>
+        @vite(['resources/rtl/assets/js/widgets/modules-widgets.js'])
+        <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
+        @vite(['resources/rtl/assets/js/custom.js'])
+        <script>
+            function formatDate(input) {
+                let value = input.value.replace(/\D/g, '');
+                if (value.length > 4) {
+                    value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
+                } else if (value.length > 2) {
+                    value = value.substring(0, 2) + '-' + value.substring(2, 4);
+                }
+                input.value = value;
             }
-            input.value = value;
-        }
 
-        window.addEventListener('ReviewMassage', event => {
-            $('#review').modal('show');
-        })
-        window.addEventListener('hideReviewMassage', event => {
-            $('#review').modal('hide');
-        })
-        window.addEventListener('open_google_modal', event => {
-            $('#googleForm').modal('show');
-        })
-
-        window.addEventListener('open_go_to_index_modal', event => {
-            $('#goToIndex').modal('show');
-        })
-
-        document.body.addEventListener('scroll-to-top', function () {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.addEventListener('create_massage', function () {
-                Swal.fire(
-                    {
-                        title: 'نجاح',
-                        text: 'شكراً لك سيتم مراجعة البيانات',
-                        icon: 'success',
-                        confirmButtonText: 'تم',
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/';
-                    }
-                });
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.addEventListener('update_massage', function () {
-                Swal.fire(
-                    {
-                        title: 'نجاح',
-                        text: 'شكراً لك سيتم مراجعة البيانات',
-                        icon: 'success',
-                        confirmButtonText: 'تم',
-                    }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '/';
-                    }
-                });
-            });
-        });
-
-        Livewire.hook('commit', ({succeed}) => {
-            succeed(() => {
-                setTimeout(() => {
-                    const firstErrorMessage = document.querySelector('.error-message')
-
-                    if (firstErrorMessage !== null) {
-                        firstErrorMessage.scrollIntoView({block: 'center', inline: 'center'})
-                    }
-                }, 0)
+            window.addEventListener('ReviewMassage', event => {
+                $('#review').modal('show');
             })
-        })
-    </script>
+            window.addEventListener('hideReviewMassage', event => {
+                $('#review').modal('hide');
+            })
+            window.addEventListener('open_google_modal', event => {
+                $('#googleForm').modal('show');
+            })
+
+            window.addEventListener('open_go_to_index_modal', event => {
+                $('#goToIndex').modal('show');
+            })
+
+            document.body.addEventListener('scroll-to-top', function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.addEventListener('create_massage', function () {
+                    Swal.fire(
+                        {
+                            title: 'نجاح',
+                            text: 'شكراً لك سيتم مراجعة البيانات',
+                            icon: 'success',
+                            confirmButtonText: 'تم',
+                        }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/';
+                        }
+                    });
+                });
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.addEventListener('update_massage', function () {
+                    Swal.fire(
+                        {
+                            title: 'نجاح',
+                            text: 'شكراً لك سيتم مراجعة البيانات',
+                            icon: 'success',
+                            confirmButtonText: 'تم',
+                        }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/';
+                        }
+                    });
+                });
+            });
+
+            Livewire.hook('commit', ({succeed}) => {
+                succeed(() => {
+                    setTimeout(() => {
+                        const firstErrorMessage = document.querySelector('.error-message')
+
+                        if (firstErrorMessage !== null) {
+                            firstErrorMessage.scrollIntoView({block: 'center', inline: 'center'})
+                        }
+                    }, 0)
+                })
+            })
+        </script>
 @endsection

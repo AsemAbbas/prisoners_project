@@ -69,7 +69,7 @@
     <div class="page-meta">
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{route('main.index')}}">الصفحة الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="#">لوحة التحكم</a></li>
                 <li class="breadcrumb-item active" aria-current="page">قائمة الأسرى</li>
             </ol>
         </nav>
@@ -97,6 +97,10 @@
                     @endauth
                 </div>
                 <div>
+                    <div class="d-inline">
+                        <input type="checkbox" name="IsReleased" id="IsReleased" wire:model.live="IsReleased">
+                        <label for="IsReleased">المفرج عنهم</label>
+                    </div>
                     <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
                            placeholder="البحث...">
                     @auth

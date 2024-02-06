@@ -172,9 +172,16 @@
                             <input class="form-control mb-3" placeholder="بحث عن بلدة..." type="text" wire:model.live="TownSearch">
                             @foreach($Towns as $town)
                                 <div class="col-md-6 mb-3">
-                                    <h5 class="text-info">
-                                        {{$town->town_name}}
-                                    </h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5 class="text-info d-inline">
+                                                {{$town->town_name}}
+                                            </h5>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <a wire:click="deleteTown('{{$town->id}}','{{$town->city_id}}')" wire:confirm="هل أنت متأكد أنك تريد حذف البلدة؟" class="btn btn-danger">حذف بلدة</a>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
