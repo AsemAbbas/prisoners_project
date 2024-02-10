@@ -606,7 +606,9 @@
                                                                  data-bs-target="#defaultFamilyArrested"
                                                                  aria-expanded="false"
                                                                  aria-controls="defaultFamilyArrested">
-                                                                <p class="p-0 m-0">اختر...</p>
+                                                                <p class="p-0 m-0 text-danger">
+                                                                    عليك اختيار المعتقلين من الأقارب ووضع أرقام هوياتهم
+                                                                </p>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                      height="24"
                                                                      viewBox="0 0 24 24" fill="none"
@@ -1046,8 +1048,23 @@
                                 $identification_number = $state['identification_number'];
                             }else $identification_number = null;
                         @endphp
+
                         <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
+{{--                                <div class="form-group col-md-6 mb-4">--}}
+{{--                                    <label>المستندات والوثائق</label>--}}
+{{--                                    @if(isset($full_name) && isset($identification_number))--}}
+{{--                                        <a class="btn btn-link d-block" style="padding:12px 0;"--}}
+{{--                                           wire:click="openFileFormModal('{{$full_name}}','{{$identification_number}}')">--}}
+{{--                                            اضغط هنا لإرفاق الملفات--}}
+{{--                                        </a>--}}
+{{--                                    @else--}}
+{{--                                        <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">--}}
+{{--                                            اضغط هنا لإرفاق الملفات--}}
+{{--                                        </a>--}}
+{{--                                        <span class="text-danger">عليك تعبئة الاسم رباعي و رقم هوية الأسير ليعمل الرابط</span>--}}
+{{--                                    @endif--}}
+{{--                                </div>--}}
                                 <div class="form-group col-md-6 mb-4">
                                     <label>المستندات والوثائق</label>
                                     @if(isset($full_name) && isset($identification_number))
@@ -1067,8 +1084,8 @@
                             <div class="form-group col-sm-12 mb-4">
                                 <div class="row">
                                     <div class="form-group col-md-6 mb-4">
-                                        <label for="is-released">مفرج عنه حاليا؟</label>
-                                        <select id="is-released" class="form-select"
+                                        <label for="is_released">مفرج عنه حاليا؟</label>
+                                        <select id="is_released" class="form-select @error('is_released') is-invalid @enderror"
                                                 wire:model.live="state.is_released">
                                             <option>اختر...</option>
                                             <option value="1">نعم, مفرج عنه</option>
@@ -1229,6 +1246,26 @@
                 </div>
             </div>
         @endif
+{{--        <div class="modal modal fade" id="fileFormModal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"--}}
+{{--             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>--}}
+{{--            <div class="modal-dialog">--}}
+{{--                <div class="modal-content bg-white">--}}
+{{--                    <div class="modal-header bg-warning" style="margin: 5px;">--}}
+{{--                        <h1 class="modal-title fs-5 text-white"--}}
+{{--                            id="staticBackdropLabel">رابط إرفاق الملفات</h1>--}}
+{{--                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"--}}
+{{--                                aria-label="Close"></button>--}}
+{{--                    </div>--}}
+{{--                    <div class="modal-body">--}}
+{{--                        <iframe src="{{$fileFormUrl}}" width="100%" height="600"></iframe>--}}
+{{--                    </div>--}}
+{{--                    <div class="modal-footer d-flex justify-content-start align-items-start">--}}
+{{--                        <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
         <div class="modal modal fade" id="googleForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
 
              aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
@@ -1262,6 +1299,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal modal fade" id="goToIndex" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
              aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog">
@@ -1312,6 +1350,10 @@
             window.addEventListener('hideReviewMassage', event => {
                 $('#review').modal('hide');
             })
+            window.addEventListener('open_fileForm_modal', event => {
+                $('#fileFormModal').modal('show');
+            })
+
             window.addEventListener('open_google_modal', event => {
                 $('#googleForm').modal('show');
             })

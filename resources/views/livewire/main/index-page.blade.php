@@ -11,7 +11,7 @@
 
         .bg-gif {
             {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                                            background-color: #022d4f;
+                                             background-color: #022d4f;
             background-size: contain;
             background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
             background-repeat: no-repeat, no-repeat;
@@ -295,13 +295,6 @@
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">رقم الهوية
                                                                         </th>
-                                                                        <th style="width: 180px;" scope="col"
-                                                                            class="border-0">تاريخ الميلاد
-                                                                        </th>
-                                                                        <th style="width: 180px;" scope="col"
-                                                                            class="border-0 rounded-end">
-                                                                            المحافظة
-                                                                        </th>
                                                                     </tr>
                                                                     </thead>
 
@@ -309,11 +302,9 @@
                                                                     <tbody class="border-top-0">
                                                                     <!-- Table item -->
                                                                     <tr class="text-center">
-                                                                        <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             {{$prisoner->full_name ?? 'لا يوجد'}}
                                                                         </td>
-                                                                        <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             @php
                                                                                 if (isset($prisoner->identification_number) && strlen($prisoner->identification_number) == 9){
@@ -325,7 +316,27 @@
                                                                             @endphp
                                                                             {{$identification_number ?? $prisoner->identification_number ?? 'لا يوجد'}}
                                                                         </td>
-                                                                        <!-- Table data -->
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="table-responsive border-0 mb-4">
+                                                                <table
+                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    <!-- Table head -->
+                                                                    <thead class="table-primary">
+                                                                    <tr class="text-center" style="font-weight: bold">
+                                                                        <th style="width: 180px;" scope="col"
+                                                                            class="border-0">تاريخ الميلاد
+                                                                        </th>
+                                                                        <th style="width: 180px;" scope="col"
+                                                                            class="border-0 rounded-end">
+                                                                            المحافظة
+                                                                        </th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody class="border-top-0">
+                                                                    <tr class="text-center">
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             @if(isset($prisoner->date_of_birth))
                                                                                 {{\Carbon\Carbon::parse($prisoner->date_of_birth)->format('m-d').'-****'}}
@@ -337,27 +348,50 @@
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             {{$prisoner->City->city_name ?? 'لا يوجد'}}
                                                                         </td>
-                                                                        <!-- Table data -->
                                                                     </tr>
 
                                                                     </tbody>
                                                                     <!-- Table body END -->
                                                                 </table>
                                                             </div>
+                                                            <div class="table-responsive border-0 mb-4">
+                                                                <table class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                    <!-- Table head -->
+                                                                    <thead class="table-primary">
+                                                                        <tr class="text-center">
+                                                                            <th style="width: 180px;" scope="col"
+                                                                                class="border-0 rounded-start">
+                                                                                تاريخ الاعتقال
+                                                                            </th>
+                                                                            <th style="width: 180px;" scope="col"
+                                                                                class="border-0">
+                                                                                نوع الاعتقال
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <!-- Table body START -->
+                                                                    <tbody class="border-top-0">
+                                                                    <!-- Table item -->
+                                                                        <tr class="text-center">
+                                                                            <!-- Table data -->
+                                                                            <td style="font-size: 18px!important;font-weight: bold;">
+                                                                                {{$prisoner->Arrest->arrest_start_date ?? 'لا يوجد'}}
+                                                                            </td>
+                                                                            <!-- Table data -->
+                                                                            <td style="font-size: 18px!important;font-weight: bold;">
+                                                                                {{$prisoner->Arrest->arrest_type ?? 'لا يوجد'}}
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    </tbody>
+                                                                    <!-- Table body END -->
+                                                                </table>
+                                                            </div>
                                                             <div class="table-responsive border-0">
-                                                                <table
-                                                                    class="table align-middle p-4 mb-0 table-hover table-shrink">
+                                                                <table class="table align-middle p-4 mb-0 table-hover table-shrink">
                                                                     <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">
-                                                                        <th style="width: 180px;" scope="col"
-                                                                            class="border-0 rounded-start">
-                                                                            تاريخ الاعتقال
-                                                                        </th>
-                                                                        <th style="width: 180px;" scope="col"
-                                                                            class="border-0">
-                                                                            نوع الاعتقال
-                                                                        </th>
                                                                         <th style="width: 180px;" scope="col"
                                                                             class="border-0">
                                                                             @if(isset($prisoner->Arrest->arrest_type) && $prisoner->Arrest->arrest_type == "موقوف")
@@ -376,15 +410,6 @@
                                                                     <tbody class="border-top-0">
                                                                     <!-- Table item -->
                                                                     <tr class="text-center">
-                                                                        <!-- Table data -->
-                                                                        <td style="font-size: 18px!important;font-weight: bold;">
-                                                                            {{$prisoner->Arrest->arrest_start_date ?? 'لا يوجد'}}
-                                                                        </td>
-                                                                        <!-- Table data -->
-                                                                        <td style="font-size: 18px!important;font-weight: bold;">
-                                                                            {{$prisoner->Arrest->arrest_type ?? 'لا يوجد'}}
-                                                                        </td>
-                                                                        <!-- Table data -->
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             {{$prisoner->Arrest->judgment ?? 'لا يوجد'}}
                                                                         </td>
@@ -395,7 +420,6 @@
                                                                                 لا
                                                                             @endif
                                                                         </td>
-                                                                        <!-- Table data -->
                                                                     </tr>
 
                                                                     </tbody>

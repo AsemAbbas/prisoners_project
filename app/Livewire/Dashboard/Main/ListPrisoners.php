@@ -321,6 +321,7 @@ class ListPrisoners extends Component
             ->when(empty($this->AdvanceSearch) || empty($this->AdvanceSearch['is_released']), function ($query) {
                 $query->whereHas('Arrest', function ($query) {
                     $query->where('is_released', false);
+                    $query->orWhere('is_released', null);
                 });
             })
             ->when($this->IsReleased ,function ($q){

@@ -17,7 +17,11 @@ class ListCities extends Component
 
     public object $Cities_;
     public object $Towns;
+    public ?object $EditTown;
+    public bool $showEditTown = false;
     public int $city_id;
+    public ?string $townKey = null;
+    public ?string $newTownName = null;
     public ?string $TownSearch = null;
     public ?string $Search = null;
     public array $state = [];
@@ -80,6 +84,10 @@ class ListCities extends Component
 
     public function showTowns($id): void
     {
+        $this->showEditTown = false;
+        $this->EditTown = null;
+        $this->newTownName = null;
+
         $this->city_id = $id;
         $Towns = Town::query()
             ->where('city_id', $id)
@@ -116,14 +124,31 @@ class ListCities extends Component
             ->with('Town')
             ->when(isset($this->Search), function ($query) {
                 $query->where('city_name', 'LIKE', '%' . $this->Search . '%');
-            });
+            })
+            ->orderBy('city_name');
     }
 
-    public function deleteTown($town_id,$city_id): void
+    public function deleteTown($town_id, $city_id): void
     {
         $city = $city_id;
         Town::query()->find($town_id)->delete();
         $this->reset($this->Towns);
-        $this->Towns = Town::query()->where('city_id',$city)->get();
+        $this->Towns = Town::query()->where('city_id', $city)->get();
+    }
+    public function editTown($town_id): void
+    {
+        $this->showEditTown = true;
+        $this->EditTown = Town::query()->where('id', $town_id)->first();
+        $this->newTownName = $this->EditTown->town_name;
+    }
+
+    public function updateTown(): void
+    {
+        $this->validate(['newTownName' => 'unique:towns,town_name'], ['newTownName.unique' => 'هذه البلدة موجودة مسبقاً']);
+        $this->EditTown->update(['town_name' => $this->newTownName]);
+        $this->Towns = Town::query()->where('city_id', $this->EditTown->city_id)->get();
+        $this->newTownName = null;
+        $this->EditTown = null;
+        $this->showEditTown = false;
     }
 }

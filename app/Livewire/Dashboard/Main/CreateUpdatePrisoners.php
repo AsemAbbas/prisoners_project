@@ -219,8 +219,8 @@ class CreateUpdatePrisoners extends Component
             $this->state['prisoner_type'] = array_filter($this->state['prisoner_type']) ?? null;
 
         $rule = $this->showEdit
-            ? ["required", "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
-            : ["required", "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
+            ? ["nullable", "unique:prisoners,identification_number,{$this->state['id']},id,deleted_at,NULL"]
+            : ["nullable", "unique:prisoners,identification_number,NULL,id,deleted_at,NULL"];
         if (isset($this->state['arrest_type']) && ($this->state['arrest_type'] == "محكوم")) {
             $judgment_in_lifetime_rule = ["nullable", "integer", "required_without_all:judgment_in_years,judgment_in_months"];
             $judgment_in_years_rule = ["nullable", "integer", "required_without_all:judgment_in_lifetime,judgment_in_months"];
@@ -238,18 +238,18 @@ class CreateUpdatePrisoners extends Component
             'first_name' => "required",
             'second_name' => "nullable",
             'third_name' => "nullable",
-            'last_name' => "required",
+            'last_name' => "nullable",
             'mother_name' => "nullable",
             'nick_name' => "nullable",
-            'date_of_birth' => "required",
-            'gender' => "required|in:" . $this->subTables()['Gender'],
+            'date_of_birth' => "nullable",
+            'gender' => "nullable|in:" . $this->subTables()['Gender'],
             'city_id' => "nullable|in:" . $this->subTables()['City'],
             'town_id' => "nullable|in:" . $this->subTables()['Town'],
             'prisoner_type' => "nullable",
             'notes' => "nullable",
             //Arrest
-            "arrest_start_date" => 'required',
-            "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
+            "arrest_start_date" => 'nullable',
+            "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
             "judgment_in_lifetime" => $judgment_in_lifetime_rule,
             "judgment_in_years" => $judgment_in_years_rule,
             "judgment_in_months" => $judgment_in_months_rule,
@@ -310,6 +310,10 @@ class CreateUpdatePrisoners extends Component
 
     public function manipulateData(): array
     {
+
+        if (isset($this->state['is_released']) && ($this->state['is_released'] == null || $this->state['is_released'] == "اختر...")) {
+            $this->state['is_released'] = null;
+        }
 
         if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] === "") {
             $this->state['date_of_birth'] = null;
@@ -409,7 +413,8 @@ class CreateUpdatePrisoners extends Component
 
             $this->Done(); // Notify completion
         } catch (\Exception $e) {
-//            $massage = $e->getMessage();
+            $massage = $e->getMessage();
+//            dd($massage);
             abort(403, 'هنالك مشكلة في تأكيد العملية تواصل مع الدعم الفني');
         }
     }
@@ -491,7 +496,7 @@ class CreateUpdatePrisoners extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'is_released' => (boolean)$this->state['is_released'] ?? null,
+                'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : 0,
 
                 'email' => $this->state['email'] ?? null,
             ]);
@@ -576,6 +581,8 @@ class CreateUpdatePrisoners extends Component
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            $massage = $e->getMessage();
+//            dd($massage);
             abort(403, 'مشكلة في تعديل بيانات الأسير تواصل مع الدعم الفني');
         }
     }
@@ -632,7 +639,6 @@ class CreateUpdatePrisoners extends Component
                 'social_type' => $this->state['social_type'] ?? null,
                 'wife_type' => $this->state['wife_type'] ?? null,
                 'number_of_children' => $this->state['number_of_children'] ?? null,
-
                 'father_arrested' => $this->state['father_arrested'] ?? null,
                 'mother_arrested' => $this->state['mother_arrested'] ?? null,
                 'husband_arrested' => $this->state['husband_arrested'] ?? null,
@@ -648,7 +654,7 @@ class CreateUpdatePrisoners extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'is_released' => (boolean)$this->state['is_released'] ?? null,
+                'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : 0,
 
                 'email' => $this->state['email'] ?? null,
             ]);
@@ -728,6 +734,7 @@ class CreateUpdatePrisoners extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             $massage = $e->getMessage();
+//            dd($e);
             abort(403, 'مشكلة في إضافة أسير جديد تواصل مع الدعم الفني');
         }
     }

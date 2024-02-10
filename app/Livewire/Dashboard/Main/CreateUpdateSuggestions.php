@@ -39,6 +39,7 @@ class CreateUpdateSuggestions extends Component
     public ?string $new_town_name = null;
     public object $Prisoners_;
     public bool $showEdit = false;
+    public $fileFormUrl;
     public $googleUrl;
     public ?string $new_town_id = null;
 
@@ -102,7 +103,7 @@ class CreateUpdateSuggestions extends Component
                 "last_name" => $data['last_name'] ?? null,
                 "mother_name" => $data['mother_name'] ?? null,
                 "nick_name" => $data['nick_name'] ?? null,
-                "date_of_birth" => $data['date_of_birth'] ?? null,
+                "date_of_birth" => null,
                 "gender" => $data['gender'] ?? null,
                 "city_id" => $data['city_id'] ?? null,
                 "town_id" => $data['town_id'] ?? null,
@@ -113,7 +114,7 @@ class CreateUpdateSuggestions extends Component
                 "judgment_in_lifetime" => $data['arrest']['judgment_in_lifetime'] ?? null,
                 "judgment_in_years" => $data['arrest']['judgment_in_years'] ?? null,
                 "judgment_in_months" => $data['arrest']['judgment_in_months'] ?? null,
-                "belong_id" => $data['arrest']['belong_id'] ?? null,
+                "belong_id" => null,//$data['arrest']['belong_id'] ?? null,
                 "special_case" => array_fill_keys(explode(',' ?? null, $data['arrest']['special_case']) ?? null, true) ?? null,
                 "health_note" => $data['arrest']['health_note'] ?? null,
                 "social_type" => $data['arrest']['social_type'] ?? null,
@@ -132,7 +133,7 @@ class CreateUpdateSuggestions extends Component
                 "first_phone_number" => $data['arrest']['first_phone_number'] ?? null,
                 "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
                 "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
-                "is_released" => isset($data['arrest']['is_released']) ? (boolean)$data['arrest']['is_released'] : null,
+                "is_released" => isset($data['arrest']['is_released']) ? (boolean)$data['arrest']['is_released'] : 0,
                 "email" => $data['arrest']['email'] ?? null,
 
                 "father_arrested_id" => $father_arrested_id,
@@ -278,7 +279,7 @@ class CreateUpdateSuggestions extends Component
             "sister_arrested" => 'nullable|integer',
             "son_arrested" => 'nullable|integer',
             "daughter_arrested" => 'nullable|integer',
-            'belong_id' => "nullable|in:" . $this->subTables()['Belongs'],
+            'belong_id' => "required|in:" . $this->subTables()['Belongs'],
             "special_case" => 'nullable',
             'social_type' => "nullable|in:" . $this->subTables()['SocialType'],
             'wife_type' => "nullable|in:" . $this->subTables()['WifeType'],
@@ -287,10 +288,8 @@ class CreateUpdateSuggestions extends Component
             'first_phone_number' => "required",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
-            'is_released' => "nullable|in:0,1",
+            'is_released' => "required|in:0,1",
             'email' => "nullable",
-        ], [
-            'last_name.unique' => 'يوجد اسم كامل مشابه في قاعدة البيانات',
         ]);
         $oldArrestsValidation = Validator::make($this->old_arrests, [
             '*.old_arrest_start_date' => 'nullable|required_with:*.old_arrest_end_date,*.arrested_side',
@@ -343,7 +342,7 @@ class CreateUpdateSuggestions extends Component
             $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
         }
 
-        if (isset($this->state['is_released']) && $this->state['is_released'] == "اختر...") {
+        if (isset($this->state['is_released']) && ($this->state['is_released'] == null || $this->state['is_released'] == "اختر...")) {
             $this->state['is_released'] = null;
         }
 
@@ -435,6 +434,13 @@ class CreateUpdateSuggestions extends Component
     private function dispatchAction(): void
     {
         $this->dispatch('ReviewMassage');
+    }
+
+    public function openFileFormModal(): void
+    {
+        $url = "https://www.surveymonkey.com/r/8VGDDKB";
+        $this->fileFormUrl = $url;
+        $this->dispatch('open_fileForm_modal');
     }
 
     public function openGoogleModal($full_name, $identification_number): void
@@ -535,7 +541,8 @@ class CreateUpdateSuggestions extends Component
                 'second_phone_owner' => $this->state['second_phone_owner'] ?? null,
                 'second_phone_number' => $this->state['second_phone_number'] ?? null,
 
-                'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : null,
+                'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : 0,
+
 
                 'email' => $this->state['email'] ?? null,
             ]);

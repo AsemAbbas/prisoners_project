@@ -12,7 +12,7 @@ class PalestineIdValidationRule implements Rule
         $value = preg_replace('/[^\d]/', '', $value);
 
         // Check if the ID has 9 digits
-        if (strlen($value) !== 9) {
+        if (strlen($value) !== 9 || $value == "000000000") {
             return false;
         }
 

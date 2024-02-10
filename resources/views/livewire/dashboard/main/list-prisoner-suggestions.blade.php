@@ -76,6 +76,9 @@
                                     class="flaticon-gear-fill mr-1"></i>الاضافات</a>
                         </div>
                     </div>
+                    @auth
+                        <a class="btn btn-primary mb-2 mx-2" wire:click="addNew">إضافة إقتراح</a>
+                    @endauth
                 </div>
             </div>
             <div class="table-responsive">
@@ -139,6 +142,14 @@
                                         مراجعة
                                     @endif
                                 </a>
+                                @auth
+                                    @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+
+                                        <a wire:click="edit({{$row->id}})" class="btn btn-warning">
+                                            تعديل
+                                        </a>
+                                    @endif
+                                @endauth
                                 @if($row->suggestion_status == "يحتاج مراجعة")
                                     <a wire:click="delete({{$row}})" class="btn btn-danger">
                                         حذف
@@ -850,30 +861,32 @@
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                         </svg>
                     </button>
-                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal" style="padding: 13px;">إلغاء</button>
-                    @if($Exist && !$Suggestions_->prisoner_id)
-                        <p class="text-danger" style="margin-top: 11px">(رقم الهوية موجود مسبقاً)</p>
-                    @endif
-
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal" style="padding: 13px;">
+                        إلغاء
+                    </button>
                     <div class="d-flex justify-content-center" style="width: 500px;">
                         <div>
-                            <select wire:model.live="switch_city_id" class="form-select" style="width: 160px;">
-                                <option>تحويل إلى...</option>
+                            <select wire:model.live="switch_city_id" class="form-select" style="width: 190px;">
+                                <option>تحويل الطلب إلى...</option>
                                 @foreach($Cities as $city)
                                     <option value="{{$city->id}}">{{$city->city_name}}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @if(!empty($switch_city_id) && $switch_city_id != "تحويل إلى...")
+                        @if(!empty($switch_city_id) && $switch_city_id != "تحويل الطلب إلى...")
                             <div>
                                 <a wire:click="switchCity" wire:confirm="هل أنت متأكد أنك تريد تحويل الطلب؟"
                                    class="btn btn-success mx-1" style="padding: 13px;">تحويل الطلب</a>
                             </div>
                         @endif
                         <div>
-                            <a wire:click="showNumberConverter" class="btn btn-secondary mx-1" style="padding: 13px;">محول الأرقام</a>
+                            <a wire:click="showNumberConverter" class="btn btn-secondary mx-1" style="padding: 13px;">مُحوّل
+                                الأرقام</a>
                         </div>
                     </div>
+                    @if($Exist && !$Suggestions_->prisoner_id)
+                        <p class="text-danger" style="margin-top: 11px">(رقم الهوية موجود مسبقاً)</p>
+                    @endif
                     <div>
 
                     </div>
@@ -894,37 +907,33 @@
                             aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span class="text-dark">لضمان تحويل صحيح للرقم عليك وضع الرقم مبدوء ب 59</span>
-                    <input type="text" class="form-control" wire:model.live="convert_number" placeholder="عليك وضع الرقم يبدأ ب 59">
+                    <span class="text-dark">لضمان تحويل صحيح للرقم عليك وضع الرقم مبدوء بـ 5</span>
+                    <input type="text" class="form-control" wire:model.live="convert_number"
+                           placeholder="عليك وضع الرقم يبدأ بـ 5">
                     @if(!empty($convert_number))
-                        @if(strpos($convert_number, '59') === 0)
-                        <div>
-{{--                            <p class="mt-2">--}}
-{{--                                <!-- Web Telegram -->--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">--}}
-{{--                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/>--}}
-{{--                                </svg>--}}
-{{--                                <a href="https://t.me/970{{$convert_number}}" target="_blank">({{$convert_number}})<span>970+</span></a><br>--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">--}}
-{{--                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/>--}}
-{{--                                </svg>--}}
-{{--                                <a href="https://t.me/972{{$convert_number}}" target="_blank">({{$convert_number}})<span>972+</span></a>--}}
-{{--                            </p>--}}
-                            <p class="mt-2">
-                                <!-- Web WhatsApp -->
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                                </svg>
-                                <a href="https://wa.me/970{{$convert_number}}" style="text-align: left" target="_blank">({{$convert_number}})<span>970+</span></a><br>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                                </svg>
-                                <a href="https://wa.me/972{{$convert_number}}" style="text-align: left" target="_blank">({{$convert_number}})<span>972+</span></a>
-                            </p>
-                        </div>
-                    @else
-                        <p class="text-danger">الرجاء التأكد من أن الرقم يبدأ بـ 59</p>
-                    @endif
+                        @if(strpos($convert_number, '5') === 0)
+                            <div>
+                                <p class="mt-2">
+                                    <!-- Web WhatsApp -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-whatsapp" viewBox="0 0 16 16">
+                                        <path
+                                            d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                                    </svg>
+                                    <a href="https://wa.me/970{{$convert_number}}" style="text-align: left"
+                                       target="_blank">({{$convert_number}})<span>970+</span></a><br>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-whatsapp" viewBox="0 0 16 16">
+                                        <path
+                                            d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                                    </svg>
+                                    <a href="https://wa.me/972{{$convert_number}}" style="text-align: left"
+                                       target="_blank">({{$convert_number}})<span>972+</span></a>
+                                </p>
+                            </div>
+                        @else
+                            <p class="text-danger">الرجاء التأكد من أن الرقم يبدأ بـ 5</p>
+                        @endif
                     @endif
                 </div>
                 <div class="modal-footer d-flex justify-content-start align-items-start">
@@ -933,6 +942,1115 @@
             </div>
         </div>
     </div>
+
+    <!-- CreateUpdate Modal -->
+    <div class="modal modal-xl fade" id="CreateUpdate" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content bg-white">
+                <div class="modal-header {{$showEditModel ? 'bg-warning' : 'bg-primary'}}" style="margin: 5px;">
+                    <h1 class="modal-title fs-5 text-white"
+                        id="staticBackdropLabel">{{$showEditModel ? 'تعديل افتراح' : 'إنشاء افتراح'}}</h1>
+                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form
+                        wire:submit.prevent="ConfirmAcceptAdmin">
+                        <div class="row">
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="form-group col-md-12 mb-4">
+                                    <div class="row">
+                                        <div class="form-group col-md-4 mb-4">
+                                            <label for="identification_number">رقم هوية الأسير</label>
+                                            <input wire:model.live="state.identification_number" type="text"
+                                                   class="form-control @error('identification_number') is-invalid @enderror"
+                                                   id="identification_number"
+                                                   maxlength="9"
+                                                   placeholder="رقم هوية الأسير">
+                                            @error('identification_number')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        @php
+                                            if (!empty($state['identification_number'])) {
+                                                $prisoner_idn = \App\Models\Prisoner::query()
+                                                    ->where('identification_number', $state['identification_number'])
+                                                    ->first();
+                                            }
+                                        @endphp
+                                        @if(!empty($prisoner_idn) && !isset($Prisoners_))
+                                            <span class="text-danger">رقم الهوية لهذا الاسير مسجل سابقاً، يرجى إعادة البحث بواسطة رقم الهوية</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="first_name">الاسم الأول</label>
+                                        <input wire:model.live="state.first_name" type="text"
+                                               class="form-control @error('first_name') is-invalid @enderror"
+                                               id="first_name"
+                                               placeholder="الاسم الأول">
+                                        @error('first_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="second_name">اسم الأب</label>
+                                        <input wire:model.live="state.second_name" type="text"
+                                               class="form-control @error('second_name') is-invalid @enderror"
+                                               id="second_name"
+                                               placeholder="الاسم الأب">
+                                        @error('second_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="third_name">اسم الجد</label>
+                                        <input wire:model.live="state.third_name" type="text"
+                                               class="form-control @error('third_name') is-invalid @enderror"
+                                               id="third_name"
+                                               placeholder="الاسم الجد">
+                                        @error('third_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="last_name">اسم العائلة</label>
+                                        <input wire:model.live="state.last_name" type="text"
+                                               class="form-control @error('last_name') is-invalid @enderror"
+                                               id="last_name"
+                                               placeholder="اسم العائلة">
+                                        @error('last_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="nick_name">اسم آخر للعائلة</label>
+                                        <input wire:model="state.nick_name" type="text"
+                                               class="form-control @error('nick_name') is-invalid @enderror"
+                                               id="nick_name"
+                                               placeholder="اسم آخر للعائلة">
+                                        @error('nick_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="mother_name">اسم الأم</label>
+                                        <input wire:model="state.mother_name" type="text"
+                                               class="form-control @error('mother_name') is-invalid @enderror"
+                                               id="mother_name"
+                                               placeholder="اسم الأم">
+                                        @error('mother_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                @php
+                                    if (!empty($state['first_name']) && !empty($state['second_name']) && !empty($state['third_name']) && !empty($state['last_name'])) {
+                                        $prisoner_name = \App\Models\Prisoner::query()
+                                            ->where('first_name', $state['first_name'])
+                                            ->where('second_name', $state['second_name'])
+                                            ->where('third_name', $state['third_name'])
+                                            ->where('last_name', $state['last_name'])
+                                            ->first();
+                                    }
+                                @endphp
+                                @if(!empty($prisoner_name) && !isset($Prisoners_))
+                                    <span class="text-danger">يوجد اسم مشابه سابقاً، يرجى التأكد من عدم التكرار</span>
+                                @endif
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="date_of_birth">تاريخ الميلاد</label>
+
+                                        <input wire:model="state.date_of_birth"
+                                               type="text"
+                                               class="form-control @error('date_of_birth') is-invalid @enderror"
+                                               placeholder="سنة - شهر - يوم"
+                                               oninput="formatDate(this)">
+                                        @error('date_of_birth')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="gender">الجنس</label>
+                                        <select wire:model.live="state.gender"
+                                                class="form-select @error('gender') is-invalid @enderror"
+                                                id="gender">
+                                            <option>اختر...</option>
+                                            @foreach(\App\Enums\Gender::cases() as $row)
+                                                <option value="{{$row->value}}">{{$row->value}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('gender')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="education_level">المستوى التعليمي</label>
+                                        <select wire:model.live="state.education_level"
+                                                class="form-select @error('education_level') is-invalid @enderror"
+                                                id="education_level">
+                                            <option>اختر...</option>
+                                            @foreach(\App\Enums\EducationLevel::cases() as $row)
+                                                <option value="{{$row->value}}">{{$row->value}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('education_level')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="city_id">المحافظة</label>
+                                        <select wire:model.live="state.city_id"
+                                                class="form-select @error('city_id') is-invalid @enderror"
+                                                id="city_id">
+                                            <option>اختر...</option>
+                                            @foreach($Cities as $city)
+                                                <option value="{{$city->id}}">{{$city->city_name}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('city_id')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="town_id">البلدة</label>
+                                        <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled @endif
+                                                class="form-select @error('town_id') is-invalid @enderror"
+                                                id="town_id">
+                                            <option>اختر...</option>
+                                            @foreach($Towns as $town)
+                                                <option value="{{$town->id}}">{{$town->town_name}}</option>
+                                            @endforeach
+                                            <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                        </select>
+                                        @error('town_id')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    @if(isset($state['town_id']) && $state['town_id'] == "إضافة بلدة جديدة" && isset($state['city_id']) && $state['city_id'] == "20")
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="new_town_name">اسم البلدة</label>
+                                            <input wire:model="new_town_name" type="text"
+                                                   class="form-control @error('new_town_name') is-invalid @enderror"
+                                                   id="new_town_name"
+                                                   placeholder="اسم البلدة">
+                                            <a class="btn btn-success" wire:click="addNewTown">إضافة</a>
+                                            @error('new_town_name')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="social_type">الحالة الإجتماعية</label>
+                                        <select wire:model.live="state.social_type"
+                                                class="form-select @error('social_type') is-invalid @enderror"
+                                                id="social_type">
+                                            <option>اختر...</option>
+                                            @foreach(\App\Enums\SocialType::cases() as $row)
+                                                <option value="{{$row->value}}">{{$row->value}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('social_type')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    @if(isset($state['social_type']) && !in_array($state['social_type'],['أعزب','اختر...']))
+                                        @if($state['social_type'] !== "مطلق")
+                                            @if(isset($state['gender']) && $state['gender'] === 'ذكر')
+                                                <div class="form-group col-md-4 mb-4">
+                                                    <label for="wife_type" class="d-block">عدد الزوجات</label>
+                                                    <div class="bg-white p-2 mt-1 border rounded-2">
+                                                        @foreach(\App\Enums\WifeType::cases() as $row)
+                                                            <div
+                                                                class="form-check form-check-primary form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                       name="wife_type"
+                                                                       wire:model="state.wife_type"
+                                                                       value="{{$row->value}}" id="wife_type">
+                                                                <label class="form-check-label" for="wife_type">
+                                                                    {{$row->value}}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                        @error('wife_type')
+                                                        <div class="error-message invalid-feedback"
+                                                             style="font-size: 15px">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="number_of_children">عدد الأبناء</label>
+                                            <input wire:model="state.number_of_children" type="number"
+                                                   style="text-align: right"
+                                                   class="form-control @error('number_of_children') is-invalid @enderror"
+                                                   id="number_of_children"
+                                                   placeholder="عدد الأبناء">
+                                            @error('number_of_children')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="arrest_start_date">تاريخ الاعتقال</label>
+                                        <input wire:model="state.arrest_start_date"
+                                               type="text"
+                                               class="form-control @error('arrest_start_date') is-invalid @enderror"
+
+                                               placeholder="سنة - شهر - يوم"
+                                               oninput="formatDate(this)">
+                                        @error('arrest_start_date')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="belong_id">الإنتماء</label>
+                                        <select wire:model.live="state.belong_id"
+                                                class="form-select @error('belong_id') is-invalid @enderror"
+                                                id="belong_id">
+                                            <option>اختر...</option>
+                                            @foreach($Belongs as $row)
+                                                <option value="{{$row->id}}">{{$row->belong_name}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('belong_id')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="arrest_type">نوع الاعتقال</label>
+                                        <select wire:model.live="state.arrest_type"
+                                                class="form-select @error('arrest_type') is-invalid @enderror"
+                                                id="arrest_type">
+                                            <option>اختر...</option>
+                                            @foreach(\App\Enums\ArrestType::cases() as $row)
+                                                <option value="{{$row->value}}">{{$row->value}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('arrest_type')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                    </div>
+                                    @if(isset($state['arrest_type']) &&  in_array($state['arrest_type'],['محكوم','موقوف']))
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="judgment_in_lifetime">
+                                                الحكم
+                                                @if($state['arrest_type'] === 'موقوف')
+                                                    المتوقع
+                                                @endif
+                                                بالمؤبدات
+                                            </label>
+                                            <input wire:model="state.judgment_in_lifetime"
+                                                   type="number"
+                                                   class="form-control @error('judgment_in_lifetime') is-invalid @enderror"
+                                                   style="text-align: right"
+                                                   min="0"
+                                                   placeholder="أرقام (اختياري)"
+                                                   id="judgment_in_lifetime">
+                                            @error('judgment_in_lifetime')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="judgment_in_years">
+                                                الحكم
+                                                @if($state['arrest_type'] === 'موقوف')
+                                                    المتوقع
+                                                @endif
+                                                بالسنوات
+                                            </label>
+                                            <input wire:model="state.judgment_in_years" type="number"
+                                                   class="form-control @error('judgment_in_years') is-invalid @enderror"
+                                                   placeholder="أرقام (اختياري)"
+                                                   style="text-align: right"
+                                                   min="0"
+                                                   id="judgment_in_years">
+                                            @error('judgment_in_years')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="judgment_in_months">
+                                                الحكم
+                                                @if($state['arrest_type'] === 'موقوف')
+                                                    المتوقع
+                                                @endif
+                                                بالأشهر
+                                            </label>
+                                            <input wire:model="state.judgment_in_months" type="number"
+                                                   class="form-control @error('judgment_in_months') is-invalid @enderror"
+                                                   placeholder="أرقام (اختياري)"
+                                                   style="text-align: right"
+                                                   min="0"
+                                                   id="judgment_in_months">
+                                            @error('judgment_in_months')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-5 mb-4">
+                                        <label for="SpecialCase">حالة خاصة</label>
+                                        <div id="toggleSpecialCase" class="SpecialCase">
+                                            <div class="card">
+                                                <div class="card-header" id="headingSpecialCase" wire:ignore.self>
+                                                    <section class="mb-0 mt-0">
+                                                        <div role="menu"
+                                                             class="collapsed d-flex justify-content-between"
+                                                             data-bs-toggle="collapse"
+                                                             data-bs-target="#defaultSpecialCase"
+                                                             aria-expanded="false"
+                                                             aria-controls="defaultSpecialCase">
+                                                            <p class="p-0 m-0">اختر...</p>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24"
+                                                                 viewBox="0 0 24 24" fill="none"
+                                                                 stroke="currentColor"
+                                                                 stroke-width="2" stroke-linecap="round"
+                                                                 stroke-linejoin="round"
+                                                                 class="feather feather-chevron-down">
+                                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                                            </svg>
+                                                        </div>
+                                                    </section>
+                                                </div>
+                                                @php
+                                                    // Assuming $state['special_case'] is an array
+                                                    $keyToDelete = ''; // Set the key you want to delete
+
+                                                    if (isset($state['special_case'][$keyToDelete])) {
+                                                        unset($state['special_case'][$keyToDelete]);
+                                                    }
+                                                @endphp
+                                                <div id="defaultSpecialCase"
+                                                     class="collapse show"
+                                                     aria-labelledby="headingSpecialCase"
+                                                     wire:ignore.self
+                                                     data-bs-parent="#toggleSpecialCase">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            @foreach(\App\Enums\SpecialCase::cases() as $index => $row)
+                                                                @if($row->value == 'حامل')
+                                                                    @if(isset($state['gender']) && $state['gender'] == "انثى")
+                                                                        <div class="col-md-6">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="state.special_case.{{$row->value}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$row->value}}
+                                                                                </label>
+                                                                            </div>
+                                                                            @error('state.special_case.' . $index)
+                                                                            <div class="error-message invalid-feedback"
+                                                                                 style="font-size: 15px">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
+                                                                    @endif
+                                                                @else
+                                                                    <div class="col-md-6">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.special_case.{{$row->value}}"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                {{$row->value}}
+                                                                            </label>
+                                                                        </div>
+                                                                        @error('state.special_case.' . $index)
+                                                                        <div class="error-message invalid-feedback"
+                                                                             style="font-size: 15px">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if(isset($state['special_case']) && !empty(array_filter($state['special_case'])))
+                                        @php
+                                            $data = array_filter($state['special_case']);
+                                        @endphp
+                                        @if(in_array("مريض / جريح",array_filter(array_keys($data))))
+                                            <div class="form-group col-md-3 mb-4">
+                                                <label for="health_note">وصف الحالة المرضية</label>
+                                                <textarea id="health_note" rows="8"
+                                                          class="form-control @error('health_note') is-invalid @enderror"
+                                                          placeholder="اكتب وصف الحالة المرضية..."
+                                                          wire:model="state.health_note"></textarea>
+                                                @error('health_note')
+                                                <div class="error-message invalid-feedback"
+                                                     style="font-size: 15px">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        @endif
+                                        @if(in_array("أقارب معتقلين",array_filter(array_keys($data))))
+                                            <div class="form-group col-md-10 mb-4">
+                                                <label for="FamilyArrested">أقارب معتقلين</label>
+                                                <div id="toggleFamilyArrested" class="FamilyArrested">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingFamilyArrested"
+                                                             wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultFamilyArrested"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultFamilyArrested">
+                                                                    <p class="p-0 m-0 text-danger">
+                                                                        عليك اختيار المعتقلين من الأقارب ووضع أرقام
+                                                                        هوياتهم
+                                                                    </p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultFamilyArrested" class="collapse show"
+                                                             aria-labelledby="headingFamilyArrested"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleFamilyArrested">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.father_arrested"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                الأب
+                                                                            </label>
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['father_arrested']) &&  $state['father_arrested'] === true)
+                                                                            <div>
+                                                                                <label>
+                                                                                    <input
+                                                                                        class="form-input border rounded-2 p-2"
+                                                                                        wire:model.live="state.father_arrested_id"
+                                                                                        maxlength="9"
+                                                                                        placeholder="رقم هوية الاب"
+                                                                                        type="text">
+                                                                                </label>
+                                                                                @php
+                                                                                    if (isset($state) && isset($state['father_arrested_id']) && strlen($state['father_arrested_id']) == 9)
+                                                                                        $father_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['father_arrested_id'])->first()
+                                                                                @endphp
+                                                                                @if(isset($state['father_arrested_id']) && strlen($state['father_arrested_id']) == 9)
+                                                                                    @if(isset($father_arrested_id_check))
+                                                                                        @if($father_arrested_id_check)
+                                                                                            <span
+                                                                                                class="text-success">موجود</span>
+                                                                                        @else
+                                                                                            <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.mother_arrested"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                الأم
+                                                                            </label>
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['mother_arrested']) &&  $state['mother_arrested'] === true)
+                                                                            <div>
+                                                                                <label>
+                                                                                    <input
+                                                                                        class="form-input border rounded-2 p-2"
+                                                                                        wire:model.live="state.mother_arrested_id"
+                                                                                        maxlength="9"
+                                                                                        placeholder="رقم هوية الأم"
+                                                                                        type="text">
+                                                                                </label>
+                                                                                @php
+                                                                                    if (isset($state) && isset($state['mother_arrested_id']) && strlen($state['mother_arrested_id']) == 9)
+                                                                                        $mother_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['mother_arrested_id'])->first()
+                                                                                @endphp
+                                                                                @if(isset($state['mother_arrested_id']) && strlen($state['mother_arrested_id']) == 9)
+                                                                                    @if(isset($mother_arrested_id_check))
+                                                                                        @if($mother_arrested_id_check)
+                                                                                            <span
+                                                                                                class="text-success">موجود</span>
+                                                                                        @else
+                                                                                            <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.husband_arrested"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                الزوج
+                                                                            </label>
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['husband_arrested']) &&  $state['husband_arrested'] === true)
+                                                                            <div>
+                                                                                <label>
+                                                                                    <input
+                                                                                        class="form-input border rounded-2 p-2"
+                                                                                        wire:model.live="state.husband_arrested_id"
+                                                                                        maxlength="9"
+                                                                                        placeholder="رقم هوية الزوج"
+                                                                                        type="text">
+                                                                                </label>
+                                                                                @php
+                                                                                    if (isset($state) && isset($state['husband_arrested_id']) && strlen($state['husband_arrested_id']) == 9)
+                                                                                        $husband_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['husband_arrested_id'])->first()
+                                                                                @endphp
+                                                                                @if(isset($state['husband_arrested_id']) && strlen($state['husband_arrested_id']) == 9)
+                                                                                    @if(isset($husband_arrested_id_check))
+                                                                                        @if($husband_arrested_id_check)
+                                                                                            <span
+                                                                                                class="text-success">موجود</span>
+                                                                                        @else
+                                                                                            <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="state.wife_arrested"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark">
+                                                                                الزوجة
+                                                                            </label>
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['wife_arrested']) &&  $state['wife_arrested'] === true)
+                                                                            <div>
+                                                                                <label>
+                                                                                    <input
+                                                                                        class="form-input border rounded-2 p-2"
+                                                                                        wire:model.live="state.wife_arrested_id"
+                                                                                        placeholder="رقم هوية الزوجة"
+                                                                                        maxlength="9"
+                                                                                        type="text">
+                                                                                </label>
+                                                                                @php
+                                                                                    if (isset($state) && isset($state['wife_arrested_id']) && strlen($state['wife_arrested_id']) == 9)
+                                                                                        $wife_arrested_id_check = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['wife_arrested_id'])->first()
+                                                                                @endphp
+                                                                                @if(isset($state['wife_arrested_id']) && strlen($state['wife_arrested_id']) == 9)
+                                                                                    @if(isset($wife_arrested_id_check))
+                                                                                        @if($wife_arrested_id_check)
+                                                                                            <span
+                                                                                                class="text-success">موجود</span>
+                                                                                        @else
+                                                                                            <span class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                        @endif
+                                                                                    @endif
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div class="form-group mb-2">
+                                                                            <label for="brother_arrested"
+                                                                                   style="display: inline-block;">
+                                                                                أخ
+                                                                            </label>
+                                                                            <input class="form-control form-control-sm"
+                                                                                   wire:model.live="state.brother_arrested"
+                                                                                   type="number"
+                                                                                   max="10"
+                                                                                   min="0"
+                                                                                   id="brother_arrested"
+                                                                                   style="width: 80px; display: inline-block;">
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['brother_arrested']) &&  $state['brother_arrested'] > 0)
+                                                                            @for($i = 1; $i <= min(10, $state['brother_arrested']); $i++)
+                                                                                <div>
+                                                                                    <label>
+                                                                                        <input
+                                                                                            class="form-input border rounded-2 p-2"
+                                                                                            wire:model.live="state.brother_arrested_id.{{$i}}"
+                                                                                            placeholder="رقم هوية الأخ {{$i}}"
+                                                                                            maxlength="9"
+                                                                                            type="text">
+                                                                                    </label>
+                                                                                    @php
+                                                                                        if (isset($state) && isset($state['brother_arrested_id']) && isset($state['brother_arrested_id'][$i]) && strlen($state['brother_arrested_id'][$i]) == 9)
+                                                                                            $brother_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['brother_arrested_id'][$i])->first()
+                                                                                    @endphp
+                                                                                    @if(isset($state['brother_arrested_id'][$i]) && strlen($state['brother_arrested_id'][$i]) == 9)
+                                                                                        @if(isset($brother_arrested_id_check[$i]))
+                                                                                            @if($brother_arrested_id_check[$i])
+                                                                                                <span
+                                                                                                    class="text-success">موجود</span>
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endif
+                                                                                </div>
+                                                                            @endfor
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div class="form-group mb-2">
+                                                                            <label for="brother_arrested"
+                                                                                   style="display: inline-block;">
+                                                                                أخت
+                                                                            </label>
+                                                                            <input class="form-control form-control-sm"
+                                                                                   wire:model.live="state.sister_arrested"
+                                                                                   type="number"
+                                                                                   max="10"
+                                                                                   min="0"
+                                                                                   id="brother_arrested"
+                                                                                   style="width: 80px; display: inline-block;">
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['sister_arrested']) &&  $state['sister_arrested'] > 0)
+                                                                            @for($i = 1; $i <= min(10, $state['sister_arrested']); $i++)
+                                                                                <div>
+                                                                                    <label>
+                                                                                        <input
+                                                                                            class="form-input border rounded-2 p-2"
+                                                                                            wire:model.live="state.sister_arrested_id.{{$i}}"
+                                                                                            placeholder="رقم هوية الأخت {{$i}}"
+                                                                                            maxlength="9"
+                                                                                            type="text">
+                                                                                    </label>
+                                                                                    @php
+                                                                                        if (isset($state) && isset($state['sister_arrested_id']) && isset($state['sister_arrested_id'][$i]) && strlen($state['sister_arrested_id'][$i]) == 9)
+                                                                                            $sister_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['sister_arrested_id'][$i])->first()
+                                                                                    @endphp
+                                                                                    @if(isset($state['sister_arrested_id'][$i]) && strlen($state['sister_arrested_id'][$i]) == 9)
+                                                                                        @if(isset($sister_arrested_id_check[$i]))
+                                                                                            @if($sister_arrested_id_check[$i])
+                                                                                                <span
+                                                                                                    class="text-success">موجود</span>
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endif
+                                                                                </div>
+                                                                            @endfor
+
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div class="form-group mb-2">
+                                                                            <label for="son_arrested"
+                                                                                   style="display: inline-block;">
+                                                                                ابن
+                                                                            </label>
+                                                                            <input class="form-control form-control-sm"
+                                                                                   wire:model.live="state.son_arrested"
+                                                                                   type="number"
+                                                                                   max="10"
+                                                                                   min="0"
+                                                                                   id="son_arrested"
+                                                                                   style="width: 80px; display: inline-block;">
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['son_arrested']) &&  $state['son_arrested'] > 0)
+                                                                            @for($i = 1; $i <= min(10, $state['son_arrested']); $i++)
+                                                                                <div>
+                                                                                    <label>
+                                                                                        <input
+                                                                                            class="form-input border rounded-2 p-2"
+                                                                                            wire:model.live="state.son_arrested_id.{{$i}}"
+                                                                                            placeholder="رقم هوية الابن {{$i}}"
+                                                                                            maxlength="9"
+                                                                                            type="text">
+                                                                                    </label>
+                                                                                    @php
+                                                                                        if (isset($state) && isset($state['son_arrested_id']) && isset($state['son_arrested_id'][$i]) && strlen($state['son_arrested_id'][$i]) == 9)
+                                                                                            $son_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['son_arrested_id'][$i])->first()
+                                                                                    @endphp
+                                                                                    @if(isset($state['son_arrested_id'][$i]) && strlen($state['son_arrested_id'][$i]) == 9)
+                                                                                        @if(isset($son_arrested_id_check[$i]))
+                                                                                            @if($son_arrested_id_check[$i])
+                                                                                                <span
+                                                                                                    class="text-success">موجود</span>
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endif
+                                                                                </div>
+                                                                            @endfor
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div class="form-group mb-2">
+                                                                            <label for="daughter_arrested"
+                                                                                   style="display: inline-block;">
+                                                                                ابنه
+                                                                            </label>
+                                                                            <input class="form-control form-control-sm"
+                                                                                   wire:model.live="state.daughter_arrested"
+                                                                                   type="number"
+                                                                                   max="10"
+                                                                                   min="0"
+                                                                                   id="daughter_arrested"
+                                                                                   style="width: 80px; display: inline-block;">
+                                                                        </div>
+                                                                        @if(isset($state) && isset($state['daughter_arrested']) && $state['daughter_arrested'] > 0)
+                                                                            @for($i = 1; $i <= min(10, $state['daughter_arrested']); $i++)
+                                                                                <div>
+                                                                                    <label>
+                                                                                        <input
+                                                                                            class="form-input border rounded-2 p-2"
+                                                                                            wire:model.live="state.daughter_arrested_id.{{$i}}"
+                                                                                            maxlength="9"
+                                                                                            placeholder="رقم هوية الابنه {{$i}}"
+                                                                                            type="text">
+                                                                                    </label>
+                                                                                    @php
+                                                                                        if (isset($state) && isset($state['daughter_arrested_id']) && isset($state['daughter_arrested_id'][$i]) && strlen($state['daughter_arrested_id'][$i]) == 9)
+                                                                                            $daughter_arrested_id_check[$i] = (boolean)\App\Models\Prisoner::query()->where('identification_number' ,$state['daughter_arrested_id'][$i])->first()
+                                                                                    @endphp
+                                                                                    @if(isset($daughter_arrested_id_check[$i]))
+                                                                                        @if(isset($state['daughter_arrested_id'][$i]) && strlen($state['daughter_arrested_id'][$i]) == 9)
+                                                                                            @if($daughter_arrested_id_check[$i])
+                                                                                                <span
+                                                                                                    class="text-success">موجود</span>
+                                                                                            @else
+                                                                                                <span
+                                                                                                    class="text-danger">غير موجود (يرجى الإضافة)</span>
+                                                                                            @endif
+                                                                                        @endif
+                                                                                    @endif
+                                                                                </div>
+                                                                            @endfor
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="first_phone_number">رقم التواصل مع الأهل</label>
+                                        <input wire:model="state.first_phone_number" type="number"
+                                               class="form-control @error('first_phone_number') is-invalid @enderror"
+                                               id="first_phone_number"
+                                               maxlength="14"
+                                               min="0"
+                                               inputmode="numeric"
+                                               placeholder="رقم التواصل مع الأهل">
+                                        @error('first_phone_number')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-3 mb-4">
+                                        <label for="first_phone_owner">اسم صاحب الرقم</label>
+                                        <input wire:model="state.first_phone_owner" type="text"
+                                               class="form-control @error('first_phone_owner') is-invalid @enderror"
+                                               id="first_phone_owner"
+                                               placeholder="اسم صاحب الرقم">
+                                        @error('first_phone_owner')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12 mb-4">
+                                    <div class="row">
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="second_phone_number">رقم التواصل الإضافي</label>
+                                            <input wire:model="state.second_phone_number" type="number"
+                                                   class="form-control @error('second_phone_number') is-invalid @enderror"
+                                                   id="second_phone_number"
+                                                   maxlength="14"
+                                                   min="0"
+                                                   inputmode="numeric"
+                                                   placeholder="رقم التواصل الإضافي">
+                                            @error('second_phone_number')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group col-md-3 mb-4">
+                                            <label for="second_phone_owner">اسم صاحب الرقم</label>
+                                            <input wire:model="state.second_phone_owner" type="text"
+                                                   class="form-control @error('second_phone_owner') is-invalid @enderror"
+                                                   id="second_phone_owner"
+                                                   placeholder="اسم صاحب الرقم">
+                                            @error('second_phone_owner')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12 mb-4">
+                                    <div class="row">
+                                        <div class="form-group col-md-6 mb-4">
+                                            <label for="email">البريد الإلكتروني</label>
+                                            <input wire:model="state.email" type="email"
+                                                   class="form-control @error('email') is-invalid @enderror"
+                                                   id="email"
+                                                   placeholder="البريد الإلكتروني">
+                                            @error('email')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @php
+                                if (isset($state['first_name'], $state['second_name'], $state['third_name'], $state['last_name'])) {
+                                    $full_name = $state['first_name'] . ' ' . $state['second_name'] . ' ' . $state['third_name'] . ' ' . $state['last_name'];
+                                }else $full_name = null;
+
+                                if (isset($state['identification_number'])) {
+                                    $identification_number = $state['identification_number'];
+                                }else $identification_number = null;
+                            @endphp
+
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    {{--                                <div class="form-group col-md-6 mb-4">--}}
+                                    {{--                                    <label>المستندات والوثائق</label>--}}
+                                    {{--                                    @if(isset($full_name) && isset($identification_number))--}}
+                                    {{--                                        <a class="btn btn-link d-block" style="padding:12px 0;"--}}
+                                    {{--                                           wire:click="openFileFormModal('{{$full_name}}','{{$identification_number}}')">--}}
+                                    {{--                                            اضغط هنا لإرفاق الملفات--}}
+                                    {{--                                        </a>--}}
+                                    {{--                                    @else--}}
+                                    {{--                                        <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">--}}
+                                    {{--                                            اضغط هنا لإرفاق الملفات--}}
+                                    {{--                                        </a>--}}
+                                    {{--                                        <span class="text-danger">عليك تعبئة الاسم رباعي و رقم هوية الأسير ليعمل الرابط</span>--}}
+                                    {{--                                    @endif--}}
+                                    {{--                                </div>--}}
+                                    <div class="form-group col-md-6 mb-4">
+                                        <label>المستندات والوثائق</label>
+                                        @if(isset($full_name) && isset($identification_number))
+                                            <a class="btn btn-link d-block" style="padding:12px 0;"
+                                               wire:click="openGoogleModal('{{$full_name}}','{{$identification_number}}')">
+                                                اضغط هنا لإرفاق الملفات
+                                            </a>
+                                        @else
+                                            <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">
+                                                اضغط هنا لإرفاق الملفات
+                                            </a>
+                                            <span
+                                                class="text-danger">عليك تعبئة الاسم رباعي و رقم هوية الأسير ليعمل الرابط</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-12 mb-4">
+                                    <div class="row">
+                                        <div class="form-group col-md-6 mb-4">
+                                            <label for="is-released">مفرج عنه حاليا؟</label>
+                                            <select id="is-released" class="form-select"
+                                                    wire:model.live="state.is_released">
+                                                <option>اختر...</option>
+                                                <option value="1">نعم, مفرج عنه</option>
+                                                <option value="0">لا, في السجن حالياً</option>
+                                            </select>
+                                            @error('is_released')
+                                            <div class="error-message invalid-feedback"
+                                                 style="font-size: 15px">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6 mb-4">
+                                    <label for="notes">ملاحظات</label>
+                                    <textarea id="notes" rows="3"
+                                              class="form-control @error('notes') is-invalid @enderror"
+                                              placeholder="اكتب ملاحظاتك..."
+                                              wire:model="state.notes"></textarea>
+                                    @error('notes')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3 text-center">
+                            <hr>
+                            <h1>اعتقالات سابقة (إن وجد)</h1>
+                            <hr>
+                        </div>
+                        @foreach($old_arrests as $key => $old_arrest)
+                            <div class="col-md-12">
+                                <div class="accordion-item col-md-6 mx-auto mb-4 p-0" wire:key="{{$key}}_"
+                                     wire:ignore.self>
+                                    <h2 class="accordion-header" style="background-color:rgba(227,227,227,0.52);margin-bottom: 6px;padding: 10px;border-radius: 3px" id="panelsStayOpen-heading_{{$key}}">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#panelsStayOpen-collapse_{{$key}}"
+                                                aria-expanded="true"
+                                                aria-controls="panelsStayOpen-collapse_{{$key}}">
+                                            اعتقال سابق {{$key + 1}}
+                                            <a class="btn btn-danger mx-4"
+                                               wire:click="removeOldArrest({{ $key }})">إزالة</a>
+                                        </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapse_{{$key}}"
+                                         class="accordion-collapse collapse show"
+                                         wire:ignore.self
+                                         aria-labelledby="panelsStayOpen-heading_{{$key}}">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="form-group col-md-4 mb-4">
+                                                    <label style="font-weight: bold" for="old_arrest_start_date">بداية
+                                                        الاعتقال</label>
+                                                    <input wire:model="old_arrests.{{$key}}.old_arrest_start_date"
+                                                           type="text"
+                                                           class="form-control"
+
+                                                           placeholder="سنة - شهر - يوم"
+                                                           oninput="formatDate(this)">
+                                                    @if(isset($old_errors) && isset($old_errors[$key.".old_arrest_start_date"]))
+                                                        <h6 class="text-danger error-message">{{ $old_errors[$key.".old_arrest_start_date"][0] }}</h6>
+                                                    @endif
+                                                </div>
+                                                <div class="form-group col-md-4 mb-4">
+                                                    <label style="font-weight: bold" for="old_arrest_end_date">نهاية
+                                                        الاعتقال</label>
+                                                    <input wire:model="old_arrests.{{$key}}.old_arrest_end_date"
+                                                           type="text"
+                                                           class="form-control"
+                                                           placeholder="سنة - شهر - يوم"
+                                                           oninput="formatDate(this)">
+
+
+                                                    @if(isset($old_errors) && isset($old_errors[$key.".old_arrest_end_date"]))
+                                                        <h6 class="text-danger error-message">{{ $old_errors[$key.".old_arrest_end_date"][0] }}</h6>
+                                                    @endif
+                                                </div>
+                                                <div class="form-group col-md-4 mb-4">
+                                                    <label style="font-weight: bold" for="arrested_side">جهة
+                                                        الاعتقال</label>
+                                                    <select id="arrested_side"
+                                                            wire:model="old_arrests.{{$key}}.arrested_side"
+                                                            class="form-select">
+                                                        <option>اختر...</option>
+                                                        @foreach(\App\Enums\ArrestedSide::cases() as $row)
+                                                            <option value="{{$row->value}}">{{$row->value}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if(isset($old_errors) && isset($old_errors[$key.".arrested_side"]))
+                                                        <h6 class="text-danger error-message">{{ $old_errors[$key.".arrested_side"][0] }}</h6>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div class="col-md-12">
+                            <div class="col-md-6 text-center mx-auto">
+                                <a class="btn btn-primary mx-auto" wire:click="addOldArrest">إضافة اعتقال سابق
+                                    آخر</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer d-flex justify-content-start align-items-start">
+                    <button type="submit"
+                            wire:click="ConfirmAcceptAdmin"
+                            class="btn {{$showEditModel ? 'bg-warning' : 'bg-primary'}}">
+                        حفظ
+                    </button>
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Modal -->
     <div class="modal modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
@@ -979,9 +2097,29 @@
     <script src="{{asset('plugins-rtl/global/vendors.min.js')}}"></script>
     @vite(['resources/rtl/assets/js/custom.js'])
     <script>
+
+        function formatDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 4) {
+                value = value.substring(0, 2) + '-' + value.substring(2, 4) + '-' + value.substring(4, 8);
+            } else if (value.length > 2) {
+                value = value.substring(0, 2) + '-' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
         window.addEventListener('showNumberConverter', event => {
             $('#showNumberConverter').modal('show');
         })
+
+        window.addEventListener('show_create_update_modal', event => {
+            $('#CreateUpdate').modal('show');
+        })
+        window.addEventListener('hide_create_update_modal', event => {
+            $('#CreateUpdate').modal('hide');
+            toastr.success(event.detail.message, 'تهانينا!');
+        })
+
         window.addEventListener('show_delete_modal', event => {
             $('#delete').modal('show');
         })
@@ -1018,8 +2156,37 @@
                 });
             });
         });
-        window.addEventListener('ReviewBefore', event => {
-            $('#review').modal('show');
+
+        window.addEventListener('open_fileForm_modal', event => {
+            $('#fileFormModal').modal('show');
+        })
+
+        window.addEventListener('open_google_modal', event => {
+            $('#googleForm').modal('show');
+        })
+
+        window.addEventListener('open_go_to_index_modal', event => {
+            $('#goToIndex').modal('show');
+        })
+
+        document.body.addEventListener('scroll-to-top', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+
+        Livewire.hook('commit', ({succeed}) => {
+            succeed(() => {
+                setTimeout(() => {
+                    const firstErrorMessage = document.querySelector('.error-message')
+
+                    if (firstErrorMessage !== null) {
+                        firstErrorMessage.scrollIntoView({block: 'center', inline: 'center'})
+                    }
+                }, 0)
+            })
         })
 
     </script>
