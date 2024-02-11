@@ -49,6 +49,7 @@ class ListPrisonerSuggestions extends Component
     public $old_errors = null;
     public ?string $new_town_name = null;
     public object $Prisoners_;
+
     public $fileFormUrl;
     public $googleUrl;
     public ?string $new_town_id = null;
@@ -67,7 +68,7 @@ class ListPrisonerSuggestions extends Component
     public ?string $change_prisoner_id = null;
     public ?string $prisoner_search = null;
     public ?string $sortBy = null;
-    public array $state = [];
+    public ?array $state = [];
 
     public $suggestion;
     public array $selectAccepted = [];
@@ -510,8 +511,9 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('show_create_update_modal');
     }
 
-    public function edit($suggestion_id = null): void
+    public function edit($suggestion_id): void
     {
+
         $this->suggestion = PrisonerSuggestion::query()
             ->with('FamilyIDNumberSuggestion', 'ArrestSuggestion', 'OldArrestSuggestion')
             ->where('id', $suggestion_id)
@@ -550,7 +552,7 @@ class ListPrisonerSuggestions extends Component
         $data = $this->suggestion->toArray();
         $this->state = [
             "id" => $data['id'] ?? null,
-            "prisoner_id" => $data['id'] ?? null,
+            "prisoner_id" => $data['prisoner_id'] ?? null,
             "identification_number" => $data['identification_number'] ?? null,
             "first_name" => $data['first_name'] ?? null,
             "second_name" => $data['second_name'] ?? null,
@@ -561,7 +563,7 @@ class ListPrisonerSuggestions extends Component
             "date_of_birth" => $data['date_of_birth'] ?? null,
             "gender" => $data['gender'] ?? null,
             "city_id" => $data['city_id'] ?? null,
-            "town_id" => $data['town_id'] ?? null,
+            "town_id" => (int)$data['town_id'] ?? null,
             "notes" => $data['notes'] ?? null,
 
             "arrest_start_date" => $data['arrest_suggestion']['arrest_start_date'] ?? null,
@@ -628,137 +630,6 @@ class ListPrisonerSuggestions extends Component
         unset($this->old_arrests[$index]);
         $this->old_errors = null;
         $this->old_arrests = array_values($this->old_arrests);
-    }
-
-    public function oldArrestManipulateData(): void
-    {
-        foreach ($this->old_arrests as &$old) {
-            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === "") {
-                $old['old_arrest_start_date'] = null;
-            }
-            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === "") {
-                $old['old_arrest_end_date'] = null;
-            }
-            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] !== "") {
-                $old['old_arrest_start_date'] = Carbon::parse($old['old_arrest_start_date'])->format('Y-m-d');
-            }
-            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] !== "") {
-                $old['old_arrest_end_date'] = Carbon::parse($old['old_arrest_end_date'])->format('Y-m-d');
-            }
-            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر...") {
-                $old['arrested_side'] = null;
-            }
-        }
-        unset($old);
-
-    }
-
-    public function manipulateData(): array
-    {
-
-        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] === "") {
-            $this->state['date_of_birth'] = null;
-        }
-
-        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] !== "") {
-            $this->state['date_of_birth'] = Carbon::parse($this->state['date_of_birth'])->format('Y-m-d');
-        }
-
-        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] === "") {
-            $this->state['arrest_start_date'] = null;
-        }
-
-        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] !== "") {
-            $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
-        }
-
-        if (isset($this->state['is_released']) && $this->state['is_released'] == "اختر...") {
-            $this->state['is_released'] = null;
-        }
-
-        if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {
-            $this->state['gender'] = null;
-        }
-
-        if (isset($this->state['city_id']) && $this->state['city_id'] == "اختر...") {
-            $this->state['city_id'] = null;
-        }
-
-        if (isset($this->state['town_id']) && $this->state['town_id'] == "اختر...") {
-            $this->state['town_id'] = null;
-        }
-
-        if (isset($this->state['belong_id']) && $this->state['belong_id'] == "اختر...") {
-            $this->state['belong_id'] = null;
-        }
-
-        if (isset($this->state['social_type']) && $this->state['social_type'] == "اختر...") {
-            $this->state['social_type'] = null;
-        }
-
-        if (isset($this->state['education_level']) && $this->state['education_level'] == "اختر...") {
-            $this->state['education_level'] = null;
-        }
-
-
-        if (isset($this->state['social_type']) && $this->state['social_type'] == "أعزب") {
-            $this->state['wife_type'] = null;
-            $this->state['number_of_children'] = null;
-        }
-        if (isset($this->state['gender']) && $this->state['gender'] == "انثى") {
-            $this->state['wife_type'] = null;
-        }
-        if (isset($this->state['social_type']) && $this->state['social_type'] == "مطلق") {
-            $this->state['wife_type'] = null;
-        }
-        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
-            $this->state['judgment_in_lifetime'] = null;
-            $this->state['judgment_in_years'] = null;
-            $this->state['judgment_in_months'] = null;
-        }
-        if (isset($this->state['special_case']) && !in_array('أقارب معتقلين', array_filter(array_keys($this->state['special_case'])))) {
-            $this->state['father_arrested'] = null;
-            $this->state['mother_arrested'] = null;
-            $this->state['husband_arrested'] = null;
-            $this->state['wife_arrested'] = null;
-            $this->state['brother_arrested'] = null;
-            $this->state['sister_arrested'] = null;
-            $this->state['son_arrested'] = null;
-            $this->state['daughter_arrested'] = null;
-        }
-
-        if (!isset($this->state['father_arrested'])) {
-            $this->state['father_arrested_id'] = null;
-        }
-        if (!isset($this->state['mother_arrested'])) {
-            $this->state['mother_arrested_id'] = null;
-        }
-        if (!isset($this->state['husband_arrested'])) {
-            $this->state['husband_arrested_id'] = null;
-        }
-        if (!isset($this->state['wife_arrested'])) {
-            $this->state['wife_arrested_id'] = null;
-        }
-        if (!isset($this->state['sister_arrested']) || $this->state['sister_arrested'] == 0) {
-            $this->state['sister_arrested_id'] = null;
-        }
-        if (!isset($this->state['brother_arrested']) || $this->state['brother_arrested'] == 0) {
-            $this->state['brother_arrested_id'] = null;
-        }
-        if (!isset($this->state['son_arrested']) || $this->state['son_arrested'] == 0) {
-            $this->state['son_arrested_id'] = null;
-        }
-        if (!isset($this->state['daughter_arrested']) || $this->state['daughter_arrested'] == 0) {
-            $this->state['daughter_arrested_id'] = null;
-        }
-        if (isset($this->state['special_case']) && !in_array('مريض / جريح', array_filter(array_keys($this->state['special_case'])))) {
-            $this->state['health_note'] = null;
-        }
-        if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
-            $this->state['special_case']['حامل'] = false;
-        }
-
-        return $this->state;
     }
 
     public function switchCity(): void
@@ -917,7 +788,11 @@ class ListPrisonerSuggestions extends Component
         $this->moveItem($this->oldArrestColumns['suggestion_accepted'], $this->oldArrestColumns['suggestion'], $id);
     }
 
-
+    public function confirmDelete(): void
+    {
+        $this->Suggestions_->delete();
+        $this->dispatch('hide_delete_modal');
+    }
 
     public function delete(PrisonerSuggestion $prisonerSuggestion): void
     {
@@ -926,22 +801,6 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('show_delete_modal');
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function Review(): void
-    {
-        $this->oldArrestManipulateData();
-
-        $this->validateData();
-
-        $this->manipulateData();
-    }
-    public function confirmDelete(): void
-    {
-        $this->Suggestions_->delete();
-        $this->dispatch('hide_delete_modal');
-    }
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $Suggestions = $this->getSuggestionsProperty()->paginate(10);
@@ -1017,14 +876,110 @@ class ListPrisonerSuggestions extends Component
                 }
             }
 
-
         $Belongs = Belong::all()->sortBy('belong_name');
-        $Cities = City::all()->sortBy('city_name');
-        $city = !empty($this->state['city_id']) ? $this->state['city_id'] : null;
-        $Towns = Town::query()->where('city_id', $city)->orderBy('town_name')->get();
         $Relationships = Relationship::all()->sortBy('id');
 
+        $Cities = City::query()
+            ->orderBy('city_name')
+            ->get();
+
+        $Towns = Town::query()
+            ->when(!empty($this->suggestion), function ($q) {
+                $q->where('city_id', $this->suggestion->city_id);
+            })
+            ->orderBy('town_name')
+            ->get();
+
         return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Belongs', 'Cities', 'Towns', 'Relationships', 'Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus'));
+    }
+
+    public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder
+    {
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')
+            ->first()
+            ->toArray()['city'] ?? [];
+
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
+
+        return PrisonerSuggestion::query()
+            ->with(['City', 'Relationship'])
+            ->where(function ($query) use ($cityIdArray) {
+                $query->whereIn('city_id', $cityIdArray)
+                    ->orWhereNull('city_id');
+            })
+            ->where('suggestion_status', 'يحتاج مراجعة')
+            ->where(function ($q) {
+                $q->when(isset($this->Search), function ($query) {
+                    $searchTerms = explode(' ', $this->Search);
+                    $query->where(function ($subQuery) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            $subQuery->where(function ($nameSubQuery) use ($term) {
+                                $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('second_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('third_name', 'LIKE', '%' . $term . '%')
+                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
+                            });
+                        }
+
+                        // City name search within the city_id check
+                        $subQuery->orWhereHas('City', function ($q) use ($searchTerms) {
+                            foreach ($searchTerms as $term) {
+                                $q->where('city_name', 'like', '%' . $term . '%');
+                            }
+                        });
+                    })
+                        ->orWhereHas('Prisoner', function ($subQuery_) use ($searchTerms) {
+                            foreach ($searchTerms as $term_) {
+                                $subQuery_->where(function ($nameSubQuery_) use ($term_) {
+                                    $nameSubQuery_->where('first_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('second_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('third_name', 'LIKE', '%' . $term_ . '%')
+                                        ->orWhere('last_name', 'LIKE', '%' . $term_ . '%');
+                                });
+                            }
+                        })
+                        ->orWhereHas('Prisoner', function ($q) {
+                            $q->where('identification_number', 'LIKE', $this->Search);
+                        })
+                        ->orWhereHas('Prisoner', function ($q) {
+                            $q->where('id', 'LIKE', $this->Search);
+                        })
+                        ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhere('suggester_identification_number', 'LIKE', $this->Search)
+                        ->orWhere('identification_number', 'LIKE', $this->Search)
+                        ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
+                        ->orWhereHas('City', function ($q) {
+                            $q->where('city_name', 'like', '%' . $this->Search . '%');
+                        })
+                        ->orWhereHas('Relationship', function ($q) {
+                            $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
+                        });
+                });
+                $q->when(isset($this->sortBy), function ($query) {
+                    if ($this->sortBy === "الإضافات") {
+                        $query->whereNull('prisoner_id');
+                    } elseif ($this->sortBy === "التعديلات") {
+                        $query->whereNotNull('prisoner_id');
+                    } else {
+                        $query->whereNull('prisoner_id')->orWhereNotNull('prisoner_id');
+                    }
+                });
+            });
+
+    }
+
+    public function SortBy($sort): void
+    {
+        $this->resetPage();
+        $this->Search = null;
+        $this->sortBy = $sort;
     }
 
     /**
@@ -1206,110 +1161,6 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('HideAcceptModal');
     }
 
-    /**
-     * @throws ValidationException
-     */
-    public function ConfirmAcceptAdmin(): void
-    {
-        $this->Review();
-
-        $Prisoner = PrisonerConfirm::query()->create([
-            'confirm_status' => "يحتاج مراجعة",
-            'prisoner_id' => $this->state['prisoner_id'] ?? null,
-            'identification_number' => $this->state['identification_number'] ?? null,
-            'first_name' => $this->state['first_name'] ?? null,
-            'second_name' => $this->state['second_name'] ?? null,
-            'third_name' => $this->state['third_name'] ?? null,
-            'last_name' => $this->state['last_name'] ?? null,
-            'mother_name' => $this->state['mother_name'] ?? null,
-            'nick_name' => $this->state['nick_name'] ?? null,
-            'date_of_birth' => $this->state['date_of_birth'] ?? null,
-            'gender' => $this->state['gender'] ?? null,
-            'city_id' => $this->state['city_id'] ?? null,
-            'town_id' => $this->state['town_id'] ?? null,
-            'notes' => $this->state['notes'] ?? null,
-        ]);
-
-        ArrestConfirm::query()->create([
-            'confirm_status' => "يحتاج مراجعة",
-            "prisoner_id" => $this->state['prisoner_id'] ?? null,
-            "prisoner_confirm_id" => $Prisoner->id,
-            "arrest_start_date" => $this->state['arrest_start_date'] ?? null,
-            "arrest_type" => $this->state['arrest_type'] ?? null,
-            "judgment_in_lifetime" => $this->state['judgment_in_lifetime'] ?? null,
-            "judgment_in_years" => $this->state['judgment_in_years'] ?? null,
-            "judgment_in_months" => $this->state['judgment_in_months'] ?? null,
-            "belong_id" => $this->state['belong_id'] ?? null,
-            "special_case" => $this->state['special_case'] ?? null,
-            "social_type" => $this->state['social_type'] ?? null,
-            "wife_type" => $this->state['wife_type'] ?? null,
-            "number_of_children" => $this->state['number_of_children'] ?? null,
-            "education_level" => $this->state['education_level'] ?? null,
-            "health_note" => $this->state['health_note'] ?? null,
-            "father_arrested" => $this->state['father_arrested'] ?? null,
-            "mother_arrested" => $this->state['mother_arrested'] ?? null,
-            "husband_arrested" => $this->state['husband_arrested'] ?? null,
-            "wife_arrested" => $this->state['wife_arrested'] ?? null,
-            "brother_arrested" => $this->state['brother_arrested'] ?? null,
-            "sister_arrested" => $this->state['sister_arrested'] ?? null,
-            "son_arrested" => $this->state['son_arrested'] ?? null,
-            "daughter_arrested" => $this->state['daughter_arrested'] ?? null,
-            "first_phone_owner" => $this->state['first_phone_owner'] ?? null,
-            "first_phone_number" => $this->state['first_phone_number'] ?? null,
-            "second_phone_owner" => $this->state['second_phone_owner'] ?? null,
-            "second_phone_number" => $this->state['second_phone_number'] ?? null,
-            "is_released" => $this->state['is_released'] ?? null,
-            "email" => $this->state['email'] ?? null,
-        ]);
-
-//        if (isset($this->old_arrests)) {
-//            foreach ($this->old_arrests as $old) {
-//                OldArrest::query()->find($old['id'])->delete();
-//            }
-//        }
-
-        if (isset($this->old_arrests)) {
-            foreach ($this->old_arrests as $old) {
-                OldArrestConfirm::query()->create([
-                    'confirm_status' => "يحتاج مراجعة",
-                    'prisoner_id' => $SuggestionsArrestArray['prisoner_id'] ?? null,
-                    'prisoner_confirm_id' => $Prisoner->id ?? null,
-                    'old_arrest_start_date' => $old['old_arrest_start_date'] ?? null,
-                    'old_arrest_end_date' => $old['old_arrest_end_date'] ?? null,
-                    'arrested_side' => $old['arrested_side'] ?? null,
-                ]);
-                OldArrestSuggestion::query()
-                    ->find($old['id'])
-                    ->update(['suggestion_status' => 'تم القبول']);
-            }
-        }
-
-//        if (isset($this->familyIDNumberColumns['prisoner_deleted'])) {
-//            foreach ($this->familyIDNumberColumns['prisoner_deleted'] as $index => $family_arrested) {
-//                foreach ($family_arrested as $key => $row)
-//                    FamilyIDNumber::query()->find($key)->delete();
-//            }
-//        }
-//
-//                foreach ($family_arrested as $key => $row) {
-//                    FamilyIDNumberConfirm::query()->create([
-//                        'confirm_status' => "يحتاج مراجعة",
-//                        'prisoner_id' => $SuggestionsArrestArray['prisoner_id'] ?? null,
-//                        'prisoner_confirm_id' => $Prisoner->id ?? null,
-//                        'id_number' => $row['idn'] ?? null,
-//                        'relationship_name' => $row['relationship_name'] ?? null,
-//                    ]);
-//                    FamilyIDNumberSuggestion::query()
-//                        ->find($key)
-//                        ->update(['suggestion_status' => 'تم القبول']);
-//                }
-
-        $this->Suggestions_->update(['suggestion_status' => 'تم القبول']);
-        $this->Suggestions_->ArrestSuggestion->update(['suggestion_status' => 'تم القبول']);
-
-        $this->dispatch('HideAcceptModal');
-    }
-
     function subTables(): array
     {
         return [
@@ -1331,100 +1182,209 @@ class ListPrisonerSuggestions extends Component
         ];
     }
 
-    public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * @throws ValidationException
+     */
+    public function CreateAcceptAdmin(): void
     {
-        $CurrentUserCities = User::query()
-            ->where('id', Auth::user()->id)
-            ->with('City')
-            ->first()
-            ->toArray()['city'] ?? [];
+        $this->Review();
 
-        $cityIdArray = [];
-        foreach ($CurrentUserCities as $subArray) {
-            if (isset($subArray['pivot']['city_id'])) {
-                $cityIdArray[] = $subArray['pivot']['city_id'];
+        $PrisonerConfirm = PrisonerConfirm::query()->create([
+            'confirm_status' => "يحتاج مراجعة",
+            'prisoner_id' => $this->state['prisoner_id'] ?? null,
+            'identification_number' => $this->state['identification_number'] ?? null,
+            'first_name' => $this->state['first_name'] ?? null,
+            'second_name' => $this->state['second_name'] ?? null,
+            'third_name' => $this->state['third_name'] ?? null,
+            'last_name' => $this->state['last_name'] ?? null,
+            'mother_name' => $this->state['mother_name'] ?? null,
+            'nick_name' => $this->state['nick_name'] ?? null,
+            'date_of_birth' => $this->state['date_of_birth'] ?? null,
+            'gender' => $this->state['gender'] ?? null,
+            'city_id' => $this->state['city_id'] ?? null,
+            'town_id' => $this->state['town_id'] ?? null,
+            'notes' => $this->state['notes'] ?? null,
+        ]);
+
+        ArrestConfirm::query()->create([
+            "confirm_status" => "يحتاج مراجعة",
+            "prisoner_id" => $this->state['prisoner_id'] ?? null,
+            "prisoner_confirm_id" => $PrisonerConfirm->id,
+            "arrest_start_date" => $this->state['arrest_start_date'] ?? null,
+            "arrest_type" => $this->state['arrest_type'] ?? null,
+            "judgment_in_lifetime" => $this->state['judgment_in_lifetime'] ?? null,
+            "judgment_in_years" => $this->state['judgment_in_years'] ?? null,
+            "judgment_in_months" => $this->state['judgment_in_months'] ?? null,
+            "belong_id" => $this->state['belong_id'] ?? null,
+            'special_case' => !empty($this->state['special_case']) ? implode(',', array_keys(array_filter($this->state['special_case']))) : null,
+            "social_type" => $this->state['social_type'] ?? null,
+            "wife_type" => $this->state['wife_type'] ?? null,
+            "number_of_children" => $this->state['number_of_children'] ?? null,
+            "education_level" => $this->state['education_level'] ?? null,
+            "health_note" => $this->state['health_note'] ?? null,
+            "father_arrested" => $this->state['father_arrested'] ?? null,
+            "mother_arrested" => $this->state['mother_arrested'] ?? null,
+            "husband_arrested" => $this->state['husband_arrested'] ?? null,
+            "wife_arrested" => $this->state['wife_arrested'] ?? null,
+            "brother_arrested" => $this->state['brother_arrested'] ?? null,
+            "sister_arrested" => $this->state['sister_arrested'] ?? null,
+            "son_arrested" => $this->state['son_arrested'] ?? null,
+            "daughter_arrested" => $this->state['daughter_arrested'] ?? null,
+            "first_phone_owner" => $this->state['first_phone_owner'] ?? null,
+            "first_phone_number" => $this->state['first_phone_number'] ?? null,
+            "second_phone_owner" => $this->state['second_phone_owner'] ?? null,
+            "second_phone_number" => $this->state['second_phone_number'] ?? null,
+            'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : 0,
+            "email" => $this->state['email'] ?? null,
+        ]);
+
+        if (!empty($this->old_arrests)) {
+            foreach (array_filter($this->old_arrests) as $old) {
+                if (!empty($old)) {
+                    if (!empty($old['old_arrest_start_date']) && !empty($old['old_arrest_end_date']) && !empty($old['arrested_side'])) {
+                        OldArrestConfirm::query()->create([
+                            'confirm_status' => "يحتاج مراجعة",
+                            'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                            'prisoner_confirm_id' => $PrisonerConfirm->id ?? null,
+                            'old_arrest_start_date' => $old['old_arrest_start_date'] ?? null,
+                            'old_arrest_end_date' => $old['old_arrest_end_date'] ?? null,
+                            'arrested_side' => $old['arrested_side'] ?? null,
+                        ]);
+                        if (!empty($old['id'])) {
+                            OldArrestSuggestion::query()
+                                ->find($old['id'])
+                                ->update(['suggestion_status' => 'تم القبول']);
+                        }
+                    }
+                }
             }
         }
 
-        return PrisonerSuggestion::query()
-            ->with(['City', 'Relationship'])
-            ->where(function ($query) use ($cityIdArray) {
-                $query->whereIn('city_id', $cityIdArray)
-                    ->orWhereNull('city_id');
-            })
-            ->where('suggestion_status', 'يحتاج مراجعة')
-            ->where(function ($q) {
-                $q->when(isset($this->Search), function ($query) {
-                    $searchTerms = explode(' ', $this->Search);
-                    $query->where(function ($subQuery) use ($searchTerms) {
-                        foreach ($searchTerms as $term) {
-                            $subQuery->where(function ($nameSubQuery) use ($term) {
-                                $nameSubQuery->where('first_name', 'LIKE', '%' . $term . '%')
-                                    ->orWhere('second_name', 'LIKE', '%' . $term . '%')
-                                    ->orWhere('third_name', 'LIKE', '%' . $term . '%')
-                                    ->orWhere('last_name', 'LIKE', '%' . $term . '%');
-                            });
-                        }
+        if (isset($this->state) && isset($this->state['father_arrested_id'])) {
+            FamilyIDNumberSuggestion::query()->create([
+                'id_number' => $this->state['father_arrested_id'],
+                'relationship_name' => "اب",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_confirm_id' => $PrisonerConfirm->id,
+                'confirm_status' => "يحتاج مراجعة",
+            ]);
+        }
 
-                        // City name search within the city_id check
-                        $subQuery->orWhereHas('City', function ($q) use ($searchTerms) {
-                            foreach ($searchTerms as $term) {
-                                $q->where('city_name', 'like', '%' . $term . '%');
-                            }
-                        });
-                    })
-                        ->orWhereHas('Prisoner', function ($subQuery_) use ($searchTerms) {
-                            foreach ($searchTerms as $term_) {
-                                $subQuery_->where(function ($nameSubQuery_) use ($term_) {
-                                    $nameSubQuery_->where('first_name', 'LIKE', '%' . $term_ . '%')
-                                        ->orWhere('second_name', 'LIKE', '%' . $term_ . '%')
-                                        ->orWhere('third_name', 'LIKE', '%' . $term_ . '%')
-                                        ->orWhere('last_name', 'LIKE', '%' . $term_ . '%');
-                                });
-                            }
-                        })
-                        ->orWhereHas('Prisoner', function ($q) {
-                            $q->where('identification_number', 'LIKE', $this->Search);
-                        })
-                        ->orWhereHas('Prisoner', function ($q) {
-                            $q->where('id', 'LIKE', $this->Search);
-                        })
-                        ->orWhere('suggester_name', 'LIKE', '%' . $this->Search . '%')
-                        ->orWhere('suggester_identification_number', 'LIKE', $this->Search)
-                        ->orWhere('identification_number', 'LIKE', $this->Search)
-                        ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
-                        ->orWhereHas('City', function ($q) {
-                            $q->where('city_name', 'like', '%' . $this->Search . '%');
-                        })
-                        ->orWhereHas('Relationship', function ($q) {
-                            $q->where('relationship_name', 'LIKE', '%' . $this->Search . '%');
-                        });
-                });
-                $q->when(isset($this->sortBy), function ($query) {
-                    if ($this->sortBy === "الإضافات") {
-                        $query->whereNull('prisoner_id');
-                    } elseif ($this->sortBy === "التعديلات") {
-                        $query->whereNotNull('prisoner_id');
-                    } else {
-                        $query->whereNull('prisoner_id')->orWhereNotNull('prisoner_id');
-                    }
-                });
-            });
+        if (isset($this->state) && isset($this->state['mother_arrested_id'])) {
+            FamilyIDNumberConfirm::query()->create([
+                'id_number' => $this->state['mother_arrested_id'],
+                'relationship_name' => "ام",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_confirm_id' => $PrisonerConfirm->id,
+                'confirm_status' => "يحتاج مراجعة",
+            ]);
+        }
 
+        if (isset($this->state) && isset($this->state['husband_arrested_id'])) {
+            FamilyIDNumberConfirm::query()->create([
+                'id_number' => $this->state['husband_arrested_id'],
+                'relationship_name' => "زوج",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_confirm_id' => $PrisonerConfirm->id,
+                'confirm_status' => "يحتاج مراجعة",
+            ]);
+        }
+
+        if (isset($this->state) && isset($this->state['wife_arrested_id'])) {
+            FamilyIDNumberConfirm::query()->create([
+                'id_number' => $this->state['wife_arrested_id'],
+                'relationship_name' => "زوجة",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_confirm_id' => $PrisonerConfirm->id,
+                'confirm_status' => "يحتاج مراجعة",
+            ]);
+        }
+
+        if (isset($this->state) && isset($this->state['brother_arrested_id'])) {
+            foreach ($this->state['brother_arrested_id'] as $row) {
+                FamilyIDNumberConfirm::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "اخ",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_confirm_id' => $PrisonerConfirm->id,
+                    'confirm_status' => "يحتاج مراجعة",
+                ]);
+            }
+        }
+
+        if (isset($this->state) && isset($this->state['sister_arrested_id'])) {
+            foreach ($this->state['sister_arrested_id'] as $row) {
+                FamilyIDNumberConfirm::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "اخت",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_confirm_id' => $PrisonerConfirm->id,
+                    'confirm_status' => "يحتاج مراجعة",
+                ]);
+            }
+        }
+
+        if (isset($this->state) && isset($this->state['son_arrested_id'])) {
+            foreach ($this->state['son_arrested_id'] as $row) {
+                FamilyIDNumberConfirm::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "ابن",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_confirm_id' => $PrisonerConfirm->id,
+                    'confirm_status' => "يحتاج مراجعة",
+                ]);
+            }
+        }
+
+        if (isset($this->state) && isset($this->state['daughter_arrested_id'])) {
+            foreach ($this->state['daughter_arrested_id'] as $row) {
+                FamilyIDNumberConfirm::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "ابنه",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_confirm_id' => $PrisonerConfirm->id,
+                    'confirm_status' => "يحتاج مراجعة",
+                ]);
+            }
+        }
+
+        $this->dispatch('show_admin_create_massage');
+        $this->dispatch('hide_create_update_modal');
     }
 
-    public function SortBy($sort): void
+    /**
+     * @throws ValidationException
+     */
+    public function Review(): void
     {
-        $this->resetPage();
-        $this->Search = null;
-        $this->sortBy = $sort;
+        $this->oldArrestManipulateData();
+
+        $this->validateData();
+
+        $this->manipulateData();
     }
 
-    public function SearchFor($search): void
+    public function oldArrestManipulateData(): void
     {
-        $this->resetPage();
-        $this->sortBy = null;
-        $this->Search = $search;
+        foreach ($this->old_arrests as &$old) {
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] === "") {
+                $old['old_arrest_start_date'] = null;
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] === "") {
+                $old['old_arrest_end_date'] = null;
+            }
+            if (isset($old['old_arrest_start_date']) && $old['old_arrest_start_date'] !== "") {
+                $old['old_arrest_start_date'] = Carbon::parse($old['old_arrest_start_date'])->format('Y-m-d');
+            }
+            if (isset($old['old_arrest_end_date']) && $old['old_arrest_end_date'] !== "") {
+                $old['old_arrest_end_date'] = Carbon::parse($old['old_arrest_end_date'])->format('Y-m-d');
+            }
+            if (isset($old['arrested_side']) && $old['arrested_side'] === "اختر...") {
+                $old['arrested_side'] = null;
+            }
+        }
+        unset($old);
+
     }
 
     /**
@@ -1499,8 +1459,360 @@ class ListPrisonerSuggestions extends Component
         }
     }
 
+    public function manipulateData(): array
+    {
 
-    private function removeAndMoveToFamilyIDNumberSuggestionDeletedList($id): void
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] === "") {
+            $this->state['date_of_birth'] = null;
+        }
+
+        if (isset($this->state['date_of_birth']) && $this->state['date_of_birth'] !== "") {
+            $this->state['date_of_birth'] = Carbon::parse($this->state['date_of_birth'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] === "") {
+            $this->state['arrest_start_date'] = null;
+        }
+
+        if (isset($this->state['arrest_start_date']) && $this->state['arrest_start_date'] !== "") {
+            $this->state['arrest_start_date'] = Carbon::parse($this->state['arrest_start_date'])->format('Y-m-d');
+        }
+
+        if (isset($this->state['is_released']) && $this->state['is_released'] == "اختر...") {
+            $this->state['is_released'] = null;
+        }
+
+        if (isset($this->state['gender']) && $this->state['gender'] == "اختر...") {
+            $this->state['gender'] = null;
+        }
+
+        if (isset($this->state['city_id']) && $this->state['city_id'] == "اختر...") {
+            $this->state['city_id'] = null;
+        }
+
+        if (isset($this->state['town_id']) && $this->state['town_id'] == "اختر...") {
+            $this->state['town_id'] = null;
+        }
+
+        if (isset($this->state['belong_id']) && $this->state['belong_id'] == "اختر...") {
+            $this->state['belong_id'] = null;
+        }
+
+        if (isset($this->state['social_type']) && $this->state['social_type'] == "اختر...") {
+            $this->state['social_type'] = null;
+        }
+
+        if (isset($this->state['education_level']) && $this->state['education_level'] == "اختر...") {
+            $this->state['education_level'] = null;
+        }
+
+
+        if (isset($this->state['social_type']) && $this->state['social_type'] == "أعزب") {
+            $this->state['wife_type'] = null;
+            $this->state['number_of_children'] = null;
+        }
+        if (isset($this->state['gender']) && $this->state['gender'] == "انثى") {
+            $this->state['wife_type'] = null;
+        }
+        if (isset($this->state['social_type']) && $this->state['social_type'] == "مطلق") {
+            $this->state['wife_type'] = null;
+        }
+        if (isset($this->state['arrest_type']) && $this->state['arrest_type'] == "إداري") {
+            $this->state['judgment_in_lifetime'] = null;
+            $this->state['judgment_in_years'] = null;
+            $this->state['judgment_in_months'] = null;
+        }
+        if (isset($this->state['special_case']) && !in_array('أقارب معتقلين', array_filter(array_keys($this->state['special_case'])))) {
+            $this->state['father_arrested'] = null;
+            $this->state['mother_arrested'] = null;
+            $this->state['husband_arrested'] = null;
+            $this->state['wife_arrested'] = null;
+            $this->state['brother_arrested'] = null;
+            $this->state['sister_arrested'] = null;
+            $this->state['son_arrested'] = null;
+            $this->state['daughter_arrested'] = null;
+        }
+
+        if (!isset($this->state['father_arrested'])) {
+            $this->state['father_arrested_id'] = null;
+        }
+        if (!isset($this->state['mother_arrested'])) {
+            $this->state['mother_arrested_id'] = null;
+        }
+        if (!isset($this->state['husband_arrested'])) {
+            $this->state['husband_arrested_id'] = null;
+        }
+        if (!isset($this->state['wife_arrested'])) {
+            $this->state['wife_arrested_id'] = null;
+        }
+        if (!isset($this->state['sister_arrested']) || $this->state['sister_arrested'] == 0) {
+            $this->state['sister_arrested_id'] = null;
+        }
+        if (!isset($this->state['brother_arrested']) || $this->state['brother_arrested'] == 0) {
+            $this->state['brother_arrested_id'] = null;
+        }
+        if (!isset($this->state['son_arrested']) || $this->state['son_arrested'] == 0) {
+            $this->state['son_arrested_id'] = null;
+        }
+        if (!isset($this->state['daughter_arrested']) || $this->state['daughter_arrested'] == 0) {
+            $this->state['daughter_arrested_id'] = null;
+        }
+        if (isset($this->state['special_case']) && !in_array('مريض / جريح', array_filter(array_keys($this->state['special_case'])))) {
+            $this->state['health_note'] = null;
+        }
+        if (isset($this->state['special_case']) && in_array('حامل', array_filter(array_keys($this->state['special_case']))) && isset($this->state['gender']) && $this->state['gender'] == 'ذكر') {
+            $this->state['special_case']['حامل'] = false;
+        }
+
+        return $this->state;
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function UpdateAcceptAdmin(): void
+    {
+        $this->Review();
+        $this->suggestion->update([
+            'identification_number' => $this->state['identification_number'] ?? null,
+            'first_name' => $this->state['first_name'] ?? null,
+            'second_name' => $this->state['second_name'] ?? null,
+            'third_name' => $this->state['third_name'] ?? null,
+            'last_name' => $this->state['last_name'] ?? null,
+            'mother_name' => $this->state['mother_name'] ?? null,
+            'nick_name' => $this->state['nick_name'] ?? null,
+            'date_of_birth' => $this->state['date_of_birth'] ?? null,
+            'gender' => $this->state['gender'] ?? null,
+            'city_id' => $this->state['city_id'] ?? null,
+            'town_id' => $this->state['town_id'] ?? null,
+            'notes' => $this->state['notes'] ?? null,
+        ]);
+
+        $this->suggestion->ArrestSuggestion->update([
+            "arrest_start_date" => $this->state['arrest_start_date'] ?? null,
+            "arrest_type" => $this->state['arrest_type'] ?? null,
+            "judgment_in_lifetime" => $this->state['judgment_in_lifetime'] ?? null,
+            "judgment_in_years" => $this->state['judgment_in_years'] ?? null,
+            "judgment_in_months" => $this->state['judgment_in_months'] ?? null,
+            "belong_id" => $this->state['belong_id'] ?? null,
+            'special_case' => !empty($this->state['special_case']) ? implode(',', array_keys(array_filter($this->state['special_case']))) : null,
+            "social_type" => $this->state['social_type'] ?? null,
+            "wife_type" => $this->state['wife_type'] ?? null,
+            "number_of_children" => $this->state['number_of_children'] ?? null,
+            "education_level" => $this->state['education_level'] ?? null,
+            "health_note" => $this->state['health_note'] ?? null,
+            "father_arrested" => $this->state['father_arrested'] ?? null,
+            "mother_arrested" => $this->state['mother_arrested'] ?? null,
+            "husband_arrested" => $this->state['husband_arrested'] ?? null,
+            "wife_arrested" => $this->state['wife_arrested'] ?? null,
+            "brother_arrested" => $this->state['brother_arrested'] ?? null,
+            "sister_arrested" => $this->state['sister_arrested'] ?? null,
+            "son_arrested" => $this->state['son_arrested'] ?? null,
+            "daughter_arrested" => $this->state['daughter_arrested'] ?? null,
+            "first_phone_owner" => $this->state['first_phone_owner'] ?? null,
+            "first_phone_number" => $this->state['first_phone_number'] ?? null,
+            "second_phone_owner" => $this->state['second_phone_owner'] ?? null,
+            "second_phone_number" => $this->state['second_phone_number'] ?? null,
+            'is_released' => isset($this->state['is_released']) ? (boolean)$this->state['is_released'] : 0,
+            "email" => $this->state['email'] ?? null,
+        ]);
+
+        $old_ = OldArrestSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->pluck('id')->toArray();
+
+        foreach ($old_ as $id) {
+            OldArrestSuggestion::query()->find($id)->forceDelete();
+        }
+        if (!empty($this->old_arrests)) {
+            foreach (array_filter($this->old_arrests) as $old) {
+                if (!empty($old)) {
+                    if (!empty($old['old_arrest_start_date']) && !empty($old['old_arrest_end_date']) && !empty($old['arrested_side'])) {
+                        OldArrestSuggestion::query()->create([
+                            'suggestion_status' => "يحتاج مراجعة",
+                            'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                            'prisoner_suggestion_id' => $this->suggestion->id ?? null,
+                            'old_arrest_start_date' => $old['old_arrest_start_date'] ?? null,
+                            'old_arrest_end_date' => $old['old_arrest_end_date'] ?? null,
+                            'arrested_side' => $old['arrested_side'] ?? null,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $father_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'اب')
+            ->pluck('id')->toArray();
+
+
+        foreach ($father_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+        if (!empty($this->state['father_arrested_id']))
+            FamilyIDNumberSuggestion::query()->create([
+                'id_number' => $this->state['father_arrested_id'],
+                'relationship_name' => "اب",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_suggestion_id' => $this->suggestion->id,
+                'suggestion_status' => "يحتاج مراجعة",
+            ]);
+
+        $mother_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'ام')
+            ->pluck('id')->toArray();
+
+
+        foreach ($mother_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+        if (!empty($this->state['mother_arrested_id']))
+            FamilyIDNumberSuggestion::query()->create([
+                'id_number' => $this->state['mother_arrested_id'],
+                'relationship_name' => "ام",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_suggestion_id' => $this->suggestion->id,
+                'suggestion_status' => "يحتاج مراجعة",
+            ]);
+
+
+        $husband_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'زوج')
+            ->pluck('id')->toArray();
+
+
+        foreach ($husband_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+
+        if (!empty($this->state['husband_arrested_id']))
+            FamilyIDNumberSuggestion::query()->create([
+                'id_number' => $this->state['husband_arrested_id'],
+                'relationship_name' => "زوج",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_suggestion_id' => $this->suggestion->id,
+                'suggestion_status' => "يحتاج مراجعة",
+            ]);
+
+        $wife_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'زوجة')
+            ->pluck('id')->toArray();
+
+
+        foreach ($wife_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+        if (!empty($this->state['wife_arrested_id']))
+            FamilyIDNumberSuggestion::query()->create([
+                'id_number' => $this->state['wife_arrested_id'],
+                'relationship_name' => "زوجة",
+                'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                'prisoner_suggestion_id' => $this->suggestion->id,
+                'suggestion_status' => "يحتاج مراجعة",
+            ]);
+
+        $brother_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'اخ')
+            ->pluck('id')->toArray();
+
+
+        foreach ($brother_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+
+        if (!empty($this->state['brother_arrested_id']))
+            foreach ($this->state['brother_arrested_id'] as $row) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "اخ",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $this->suggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+        $sister_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'اخت')
+            ->pluck('id')->toArray();
+
+
+        foreach ($sister_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+
+        if (!empty($this->state['sister_arrested_id']))
+            foreach ($this->state['sister_arrested_id'] as $row) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "اخت",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $this->suggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+        $son_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'ابن')
+            ->pluck('id')->toArray();
+
+
+        foreach ($son_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+
+        if (!empty($this->state['son_arrested_id']))
+            foreach ($this->state['son_arrested_id'] as $row) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "ابن",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $this->suggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+        $daughter_arrested_id_ = FamilyIDNumberSuggestion::query()
+            ->where('prisoner_suggestion_id', $this->suggestion->id)
+            ->where('relationship_name', 'ابنه')
+            ->pluck('id')->toArray();
+
+
+        foreach ($daughter_arrested_id_ as $id) {
+            FamilyIDNumberSuggestion::query()->find($id)->forceDelete();
+        }
+
+        if (!empty($this->state['daughter_arrested_id']))
+            foreach ($this->state['daughter_arrested_id'] as $row) {
+                FamilyIDNumberSuggestion::query()->create([
+                    'id_number' => $row,
+                    'relationship_name' => "ابنه",
+                    'prisoner_id' => $this->state['prisoner_id'] ?? null,
+                    'prisoner_suggestion_id' => $this->suggestion->id,
+                    'suggestion_status' => "يحتاج مراجعة",
+                ]);
+            }
+
+        $this->dispatch('show_admin_update_massage');
+        $this->dispatch('hide_create_update_modal');
+    }
+
+    public
+    function SearchFor($search): void
+    {
+        $this->resetPage();
+        $this->sortBy = null;
+        $this->Search = $search;
+    }
+
+    private
+    function removeAndMoveToFamilyIDNumberSuggestionDeletedList($id): void
     {
         $this->moveItem($this->familyIDNumberColumns['prisoner'], $this->familyIDNumberColumns['prisoner_deleted'], $id);
     }

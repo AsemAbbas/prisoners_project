@@ -321,8 +321,8 @@ class ListPrisonerConfirms extends Component
             'مفرج عنه حالياً؟:' =>
                 [
                     'name' => 'is_released',
-                    'confirm' => $this->Confirms_->ArrestConfirm->is_released ?? 'لا يوجد',
-                    'prisoner' => $this->Prisoner_->Arrest->is_released ?? 'لا يوجد',
+                    'confirm' => isset($this->Confirms_->ArrestConfirm->is_released) && $this->Confirms_->ArrestConfirm->is_released ? 'نعم' : 'لا',
+                    'prisoner' => isset($this->Prisoner_->Arrest->is_released) && $this->Prisoner_->Arrest->is_released ? 'نعم' : 'لا',
                 ],
             'البريد الإلكتروني:' =>
                 [
@@ -334,7 +334,6 @@ class ListPrisonerConfirms extends Component
 
         $oldPrisoners = $this->Prisoner_->OldArrest ?? [];
         $oldConfirms = $this->Confirms_->OldArrestConfirm ?? [];
-
 
         foreach ($oldPrisoners as $oldPrisoner) {
             $this->oldArrestColumns['prisoner'][] = [

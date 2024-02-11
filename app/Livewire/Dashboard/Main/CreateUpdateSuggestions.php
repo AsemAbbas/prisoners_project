@@ -58,34 +58,34 @@ class CreateUpdateSuggestions extends Component
         if ($suggestion) {
             $this->Prisoners_ = $suggestion;
 
-            $father_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'اب')->pluck('id_number')->first() ?? null;
-            $mother_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'ام')->pluck('id_number')->first() ?? null;
-            $husband_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوج')->pluck('id_number')->first() ?? null;
-            $wife_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوجة')->pluck('id_number')->first() ?? null;
+//            $father_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'اب')->pluck('id_number')->first() ?? null;
+//            $mother_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'ام')->pluck('id_number')->first() ?? null;
+//            $husband_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوج')->pluck('id_number')->first() ?? null;
+//            $wife_arrested_id = $suggestion->FamilyIDNumber->where('relationship_name', 'زوجة')->pluck('id_number')->first() ?? null;
 
-            $brother_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخ')->pluck('id_number')->toArray();
-            $brother_arrested_ids = [];
-            foreach ($brother_arrested_values as $key => $value) {
-                $brother_arrested_ids[$key + 1] = $value;
-            }
-
-            $sister_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخت')->pluck('id_number')->toArray();
-            $sister_arrested_ids = [];
-            foreach ($sister_arrested_values as $key => $value) {
-                $sister_arrested_ids[$key + 1] = $value;
-            }
-
-            $son_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابن')->pluck('id_number')->toArray();
-            $son_arrested_ids = [];
-            foreach ($son_arrested_values as $key => $value) {
-                $son_arrested_ids[$key + 1] = $value;
-            }
-
-            $daughter_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابنه')->pluck('id_number')->toArray();
-            $daughter_arrested_ids = [];
-            foreach ($daughter_arrested_values as $key => $value) {
-                $daughter_arrested_ids[$key + 1] = $value;
-            }
+//            $brother_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخ')->pluck('id_number')->toArray();
+//            $brother_arrested_ids = [];
+//            foreach ($brother_arrested_values as $key => $value) {
+//                $brother_arrested_ids[$key + 1] = $value;
+//            }
+//
+//            $sister_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'اخت')->pluck('id_number')->toArray();
+//            $sister_arrested_ids = [];
+//            foreach ($sister_arrested_values as $key => $value) {
+//                $sister_arrested_ids[$key + 1] = $value;
+//            }
+//
+//            $son_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابن')->pluck('id_number')->toArray();
+//            $son_arrested_ids = [];
+//            foreach ($son_arrested_values as $key => $value) {
+//                $son_arrested_ids[$key + 1] = $value;
+//            }
+//
+//            $daughter_arrested_values = $suggestion->FamilyIDNumber->where('relationship_name', 'ابنه')->pluck('id_number')->toArray();
+//            $daughter_arrested_ids = [];
+//            foreach ($daughter_arrested_values as $key => $value) {
+//                $daughter_arrested_ids[$key + 1] = $value;
+//            }
 
 
             $data = $suggestion->toArray();
@@ -96,14 +96,14 @@ class CreateUpdateSuggestions extends Component
                 "suggester_identification_number" => $data['suggester_identification_number'] ?? null,
                 "suggester_phone_number" => $data['suggester_phone_number'] ?? null,
                 "relationship_id" => $data['relationship_id'] ?? null,
-                "identification_number" => null,
+                "identification_number" => null,//$data['identification_number']
                 "first_name" => $data['first_name'] ?? null,
                 "second_name" => $data['second_name'] ?? null,
                 "third_name" => $data['third_name'] ?? null,
                 "last_name" => $data['last_name'] ?? null,
                 "mother_name" => $data['mother_name'] ?? null,
                 "nick_name" => $data['nick_name'] ?? null,
-                "date_of_birth" => null,
+                "date_of_birth" => null,//$data['date_of_birth']
                 "gender" => $data['gender'] ?? null,
                 "city_id" => $data['city_id'] ?? null,
                 "town_id" => $data['town_id'] ?? null,
@@ -114,7 +114,7 @@ class CreateUpdateSuggestions extends Component
                 "judgment_in_lifetime" => $data['arrest']['judgment_in_lifetime'] ?? null,
                 "judgment_in_years" => $data['arrest']['judgment_in_years'] ?? null,
                 "judgment_in_months" => $data['arrest']['judgment_in_months'] ?? null,
-                "belong_id" => null,//$data['arrest']['belong_id'] ?? null,
+                "belong_id" => null,//$data['arrest']['belong_id'],
                 "special_case" => array_fill_keys(explode(',' ?? null, $data['arrest']['special_case']) ?? null, true) ?? null,
                 "health_note" => $data['arrest']['health_note'] ?? null,
                 "social_type" => $data['arrest']['social_type'] ?? null,
@@ -129,22 +129,20 @@ class CreateUpdateSuggestions extends Component
                 "sister_arrested" => $data['arrest']['sister_arrested'] ?? null,
                 "son_arrested" => $data['arrest']['son_arrested'] ?? null,
                 "daughter_arrested" => $data['arrest']['daughter_arrested'] ?? null,
-                "first_phone_owner" => $data['arrest']['first_phone_owner'] ?? null,
-                "first_phone_number" => $data['arrest']['first_phone_number'] ?? null,
-                "second_phone_owner" => $data['arrest']['second_phone_owner'] ?? null,
-                "second_phone_number" => $data['arrest']['second_phone_number'] ?? null,
+                "first_phone_owner" => null,//$data['arrest']['first_phone_owner']
+                "first_phone_number" => null,//$data['arrest']['first_phone_number']
+                "second_phone_owner" => null,//$data['arrest']['second_phone_owner']
+                "second_phone_number" => null,//$data['arrest']['second_phone_number']
                 "is_released" => isset($data['arrest']['is_released']) ? (boolean)$data['arrest']['is_released'] : 0,
-                "email" => $data['arrest']['email'] ?? null,
-
-                "father_arrested_id" => $father_arrested_id,
-                "mother_arrested_id" => $mother_arrested_id,
-                "husband_arrested_id" => $husband_arrested_id,
-                "wife_arrested_id" => $wife_arrested_id,
-                "brother_arrested_id" => $brother_arrested_ids,
-                "sister_arrested_id" => $sister_arrested_ids,
-                "son_arrested_id" => $son_arrested_ids,
-                "daughter_arrested_id" => $daughter_arrested_ids,
-
+                "email" => null,//$data['arrest']['email']
+                "father_arrested_id" => null,//$father_arrested_id
+                "mother_arrested_id" => null,//$mother_arrested_id
+                "husband_arrested_id" => null,//$husband_arrested_id
+                "wife_arrested_id" => null,//$wife_arrested_id
+                "brother_arrested_id" => null,//$brother_arrested_ids
+                "sister_arrested_id" => null,//$sister_arrested_ids
+                "son_arrested_id" => null,//$son_arrested_ids
+                "daughter_arrested_id" => null,//$daughter_arrested_ids
             ];
             $this->old_arrests = $data['old_arrest'];
 

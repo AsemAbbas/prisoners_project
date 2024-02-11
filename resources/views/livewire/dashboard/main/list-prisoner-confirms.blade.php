@@ -338,7 +338,7 @@
                                                 @foreach($oldArrestColumns['prisoner'] as $index => $col)
                                                     @foreach($col as $key => $data)
                                                         @if($key != "الرقم الأساسي:")
-                                                            <div class="col-md-6 mb-3">
+                                                            <div class="col-md-4 mb-3">
                                                                 <h6>
                                                                     {{$key}}
                                                                 </h6>
@@ -361,7 +361,7 @@
                                                 @foreach($oldArrestColumns['confirm'] as $index => $col)
                                                     @foreach($col as $key => $data)
                                                         @if($key != "الرقم الأساسي:")
-                                                            <div class="col-md-6 mb-3">
+                                                            <div class="col-md-4 mb-3">
                                                                 <h6>
                                                                     {{$key}}
                                                                 </h6>
@@ -457,7 +457,7 @@
                                         </div>
                                         @foreach($col as $key => $data)
                                             @if($key != "الرقم الأساسي:")
-                                                <div class="col-md-6 mb-3">
+                                                <div class="col-md-4 mb-3">
                                                     <h6>
                                                         {{$key}}
                                                     </h6>

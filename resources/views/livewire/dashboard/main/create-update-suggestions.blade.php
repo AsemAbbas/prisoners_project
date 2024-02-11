@@ -296,7 +296,9 @@
                                         @foreach($Towns as $town)
                                             <option value="{{$town->id}}">{{$town->town_name}}</option>
                                         @endforeach
-                                        <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                        @if(isset($state) && isset($state['city_id']) && $state['city_id'] == "20")
+                                            <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                        @endif
                                     </select>
                                     @error('town_id')
                                     <div class="error-message invalid-feedback"

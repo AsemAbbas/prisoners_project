@@ -76,9 +76,7 @@
                                     class="flaticon-gear-fill mr-1"></i>الاضافات</a>
                         </div>
                     </div>
-                    @auth
-                        <a class="btn btn-primary mb-2 mx-2" wire:click="addNew">إضافة إقتراح</a>
-                    @endauth
+                    <a class="btn btn-primary mb-2 mx-2" wire:click="addNew">إضافة إقتراح</a>
                 </div>
             </div>
             <div class="table-responsive">
@@ -956,7 +954,7 @@
                 </div>
                 <div class="modal-body">
                     <form
-                        wire:submit.prevent="ConfirmAcceptAdmin">
+                        wire:submit.prevent="{{$showEditModel ? 'UpdateAcceptAdmin' : 'CreateAcceptAdmin'}}">
                         <div class="row">
                             <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                                 <div class="form-group col-md-12 mb-4">
@@ -1131,14 +1129,30 @@
                                     </div>
                                     <div class="form-group col-md-3 mb-4">
                                         <label for="town_id">البلدة</label>
-                                        <select wire:model.live="state.town_id" @if(empty($state['city_id'])) disabled @endif
+                                        <span style="color: black">
+                                            @php
+                                            if (isset($state['town_id']))
+                                                $town_name = \App\Models\Town::query()->where('id',$state['town_id'])->pluck('town_name')->first();
+                                            else $town_name = null;
+                                            @endphp
+
+                                            @if($town_name)
+                                                الحالية:
+                                                <span class="text-danger">({{$town_name}})</span>
+                                            @endif
+                                        </span>
+                                        <select wire:model.live="state.town_id"
+                                                @if(empty($state['city_id'])) disabled
+                                                @endif
                                                 class="form-select @error('town_id') is-invalid @enderror"
                                                 id="town_id">
                                             <option>اختر...</option>
                                             @foreach($Towns as $town)
                                                 <option value="{{$town->id}}">{{$town->town_name}}</option>
                                             @endforeach
-                                            <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                            @if(isset($state) && isset($state['city_id']) && $state['city_id'] == "20")
+                                                <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                            @endif
                                         </select>
                                         @error('town_id')
                                         <div class="error-message invalid-feedback"
@@ -1967,7 +1981,9 @@
                             <div class="col-md-12">
                                 <div class="accordion-item col-md-6 mx-auto mb-4 p-0" wire:key="{{$key}}_"
                                      wire:ignore.self>
-                                    <h2 class="accordion-header" style="background-color:rgba(227,227,227,0.52);margin-bottom: 6px;padding: 10px;border-radius: 3px" id="panelsStayOpen-heading_{{$key}}">
+                                    <h2 class="accordion-header"
+                                        style="background-color:rgba(227,227,227,0.52);margin-bottom: 6px;padding: 10px;border-radius: 3px"
+                                        id="panelsStayOpen-heading_{{$key}}">
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                                 data-bs-target="#panelsStayOpen-collapse_{{$key}}"
                                                 aria-expanded="true"
@@ -2041,7 +2057,7 @@
                 </div>
                 <div class="modal-footer d-flex justify-content-start align-items-start">
                     <button type="submit"
-                            wire:click="ConfirmAcceptAdmin"
+                            wire:click="{{$showEditModel ? 'UpdateAcceptAdmin' : 'CreateAcceptAdmin'}}"
                             class="btn {{$showEditModel ? 'bg-warning' : 'bg-primary'}}">
                         حفظ
                     </button>
@@ -2119,6 +2135,26 @@
             $('#CreateUpdate').modal('hide');
             toastr.success(event.detail.message, 'تهانينا!');
         })
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.addEventListener('show_admin_update_massage', function () {
+                Swal.fire({
+                    title: 'نجاح',
+                    text: 'تم تعديل الاقتراح عليك مراجعته',
+                    icon: 'success',
+                    confirmButtonText: 'تم',
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.addEventListener('show_admin_create_massage', function () {
+                Swal.fire({
+                    title: 'نجاح',
+                    text: 'تم الارسال الى الاقتراحات المؤكدة',
+                    icon: 'success',
+                    confirmButtonText: 'تم',
+                });
+            });
+        });
 
         window.addEventListener('show_delete_modal', event => {
             $('#delete').modal('show');
