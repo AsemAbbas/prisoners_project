@@ -140,19 +140,15 @@
                                         مراجعة
                                     @endif
                                 </a>
-                                @auth
-                                    @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-
-                                        <a wire:click="edit({{$row->id}})" class="btn btn-warning">
-                                            تعديل
-                                        </a>
-                                    @endif
-                                @endauth
+                                <a wire:click="edit({{$row->id}})" class="btn btn-warning">
+                                    تعديل
+                                </a>
                                 @if($row->suggestion_status == "يحتاج مراجعة")
                                     <a wire:click="delete({{$row}})" class="btn btn-danger">
                                         حذف
                                     </a>
                                 @endif
+                                {{--متوقف للصيانة--}}
                             </td>
                         </tr>
                     @endforeach
@@ -1131,9 +1127,9 @@
                                         <label for="town_id">البلدة</label>
                                         <span style="color: black">
                                             @php
-                                            if (isset($state['town_id']))
-                                                $town_name = \App\Models\Town::query()->where('id',$state['town_id'])->pluck('town_name')->first();
-                                            else $town_name = null;
+                                                if (isset($state['town_id']))
+                                                    $town_name = \App\Models\Town::query()->where('id',$state['town_id'])->pluck('town_name')->first();
+                                                else $town_name = null;
                                             @endphp
 
                                             @if($town_name)
@@ -1150,7 +1146,7 @@
                                             @foreach($Towns as $town)
                                                 <option value="{{$town->id}}">{{$town->town_name}}</option>
                                             @endforeach
-                                            @if(isset($state) && isset($state['city_id']) && $state['city_id'] == "20")
+                                            @if(isset($state) && isset($state['city_id']) && ($state['city_id'] == "20" || $state['city_id'] == "21"))
                                                 <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
                                             @endif
                                         </select>
@@ -1159,14 +1155,14 @@
                                              style="font-size: 15px">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    @if(isset($state['town_id']) && $state['town_id'] == "إضافة بلدة جديدة" && isset($state['city_id']) && $state['city_id'] == "20")
+                                    @if(isset($state['town_id']) && $state['town_id'] == "إضافة بلدة جديدة" && isset($state['city_id']) && ($state['city_id'] == "20" || $state['city_id'] == "21"))
                                         <div class="form-group col-md-3 mb-4">
                                             <label for="new_town_name">اسم البلدة</label>
                                             <input wire:model="new_town_name" type="text"
                                                    class="form-control @error('new_town_name') is-invalid @enderror"
                                                    id="new_town_name"
                                                    placeholder="اسم البلدة">
-                                            <a class="btn btn-success" wire:click="addNewTown">إضافة</a>
+                                            <a class="btn btn-success" wire:click="addNewTown({{$state['city_id']}})">إضافة</a>
                                             @error('new_town_name')
                                             <div class="error-message invalid-feedback"
                                                  style="font-size: 15px">{{ $message }}</div>

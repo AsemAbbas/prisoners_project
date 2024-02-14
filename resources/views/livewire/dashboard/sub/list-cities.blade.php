@@ -176,7 +176,8 @@
                                 <div class="col-md-12 my-4">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <input class="form-control @error('newTownName') is-invalid @enderror" placeholder="تعديل اسم البلدة"
+                                            <input class="form-control @error('newTownName') is-invalid @enderror"
+                                                   placeholder="تعديل اسم البلدة"
                                                    type="text" wire:model.live="newTownName">
                                             @error('newTownName')
                                             <div class="invalid-feedback" style="font-size: 15px">{{ $message }}</div>

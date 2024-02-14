@@ -28,40 +28,6 @@
             border: 1px solid grey;
             border-radius: 7px;
         }
-
-        .pagination-container {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-        }
-
-        .pagination-button {
-            padding: 8px 12px;
-            margin: 0 5px;
-            background-color: #4361ee;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-family: 'Changa', sans-serif;
-            transition: background-color 0.3s ease;
-        }
-
-        .pagination-button:hover {
-            background-color: #4361ee;
-        }
-
-        .pagination-current-page {
-            padding: 8px 15px;
-            font-weight: bold;
-            font-size: 14px;
-            font-family: 'Changa', sans-serif;
-            border: 1px solid grey;
-            border-radius: 5px;
-        }
     </style>
 @endsection
 <div class="p-4">
@@ -99,7 +65,7 @@
                 <div>
                     <div class="d-inline">
                         <input type="checkbox" name="IsReleased" id="IsReleased" wire:model.live="IsReleased">
-                        <label for="IsReleased">المفرج عنهم</label>
+                        <label for="IsReleased">يشمل المفرج عنهم</label>
                     </div>
                     <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
                            placeholder="البحث...">
@@ -476,7 +442,7 @@
                                                             <div
                                                                 class="form-check form-check-dark form-check-inline">
                                                                 <input class="form-check-input"
-                                                                       wire:model.live="ExportData.town.{{$town->id}}"
+                                                                       wire:model.live="AdvanceSearch.town.{{$town->id}}"
                                                                        type="checkbox"
                                                                        id="form-check-dark_{{$key}}">
                                                                 <label class="form-check-label"

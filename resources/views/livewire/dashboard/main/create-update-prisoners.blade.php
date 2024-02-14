@@ -183,6 +183,23 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-3 mb-4">
+                                <label for="education_level">المستوى التعليمي</label>
+                                <select wire:model.live="state.education_level"
+                                        class="form-select @error('education_level') is-invalid @enderror"
+                                        id="education_level">
+                                    <option>اختر...</option>
+                                    @foreach(\App\Enums\EducationLevel::cases() as $row)
+                                        <option value="{{$row->value}}">{{$row->value}}</option>
+                                    @endforeach
+                                </select>
+                                @error('education_level')
+                                <div class="error-message invalid-feedback"
+                                     style="font-size: 15px">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-3 mb-4">
+                            </div>
+                            <div class="form-group col-md-3 mb-4">
                                 <label for="city_id">المحافظة</label>
                                 <select wire:model.live="state.city_id"
                                         class="form-select @error('city_id') is-invalid @enderror"
@@ -207,28 +224,29 @@
                                     @foreach($Towns as $town)
                                         <option value="{{$town->id}}">{{$town->town_name}}</option>
                                     @endforeach
+                                    @if(isset($state) && isset($state['city_id']) && ($state['city_id'] == "20" || $state['city_id'] == "21"))
+                                        <option value="إضافة بلدة جديدة">إضافة بلدة جديدة</option>
+                                    @endif
                                 </select>
                                 @error('town_id')
                                 <div class="error-message invalid-feedback"
                                      style="font-size: 15px">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-3 mb-4">
-                                <label for="education_level">المستوى التعليمي</label>
-                                <select wire:model.live="state.education_level"
-                                        class="form-select @error('education_level') is-invalid @enderror"
-                                        id="education_level">
-                                    <option>اختر...</option>
-                                    @foreach(\App\Enums\EducationLevel::cases() as $row)
-                                        <option value="{{$row->value}}">{{$row->value}}</option>
-                                    @endforeach
-                                </select>
-                                @error('education_level')
-                                <div class="error-message invalid-feedback"
-                                     style="font-size: 15px">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                            @if(isset($state['town_id']) && $state['town_id'] == "إضافة بلدة جديدة" && isset($state['city_id']) && ($state['city_id'] == "20" || $state['city_id'] == "21"))
+                                <div class="form-group col-md-3 mb-4">
+                                    <label for="new_town_name">اسم البلدة</label>
+                                    <input wire:model="new_town_name" type="text"
+                                           class="form-control @error('new_town_name') is-invalid @enderror"
+                                           id="new_town_name"
+                                           placeholder="اسم البلدة">
+                                    <a class="btn btn-success" wire:click="addNewTown({{$state['city_id']}})">إضافة</a>
+                                    @error('new_town_name')
+                                    <div class="error-message invalid-feedback"
+                                         style="font-size: 15px">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif                        </div>
                     </div>
                     <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                         <div class="row">

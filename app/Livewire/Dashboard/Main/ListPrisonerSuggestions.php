@@ -81,7 +81,6 @@ class ListPrisonerSuggestions extends Component
     public array $oldArrestColumns = [];
     public array $familyIDNumberColumns = [];
 
-
     protected string $paginationTheme = 'bootstrap';
 
     public function makeItMain($change_prisoner_id): void
@@ -608,16 +607,6 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('show_create_update_modal');
     }
 
-    public function addNewTown(): void
-    {
-        if (!empty($this->new_town_name)) {
-            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
-            $town = Town::query()->create(['city_id' => 20, 'town_name' => $this->new_town_name]);
-            $this->state['town_id'] = (string)$town->id;
-            $this->new_town_name = null;
-        }
-    }
-
     public function addOldArrest(): void
     {
         $this->old_arrests[] = [];
@@ -884,13 +873,23 @@ class ListPrisonerSuggestions extends Component
             ->get();
 
         $Towns = Town::query()
-            ->when(!empty($this->suggestion), function ($q) {
-                $q->where('city_id', $this->suggestion->city_id);
+            ->when(!empty($this->state['city_id']) , function ($q) {
+                $q->where('city_id', $this->state['city_id']);
             })
             ->orderBy('town_name')
             ->get();
 
         return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Belongs', 'Cities', 'Towns', 'Relationships', 'Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus'));
+    }
+
+    public function addNewTown($city_id): void
+    {
+        if (!empty($this->new_town_name)) {
+            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
+            $town = Town::query()->create(['city_id' => $city_id, 'town_name' => $this->new_town_name]);
+            $this->state['town_id'] = (string)$town->id;
+            $this->new_town_name = null;
+        }
     }
 
     public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder

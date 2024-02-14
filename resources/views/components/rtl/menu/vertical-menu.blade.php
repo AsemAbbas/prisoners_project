@@ -56,7 +56,8 @@
                         'dashboard.news.update',
                         'dashboard.confirms',
                         'dashboard.arrests',
-                        'dashboard.relatives_prisoners'
+                        'dashboard.relatives_prisoners',
+                        'dashboard.filtering_and_exporting',
                         ]
                 @endphp
                 <li class="menu {{ in_array(Route::getCurrentRoute()->getName(),$main) ? "active" : "" }}">
@@ -89,6 +90,9 @@
                     <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),$main) ? "show" : "" }}"
                         id="dashboard" data-bs-parent="#accordionExample">
                         @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
+                                <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.filtering_and_exporting' ? 'active' : '' }}">
+                                    <a href="{{route('dashboard.filtering_and_exporting')}}">قائمة الفلتر والتقارير</a>
+                                </li>
                             <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.prisoners' ? 'active' : '' }}">
                                 <a href="{{route('dashboard.prisoners')}}">قائمة الأسرى</a>
                             </li>

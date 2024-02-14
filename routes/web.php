@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Dashboard\Main\FilteringAndExporting;
 use App\Livewire\Dashboard\Main\ListPrisonerConfirms;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Dashboard\Auth\Login;
@@ -56,6 +57,7 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/news/create', CreateUpdateNews::class)->name('dashboard.news.create')->middleware(['auth', 'publisher']);
     Route::get('/news/update/{news?}', CreateUpdateNews::class)->name('dashboard.news.update')->middleware('auth', 'publisher');
 
+    Route::get('/filtering_and_exporting', FilteringAndExporting::class)->name('dashboard.filtering_and_exporting')->middleware(['auth', 'editor']);
     Route::get('/prisoners', ListPrisoners::class)->name('dashboard.prisoners')->middleware(['auth', 'editor']);
     Route::get('/prisoners/create', CreateUpdatePrisoners::class)->name('dashboard.prisoners.create')->middleware(['auth', 'admin']);
     Route::get('/prisoners/update/{prisoner}', CreateUpdatePrisoners::class)->name('dashboard.prisoners.update')->middleware('auth', 'admin');

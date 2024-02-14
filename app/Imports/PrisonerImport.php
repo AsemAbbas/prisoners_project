@@ -75,14 +75,14 @@ class PrisonerImport implements
             'number_of_children' => $row['number_of_children'] ?? null,
             'education_level' => $row['education_level'] ?? null,
             'health_note' => $row['health_note'] ?? null,
-            'father_arrested' => $father_arrested ?? null,
-            'mother_arrested' => $mother_arrested ?? null,
-            'husband_arrested' => $husband_arrested ?? null,
-            'wife_arrested' => $wife_arrested ?? null,
-            'brother_arrested' => $brother_arrested ?? null,
-            'sister_arrested' => $sister_arrested ?? null,
-            'son_arrested' => $son_arrested ?? null,
-            'daughter_arrested' => $daughter_arrested ?? null,
+            'father_arrested' => $father_arrested ?? null,//$row['father_arrested']
+            'mother_arrested' => $mother_arrested ?? null,//$row['mother_arrested']
+            'husband_arrested' => $husband_arrested ?? null,//$row['husband_arrested']
+            'wife_arrested' => $wife_arrested ?? null,//$row['wife_arrested']
+            'brother_arrested' => $brother_arrested ?? null,//$row['brother_arrested']
+            'sister_arrested' => $sister_arrested ?? null,//$row['sister_arrested']
+            'son_arrested' => $son_arrested ?? null,//$row['son_arrested']
+            'daughter_arrested' => $daughter_arrested ?? null,//$row['daughter_arrested']
             'first_phone_owner' => $row['first_phone_owner'] ?? null,
             'first_phone_number' => $row['first_phone_number'] ?? null,
             'second_phone_owner' => $row['second_phone_owner'] ?? null,
@@ -174,7 +174,7 @@ class PrisonerImport implements
             'first_phone_owner' => 'nullable',
             'first_phone_number' => 'nullable',
             'second_phone_owner' => 'nullable',
-            'is_released' => 'nullable|in:0,1',
+            'is_released' => 'nullable',
             'email' => 'nullable',
         ];
     }

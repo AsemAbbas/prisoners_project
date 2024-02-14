@@ -219,7 +219,7 @@ class ListPrisoners extends Component
                     });
                     $query->when(isset($this->AdvanceSearch['doa_from']) && isset($this->AdvanceSearch['doa_to']), function ($subQuery) {
 
-                        $subQuery->whereHas('LastArrest', function ($q) {
+                        $subQuery->whereHas('Arrest', function ($q) {
                             $q->whereBetween('arrest_start_date', [
                                 $this->AdvanceSearch['doa_from'],
                                 $this->AdvanceSearch['doa_to']
@@ -318,17 +318,26 @@ class ListPrisoners extends Component
                     });
                 });
             })
-            ->when(empty($this->AdvanceSearch) || empty($this->AdvanceSearch['is_released']), function ($query) {
-                $query->whereHas('Arrest', function ($query) {
-                    $query->where('is_released', false);
-                    $query->orWhere('is_released', null);
-                });
-            })
-            ->when($this->IsReleased ,function ($q){
-                $q->whereHas('Arrest', function ($query) {
-                    $query->where('is_released', true);
-                });
-            })
+            ->when(
+                (empty($this->AdvanceSearch) || empty($this->AdvanceSearch['is_released'])) && !$this->IsReleased,
+                function ($query) {
+                    $query->whereHas('Arrest', function ($query) {
+                        $query->where('is_released', false)
+                            ->orWhereNull('is_released');
+                    });
+                }
+            )
+            ->when(
+                $this->IsReleased,
+                function ($q) {
+                    $q->whereHas('Arrest', function ($query) {
+                        $query->where('is_released', true)
+                            ->orWhere('is_released', false)
+                            ->orWhereNull('is_released');
+
+                    });
+                }
+            )
             ->orderBy('id', 'ASC');
 
     }
@@ -358,15 +367,6 @@ class ListPrisoners extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $CurrentUserCities = User::query()
-            ->where('id', Auth::user()->id)
-            ->with('City')->first()->toArray()['city'] ?? [];
-        $cityIdArray = [];
-        foreach ($CurrentUserCities as $subArray) {
-            if (isset($subArray['pivot']['city_id'])) {
-                $cityIdArray[] = $subArray['pivot']['city_id'];
-            }
-        }
         $Prisoners = $this->getPrisonersProperty()->paginate(10);
 
         $Cities = City::all();
@@ -436,7 +436,7 @@ class ListPrisoners extends Component
             }
         }
         $Prisoner = Prisoner::query()
-            ->with('Arrest', 'Town', 'City', 'PrisonerType', 'RelativesPrisoner')
+            ->with('Arrest', 'Town', 'City', 'PrisonerType', 'RelativesPrisoner','FamilyIDNumber')
             ->when(isset($this->ExportData), function ($query) use ($selectArrest, $selectPrisoner) {
                 $query->when(isset($this->ExportData['dob_from']) && isset($this->ExportData['dob_to']), function ($subQuery) {
                     $subQuery->whereBetween('date_of_birth', [$this->ExportData['dob_from'], $this->ExportData['dob_to']]);
@@ -552,7 +552,10 @@ class ListPrisoners extends Component
                             $mappedData[$key] = implode(',', $prisoner->PrisonerType->pluck('prisoner_type_name')->toArray()) ?? null;
                         } elseif ($key === 'age') {
                             $mappedData[$key] = \Carbon\Carbon::parse($prisoner->date_of_birth)->diffInYears() ?? null;
-                        } else {
+                        } elseif ($key === 'father_arrested') {
+                            $mappedData[$key] =  $prisoner->FamilyIDNumber->where('relationship_name','اب')->pluck('id_number') ?? null;
+                        }
+                        else {
                             $mappedData[$key] = $prisoner->$key ?? null;
                         }
                     }

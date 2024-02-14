@@ -32,6 +32,7 @@ class CitiesSeeder extends Seeder
             ['id' => 17, 'city_name' => 'دير البلح'],
             ['id' => 18, 'city_name' => 'شمال غزة'],
             ['id' => 20, 'city_name' => 'الداخل'],
+            ['id' => 21, 'city_name' => 'الأردن'],
 
         ];
         DB::table('cities')->insert($cities);

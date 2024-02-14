@@ -135,6 +135,7 @@ class ListCities extends Component
         $this->reset($this->Towns);
         $this->Towns = Town::query()->where('city_id', $city)->get();
     }
+
     public function editTown($town_id): void
     {
         $this->showEditTown = true;

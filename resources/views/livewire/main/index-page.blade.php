@@ -101,6 +101,7 @@
                                         </a>
                                     </div>
                                 </form>
+{{--                                <h4 class="text-danger" style="font-family: 'Changa', sans-serif !important;font-size: 30px">تم إيقاف الاستعلام بشكل مؤقت</h4>--}}
                             </div>
                         </div>
                     </div>

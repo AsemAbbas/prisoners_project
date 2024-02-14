@@ -19,7 +19,6 @@ use App\Models\PrisonersPrisonerTypes;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
-use App\Rules\PalestineIdValidationRule;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -31,6 +30,7 @@ use Livewire\Component;
 class CreateUpdatePrisoners extends Component
 {
     public array $state = [];
+    public ?string $new_town_name = null;
     public array $old_arrests = [];
     public object $Prisoners_;
     public bool $showEdit = false;
@@ -133,15 +133,15 @@ class CreateUpdatePrisoners extends Component
                 "daughter_arrested_id" => $daughter_arrested_ids,
             ];
 
-                foreach ($data['old_arrest'] as $old) {
-                    $this->old_arrests[] = [
-                        "id" => $old['id'],
-                        "prisoner_id" => $old['prisoner_id'],
-                        "old_arrest_start_date" => Carbon::parse($old['old_arrest_start_date'])->format('d-m-Y'),
-                        "old_arrest_end_date" => Carbon::parse($old['old_arrest_end_date'])->format('d-m-Y'),
-                        "arrested_side" => $old['arrested_side'],
-                    ];
-                }
+            foreach ($data['old_arrest'] as $old) {
+                $this->old_arrests[] = [
+                    "id" => $old['id'],
+                    "prisoner_id" => $old['prisoner_id'],
+                    "old_arrest_start_date" => Carbon::parse($old['old_arrest_start_date'])->format('d-m-Y'),
+                    "old_arrest_end_date" => Carbon::parse($old['old_arrest_end_date'])->format('d-m-Y'),
+                    "arrested_side" => $old['arrested_side'],
+                ];
+            }
 
             $this->showEdit = true;
         }
@@ -400,6 +400,16 @@ class CreateUpdatePrisoners extends Component
     private function dispatchAction(): void
     {
         $this->dispatch('ReviewMassage');
+    }
+
+    public function addNewTown($city_id): void
+    {
+        if (!empty($this->new_town_name)) {
+            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
+            $town = Town::query()->create(['city_id' => $city_id, 'town_name' => $this->new_town_name]);
+            $this->state['town_id'] = (string)$town->id;
+            $this->new_town_name = null;
+        }
     }
 
     public function ConfirmMassage(): void
