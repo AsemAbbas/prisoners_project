@@ -41,75 +41,78 @@
                      wire:ignore.self
                      aria-labelledby="panelsStayOpen-heading_prisoners">
                     <div class="row">
-                        <div class="col-md-12 mb-3 text-center">
-                            <hr>
-                            <h1>معلومات مقدم البيانات</h1>
-                            <hr>
-                        </div>
-                        <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
-                            <div class="row">
-                                <div class="form-group col-md-4 mb-4">
-                                    <label style="font-weight: bold" for="error_suggester_name">اسم مقدم البيانات
-                                        (رباعي)</label>
-                                    <input wire:model="state.suggester_name" type="text"
-                                           class="form-control @error('suggester_name') is-invalid @enderror"
-                                           id="error_suggester_name"
-                                           placeholder="اسم مقدم البيانات (رباعي)">
-                                    @error('suggester_name')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-8 mb-4">
-                                </div>
-                                <div class="form-group col-md-4 mb-4">
-                                    <label style="font-weight: bold" for="suggester_identification_number">رقم هوية مقدم
-                                        البيانات</label>
-                                    <input wire:model="state.suggester_identification_number" type="text"
-                                           class="form-control @error('suggester_identification_number') is-invalid @enderror"
-                                           id="suggester_identification_number"
-                                           maxlength="9"
-                                           placeholder="رقم هوية مقدم البيانات">
-                                    @error('suggester_identification_number')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-4 mb-4">
-                                    <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم
-                                        البيانات</label>
-                                    <input wire:model="state.suggester_phone_number"
-                                           type="number"
-                                           class="form-control @error('suggester_phone_number') is-invalid @enderror"
-                                           id="suggester_phone_number"
-                                           maxlength="14"
-                                           min="0"
-                                           inputmode="numeric"
-                                           placeholder="رقم هاتف مقدم البيانات">
-                                    @error('suggester_phone_number')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-4 mb-4">
-                                    <label style="font-weight: bold" for="relationship_id">صلة قرابة مقدم
-                                        البيانات</label>
-                                    <select wire:model.live="state.relationship_id"
-                                            class="form-select @error('relationship_id') is-invalid @enderror"
-                                            id="relationship_id">
-                                        <option>اختر...</option>
-                                        @foreach($Relationships as $relationship)
-                                            <option
-                                                value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('relationship_id')
-                                    <div class="error-message invalid-feedback"
-                                         style="font-size: 15px">{{ $message }}</div>
-                                    @enderror
+                        @guest
+                            <div class="col-md-12 mb-3 text-center">
+                                <hr>
+                                <h1>معلومات مقدم البيانات</h1>
+                                <hr>
+                            </div>
+                            <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
+                                <div class="row">
+                                    <div class="form-group col-md-4 mb-4">
+                                        <label style="font-weight: bold" for="error_suggester_name">اسم مقدم البيانات
+                                            (رباعي)</label>
+                                        <input wire:model="state.suggester_name" type="text"
+                                               class="form-control @error('suggester_name') is-invalid @enderror"
+                                               id="error_suggester_name"
+                                               placeholder="اسم مقدم البيانات (رباعي)">
+                                        @error('suggester_name')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-8 mb-4">
+                                    </div>
+                                    <div class="form-group col-md-4 mb-4">
+                                        <label style="font-weight: bold" for="suggester_identification_number">رقم هوية
+                                            مقدم
+                                            البيانات</label>
+                                        <input wire:model="state.suggester_identification_number" type="text"
+                                               class="form-control @error('suggester_identification_number') is-invalid @enderror"
+                                               id="suggester_identification_number"
+                                               maxlength="9"
+                                               placeholder="رقم هوية مقدم البيانات">
+                                        @error('suggester_identification_number')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-4 mb-4">
+                                        <label style="font-weight: bold" for="suggester_phone_number">رقم هاتف مقدم
+                                            البيانات</label>
+                                        <input wire:model="state.suggester_phone_number"
+                                               type="number"
+                                               class="form-control @error('suggester_phone_number') is-invalid @enderror"
+                                               id="suggester_phone_number"
+                                               maxlength="14"
+                                               min="0"
+                                               inputmode="numeric"
+                                               placeholder="رقم هاتف مقدم البيانات">
+                                        @error('suggester_phone_number')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-group col-md-4 mb-4">
+                                        <label style="font-weight: bold" for="relationship_id">صلة قرابة مقدم
+                                            البيانات</label>
+                                        <select wire:model.live="state.relationship_id"
+                                                class="form-select @error('relationship_id') is-invalid @enderror"
+                                                id="relationship_id">
+                                            <option>اختر...</option>
+                                            @foreach($Relationships as $relationship)
+                                                <option
+                                                    value="{{$relationship->id}}">{{$relationship->relationship_name}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('relationship_id')
+                                        <div class="error-message invalid-feedback"
+                                             style="font-size: 15px">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endguest
                         <div class="col-md-12 mb-3 text-center">
                             <hr>
                             <h1>بيانات الأسير/ة</h1>
@@ -312,7 +315,8 @@
                                                class="form-control @error('new_town_name') is-invalid @enderror"
                                                id="new_town_name"
                                                placeholder="اسم البلدة">
-                                        <a class="btn btn-success" wire:click="addNewTown({{$state['city_id']}})">إضافة</a>
+                                        <a class="btn btn-success"
+                                           wire:click="addNewTown({{$state['city_id']}})">إضافة</a>
                                         @error('new_town_name')
                                         <div class="error-message invalid-feedback"
                                              style="font-size: 15px">{{ $message }}</div>
@@ -1053,20 +1057,20 @@
 
                         <div class="form-group col-md-12 mb-4 border rounded-2 p-3">
                             <div class="row">
-{{--                                <div class="form-group col-md-6 mb-4">--}}
-{{--                                    <label>المستندات والوثائق</label>--}}
-{{--                                    @if(isset($full_name) && isset($identification_number))--}}
-{{--                                        <a class="btn btn-link d-block" style="padding:12px 0;"--}}
-{{--                                           wire:click="openFileFormModal('{{$full_name}}','{{$identification_number}}')">--}}
-{{--                                            اضغط هنا لإرفاق الملفات--}}
-{{--                                        </a>--}}
-{{--                                    @else--}}
-{{--                                        <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">--}}
-{{--                                            اضغط هنا لإرفاق الملفات--}}
-{{--                                        </a>--}}
-{{--                                        <span class="text-danger">عليك تعبئة الاسم رباعي و رقم هوية الأسير ليعمل الرابط</span>--}}
-{{--                                    @endif--}}
-{{--                                </div>--}}
+                                {{--                                <div class="form-group col-md-6 mb-4">--}}
+                                {{--                                    <label>المستندات والوثائق</label>--}}
+                                {{--                                    @if(isset($full_name) && isset($identification_number))--}}
+                                {{--                                        <a class="btn btn-link d-block" style="padding:12px 0;"--}}
+                                {{--                                           wire:click="openFileFormModal('{{$full_name}}','{{$identification_number}}')">--}}
+                                {{--                                            اضغط هنا لإرفاق الملفات--}}
+                                {{--                                        </a>--}}
+                                {{--                                    @else--}}
+                                {{--                                        <a class="btn btn-link d-block" style="padding:12px 0;cursor: not-allowed;">--}}
+                                {{--                                            اضغط هنا لإرفاق الملفات--}}
+                                {{--                                        </a>--}}
+                                {{--                                        <span class="text-danger">عليك تعبئة الاسم رباعي و رقم هوية الأسير ليعمل الرابط</span>--}}
+                                {{--                                    @endif--}}
+                                {{--                                </div>--}}
                                 <div class="form-group col-md-6 mb-4">
                                     <label>المستندات والوثائق</label>
                                     @if(isset($full_name) && isset($identification_number))
@@ -1087,7 +1091,8 @@
                                 <div class="row">
                                     <div class="form-group col-md-6 mb-4">
                                         <label for="is_released">مفرج عنه حاليا؟</label>
-                                        <select id="is_released" class="form-select @error('is_released') is-invalid @enderror"
+                                        <select id="is_released"
+                                                class="form-select @error('is_released') is-invalid @enderror"
                                                 wire:model.live="state.is_released">
                                             <option>اختر...</option>
                                             <option value="1">نعم, مفرج عنه</option>
@@ -1248,25 +1253,25 @@
                 </div>
             </div>
         @endif
-{{--        <div class="modal modal fade" id="fileFormModal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"--}}
-{{--             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>--}}
-{{--            <div class="modal-dialog">--}}
-{{--                <div class="modal-content bg-white">--}}
-{{--                    <div class="modal-header bg-warning" style="margin: 5px;">--}}
-{{--                        <h1 class="modal-title fs-5 text-white"--}}
-{{--                            id="staticBackdropLabel">رابط إرفاق الملفات</h1>--}}
-{{--                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"--}}
-{{--                                aria-label="Close"></button>--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-body">--}}
-{{--                        <iframe src="{{$fileFormUrl}}" width="100%" height="600"></iframe>--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-footer d-flex justify-content-start align-items-start">--}}
-{{--                        <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
+        {{--        <div class="modal modal fade" id="fileFormModal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"--}}
+        {{--             aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>--}}
+        {{--            <div class="modal-dialog">--}}
+        {{--                <div class="modal-content bg-white">--}}
+        {{--                    <div class="modal-header bg-warning" style="margin: 5px;">--}}
+        {{--                        <h1 class="modal-title fs-5 text-white"--}}
+        {{--                            id="staticBackdropLabel">رابط إرفاق الملفات</h1>--}}
+        {{--                        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"--}}
+        {{--                                aria-label="Close"></button>--}}
+        {{--                    </div>--}}
+        {{--                    <div class="modal-body">--}}
+        {{--                        <iframe src="{{$fileFormUrl}}" width="100%" height="600"></iframe>--}}
+        {{--                    </div>--}}
+        {{--                    <div class="modal-footer d-flex justify-content-start align-items-start">--}}
+        {{--                        <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>--}}
+        {{--                    </div>--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        {{--        </div>--}}
 
         <div class="modal modal fade" id="googleForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
 

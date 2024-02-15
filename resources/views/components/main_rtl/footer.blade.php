@@ -14,7 +14,7 @@
             </div>
             <!-- Logo -->
             <div class="col-md-4 mb-3 mb-md-0 text-center">
-                <img src="{{asset('assets/images/light-logo.webp')}}" width="150" alt="footer logo">
+                <img src="{{asset('assets/images/light-logo.webp')}}" width="180" alt="footer logo">
             </div>
             <!-- Social links -->
             @php

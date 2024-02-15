@@ -503,12 +503,12 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('showNumberConverter');
     }
 
-    public function addNew(): void
-    {
-        $this->showEditModel = false;
-        $this->state = [];
-        $this->dispatch('show_create_update_modal');
-    }
+//    public function addNew(): void
+//    {
+//        $this->showEditModel = false;
+//        $this->state = [];
+//        $this->dispatch('show_create_update_modal');
+//    }
 
     public function edit($suggestion_id): void
     {

@@ -31,7 +31,16 @@
     </style>
 @endsection
 <div class="p-4">
-    <!-- BREADCRUMB -->
+    <div wire:loading.delay.longest>
+        <div class="d-flex justify-content-center align-items-center"
+             style=" background-color: black;opacity: .55 ;position: fixed; top: 0; left: 0; z-index: 9999;width: 100%;height: 100%">
+            <div>
+                <h1 class="text-center text-primary">جاري التحميل...</h1>
+                <div class="spinner-grow text-secondary" style="width: 200px;height: 200px" role="status">
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-meta">
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -46,6 +55,19 @@
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
                     @auth
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مراجع منطقة")
+                            <a class="btn btn-primary mb-2" target="_blank" href="{{route('dashboard.suggestions.create')}}">إضافة أسير
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     class="feather feather-plus-circle">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </a>
+                        @endif
                         @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <a class="btn btn-primary mb-2" href="{{route('dashboard.prisoners.create')}}">
                                 إضافة أسير
@@ -59,33 +81,8 @@
                                     <line x1="8" y1="12" x2="16" y2="12"></line>
                                 </svg>
                             </a>
-                        @endif
-                    @endauth
-                </div>
-                <div>
-                    <div class="d-inline">
-                        <input type="checkbox" name="IsReleased" id="IsReleased" wire:model.live="IsReleased">
-                        <label for="IsReleased">يشمل المفرج عنهم</label>
-                    </div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
-                           placeholder="البحث...">
-                    @auth
-                        @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,['مراجع منطقة','مسؤول']))
-                            <a class="btn btn-outline-secondary mb-2" wire:click="showAdvanceSearch">
-                                البحث المتقدم
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                     fill="none"
-                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                     stroke-linejoin="round"
-                                     class="feather feather-search">
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                </svg>
-                            </a>
-                        @endif
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                             <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">
-                                الإستيراد والتصدير
+                                الاستيراد
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                      fill="none"
                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -100,6 +97,22 @@
                             </a>
                         @endif
                     @endauth
+                </div>
+                <div class="d-flex flex-wrap">
+                    <div class="px-2">
+                        <div>
+                            <input type="checkbox" name="IsReleased" id="IsReleased" wire:model.live="IsReleased">
+                            <label for="IsReleased">اظهار المفرج عنهم</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="HasCity" id="HasCity" wire:model.live="HasCity">
+                            <label for="HasCity">ليس لديهم محافظة</label>
+                        </div>
+                    </div>
+                    <div>
+                        <input wire:model.live="Search" class="form-input mb-2" type="search" id="Search"
+                               placeholder="البحث...">
+                    </div>
                 </div>
             </div>
             <div class="table-responsive">
@@ -116,9 +129,7 @@
                         <th>البلدة</th>
                         <th>مفرج عنه حالياً؟</th>
                         @auth
-                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
-                                <th>الخيارات</th>
-                            @endif
+                            <th>الخيارات</th>
                         @endauth
                     </tr>
                     </thead>
@@ -145,6 +156,15 @@
                                 @endif
                             </td>
                             @auth
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مراجع منطقة")
+                                    <td>
+                                        <a target="_blank" href="{{route('dashboard.suggestions.update',$row->id)}}"
+                                           class="btn btn-warning"
+                                           data-toggle="tooltip" data-placement="top" title="SuggestionEdit">
+                                            تعديل
+                                        </a>
+                                    </td>
+                                @endif
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
                                     <td>
                                         <a href="{{route('dashboard.prisoners.update',$row)}}" class="btn btn-warning"
@@ -873,15 +893,18 @@
                                     <h6>الحالة الإجتماعية:</h6>
                                     <h4>{{$Prisoners_->Arrest->social_type ?? 'لا يوجد'}}</h4>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
-                                         class="bi bi-123 text-danger" viewBox="0 0 16 16">
-                                        <path
-                                            d="M2.873 11.297V4.142H1.699L0 5.379v1.137l1.64-1.18h.06v5.961h1.174Zm3.213-5.09v-.063c0-.618.44-1.169 1.196-1.169.676 0 1.174.44 1.174 1.106 0 .624-.42 1.101-.807 1.526L4.99 10.553v.744h4.78v-.99H6.643v-.069L8.41 8.252c.65-.724 1.237-1.332 1.237-2.27C9.646 4.849 8.723 4 7.308 4c-1.573 0-2.36 1.064-2.36 2.15v.057h1.138m6.559 1.883h.786c.823 0 1.374.481 1.379 1.179.01.707-.55 1.216-1.421 1.21-.77-.005-1.326-.419-1.379-.953h-1.095c.042 1.053.938 1.918 2.464 1.918 1.478 0 2.642-.839 2.62-2.144-.02-1.143-.922-1.651-1.551-1.714v-.063c.535-.09 1.347-.66 1.326-1.678-.026-1.053-.933-1.855-2.359-1.845-1.5.005-2.317.88-2.348 1.898h1.116c.032-.498.498-.944 1.206-.944.703 0 1.206.435 1.206 1.07.005.64-.504 1.106-1.2 1.106h-.75z"/>
-                                    </svg>
-                                    <h6>عدد الزوجات:</h6>
-                                    <h4>{{$Prisoners_->Arrest->wife_type ?? 'لا يوجد'}}</h4>
-                                </div>
+                                @if(isset($Prisoners_->gender) && $Prisoners_->gender == "ذكر")
+                                    <div class="col-md-4 mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+                                             fill="currentColor"
+                                             class="bi bi-123 text-danger" viewBox="0 0 16 16">
+                                            <path
+                                                d="M2.873 11.297V4.142H1.699L0 5.379v1.137l1.64-1.18h.06v5.961h1.174Zm3.213-5.09v-.063c0-.618.44-1.169 1.196-1.169.676 0 1.174.44 1.174 1.106 0 .624-.42 1.101-.807 1.526L4.99 10.553v.744h4.78v-.99H6.643v-.069L8.41 8.252c.65-.724 1.237-1.332 1.237-2.27C9.646 4.849 8.723 4 7.308 4c-1.573 0-2.36 1.064-2.36 2.15v.057h1.138m6.559 1.883h.786c.823 0 1.374.481 1.379 1.179.01.707-.55 1.216-1.421 1.21-.77-.005-1.326-.419-1.379-.953h-1.095c.042 1.053.938 1.918 2.464 1.918 1.478 0 2.642-.839 2.62-2.144-.02-1.143-.922-1.651-1.551-1.714v-.063c.535-.09 1.347-.66 1.326-1.678-.026-1.053-.933-1.855-2.359-1.845-1.5.005-2.317.88-2.348 1.898h1.116c.032-.498.498-.944 1.206-.944.703 0 1.206.435 1.206 1.07.005.64-.504 1.106-1.2 1.106h-.75z"/>
+                                        </svg>
+                                        <h6>عدد الزوجات:</h6>
+                                        <h4>{{$Prisoners_->Arrest->wife_type ?? 'لا يوجد'}}</h4>
+                                    </div>
+                                @endif
                                 <div class="col-md-4 mb-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                          class="bi bi-person-up text-danger" viewBox="0 0 16 16">
@@ -1033,7 +1056,7 @@
             <div class="modal-content bg-white">
                 <div class="modal-header bg-dark" style="margin: 5px;">
                     <h1 class="modal-title fs-5 text-white"
-                        id="staticBackdropLabel">الإستيراد والتصدير</h1>
+                        id="staticBackdropLabel">الاستيراد</h1>
                     <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
                             wire:loading.class="disabled"
                             aria-label="Close"></button>
@@ -1116,651 +1139,6 @@
                                         </div>
                                     </div>
                                 @endif
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-12 mb-4">
-                        <div id="toggleExport" class="Export">
-                            <div class="card">
-                                <div class="card-header" id="headingExport" wire:ignore.self>
-                                    <section class="mb-0 mt-0">
-                                        <div role="menu" class="collapsed d-flex justify-content-between"
-                                             data-bs-toggle="collapse"
-                                             data-bs-target="#defaultExport" aria-expanded="false"
-                                             aria-controls="defaultExport">
-                                            <h6 class="p-0 m-0">التصدير</h6>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                 stroke-width="2" stroke-linecap="round"
-                                                 stroke-linejoin="round"
-                                                 class="feather feather-chevron-down">
-                                                <polyline points="6 9 12 15 18 9"></polyline>
-                                            </svg>
-                                        </div>
-                                    </section>
-                                </div>
-                                <div id="defaultExport" class="collapse" aria-labelledby="headingExport"
-                                     wire:ignore.self
-                                     data-bs-parent="#toggleExport">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>تاريخ الميلاد <span class="text-danger" style="font-size: 18px">(إختياري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="dob_from">من</label>
-                                                <input wire:model="ExportData.dob_from" type="date"
-                                                       class="form-control"
-                                                       id="dob_from">
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="dob_to">إلى</label>
-                                                <input wire:model="ExportData.dob_to" type="date"
-                                                       class="form-control"
-                                                       id="dob_to">
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <hr>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>تاريخ الاعتقال <span class="text-danger" style="font-size: 18px">(إختياري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="doa_from">من</label>
-                                                <input wire:model="ExportData.doa_from" type="date"
-                                                       class="form-control"
-                                                       id="doa_from">
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="doa_to">إلى</label>
-                                                <input wire:model="ExportData.doa_to" type="date"
-                                                       class="form-control"
-                                                       id="doa_to">
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <hr>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>الحكم مؤبدات<span class="text-danger" style="font-size: 18px">(إختياري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="judgment_in_lifetime_from">من</label>
-                                                <input wire:model="ExportData.judgment_in_lifetime_from" type="number"
-                                                       class="form-control"
-                                                       id="judgment_in_lifetime_from">
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="judgment_in_lifetime_to">إلى</label>
-                                                <input wire:model="ExportData.judgment_in_lifetime_to" type="number"
-                                                       class="form-control"
-                                                       id="judgment_in_lifetime_to">
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <hr>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>الحكم سنوات<span class="text-danger" style="font-size: 18px">(إختياري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="judgment_in_years_from">من</label>
-                                                <input wire:model="ExportData.judgment_in_years_from" type="number"
-                                                       class="form-control"
-                                                       id="judgment_in_years_from">
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="judgment_in_years_to">إلى</label>
-                                                <input wire:model="ExportData.judgment_in_years_to" type="number"
-                                                       class="form-control"
-                                                       id="judgment_in_years_to">
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <hr>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>بيانات اخرى <span class="text-danger" style="font-size: 18px">(إختياري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="Gender">الجنس</label>
-                                                <div id="toggleGender" class="Gender">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingGender" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultGender"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultGender">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultGender" class="collapse"
-                                                             aria-labelledby="headingGender"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleGender">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach(\App\Enums\Gender::cases() as $row)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.gender.{{$row->value}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row->value}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-6 mb-4">
-                                                <label for="SocialType">الحالة الإجتماعية</label>
-                                                <div id="toggleSocialType" class="SocialType">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingSocialType"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultSocialType"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultSocialType">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultSocialType" class="collapse"
-                                                             aria-labelledby="headingSocialType"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleSocialType">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach(\App\Enums\SocialType::cases() as $row)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.social_type.{{$row->value}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row->value}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="City">المحافظة</label>
-                                                <div id="toggleCity" class="City">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingCity" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultCity" aria-expanded="false"
-                                                                     aria-controls="defaultCity">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultCity" class="collapse"
-                                                             aria-labelledby="headingCity"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleCity">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach($Cities as $city)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.city.{{$city->id}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$city->city_name}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="Town">البلدة</label>
-                                                <div id="toggleTown" class="Town">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingTown" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultTown" aria-expanded="false"
-                                                                     aria-controls="defaultTown">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultTown" class="collapse"
-                                                             aria-labelledby="headingTown"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleTown">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    <div class="col-md-12 mb-4">
-                                                                        <input class="form-control" type="text"
-                                                                               placeholder="بحث عن بلدة"
-                                                                               wire:model.live="town_search">
-                                                                    </div>
-                                                                    @foreach($Towns as $key => $town)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.town.{{$town->id}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark_{{$key}}">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark_{{$key}}">
-                                                                                    {{$town->town_name}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="Belong">الإنتماء</label>
-                                                <div id="toggleBelong" class="Belong">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingBelong" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultBelong"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultBelong">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultBelong" class="collapse"
-                                                             aria-labelledby="headingBelong"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleBelong">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach($Belongs as $belong)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.belong.{{$belong->id}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$belong->belong_name}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="PrisonerType">التصنيف</label>
-                                                <div id="togglePrisonerType" class="PrisonerType">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingPrisonerType"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultPrisonerType"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultPrisonerType">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultPrisonerType" class="collapse"
-                                                             aria-labelledby="headingPrisonerType"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#togglePrisonerType">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach($PrisonerTypes as $prisoner_type)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.prisoner_type.{{$prisoner_type->id}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$prisoner_type->prisoner_type_name}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="SpecialCase">الحالات الخاصة</label>
-                                                <div id="toggleSpecialCase" class="SpecialCase">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingSpecialCase"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultSpecialCase"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultSpecialCase">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultSpecialCase" class="collapse"
-                                                             aria-labelledby="headingSpecialCase"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleSpecialCase">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach(\App\Enums\SpecialCase::cases() as $key => $row)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.special_case.{{$row->value}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark_{{$key}}">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark_{{$key}}">
-                                                                                    {{$row->value}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                    <div class="col-md-4 mb-4">
-                                                                        <div
-                                                                            class="form-check form-check-dark form-check-inline">
-                                                                            <input class="form-check-input"
-                                                                                   wire:model.live="ExportData.is_released"
-                                                                                   type="checkbox"
-                                                                                   id="form-check-dark_is_released">
-                                                                            <label class="form-check-label"
-                                                                                   for="form-check-dark_is_released">
-                                                                                مفرج عنه حالياً
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <hr>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4 text-center">
-                                                <h3>الأعمدة <span class="text-danger"
-                                                                  style="font-size: 18px">(إجباري)</span>
-                                                </h3>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="PrisonerData">بيانات الأسير</label>
-                                                <div id="togglePrisonerData" class="PrisonerData">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingPrisonerData"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultPrisonerData"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultPrisonerData">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultPrisonerData" class="collapse"
-                                                             aria-labelledby="headingPrisonerData"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#togglePrisonerData">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    <div class="col-md-4 mb-4">
-                                                                        <div
-                                                                            class="form-check form-check-dark form-check-inline">
-                                                                            <input class="form-check-input"
-                                                                                   wire:model.live="SelectAllPrisoner"
-                                                                                   type="checkbox"
-                                                                                   id="form-check-dark">
-                                                                            <label class="form-check-label"
-                                                                                   for="form-check-dark">
-                                                                                تحديد الكل
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                    @foreach($PrisonerColumn as $key => $row)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.selectPrisoner.{{$key}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <label for="ArrestData">بيانات الاعتقال</label>
-                                                <div id="toggleArrestData" class="ArrestData">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingArrestData"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultArrestData"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultArrestData">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultArrestData" class="collapse"
-                                                             aria-labelledby="headingArrestData"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleArrestData">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    <div class="col-md-4 mb-4">
-                                                                        <div
-                                                                            class="form-check form-check-dark form-check-inline">
-                                                                            <input class="form-check-input"
-                                                                                   wire:model.live="SelectAllArrest"
-                                                                                   type="checkbox"
-                                                                                   id="form-check-dark">
-                                                                            <label class="form-check-label"
-                                                                                   for="form-check-dark">
-                                                                                تحديد الكل
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                    @foreach($ArrestColumn as $key => $row)
-                                                                        <div class="col-md-4 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="ExportData.selectArrest.{{$key}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-12 mb-4">
-                                                <a class="btn btn-outline-dark" wire:click="ExportFile_"
-                                                   wire:loading.class="disabled">
-                                                    <div wire:loading wire:target="ExportFile_"
-                                                         style="width: 20px;height: 20px"
-                                                         class="spinner-border text-dark align-self-center loader-xs"></div>
-                                                    إستخراج
-                                                </a>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

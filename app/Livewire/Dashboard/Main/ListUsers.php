@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard\Main;
 use App\Enums\UserStatus;
 use App\Models\City;
 use App\Models\User;
+use App\Models\UserLog;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
@@ -20,6 +21,7 @@ class ListUsers extends Component
     public object $Users_;
     public ?object $UserStatus;
     public ?string $Search = null;
+    public ?string $user_id = null;
     public array $state = [];
     public bool $ShowModal = false;
 
@@ -32,6 +34,12 @@ class ListUsers extends Component
         $this->AllCities = false;
         $this->state = [];
         $this->dispatch('showForm');
+    }
+
+    public function logShow($user_id): void
+    {
+        $this->user_id = $user_id;
+        $this->dispatch('show_log');
     }
 
     public function edit(User $user): void
@@ -81,7 +89,7 @@ class ListUsers extends Component
         $user = User::query()->create($validation);
 
         if (isset($validation['cities']))
-        $user->City()->attach(array_keys($validation['cities']));
+            $user->City()->attach(array_keys($validation['cities']));
 
         $this->dispatch('hideForm');
     }
@@ -147,6 +155,11 @@ class ListUsers extends Component
     {
         $Users = $this->getUsersProperty()->paginate(10);
 
+        $UserLogs = UserLog::query()
+            ->when(isset($this->user_id), function ($q) {
+                $q->where('user_id', $this->user_id);
+            })->get();
+
         $Cities = City::all();
 
         if (isset($this->state['cities']))
@@ -154,7 +167,7 @@ class ListUsers extends Component
                 $this->AllCities = false;
             else $this->AllCities = true;
 
-        return view('livewire.dashboard.main.list-users', compact('Users', 'Cities'));
+        return view('livewire.dashboard.main.list-users', compact('Users', 'Cities', 'UserLogs'));
     }
 
     public function getUsersProperty()

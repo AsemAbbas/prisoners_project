@@ -67,8 +67,10 @@
                                              aria-controls="defaultFilter">
                                             <p class="p-0 m-0 text-white" style="font-size: 18px">
                                                 الفلتر
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
-                                                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                     fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
                                                 </svg>
                                             </p>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
@@ -89,133 +91,22 @@
                                      data-bs-parent="#toggleFilter">
                                     <div class="card-body">
                                         <div class="row">
-                                            @if(\Illuminate\Support\Facades\Auth::user()->user_status == "مسؤول")
-                                                <div class="form-group col-md-3 mb-4">
-                                                    <label for="City">المحافظة</label>
-                                                    <div id="toggleCity" class="City">
-                                                        <div class="card">
-                                                            <div class="card-header" id="headingCity" wire:ignore.self>
-                                                                <section class="mb-0 mt-0">
-                                                                    <div role="menu" class="collapsed d-flex justify-content-between"
-                                                                         data-bs-toggle="collapse"
-                                                                         data-bs-target="#defaultCity" aria-expanded="false"
-                                                                         aria-controls="defaultCity">
-                                                                        <p class="p-0 m-0">اختر...</p>
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                                             stroke-width="2" stroke-linecap="round"
-                                                                             stroke-linejoin="round"
-                                                                             class="feather feather-chevron-down">
-                                                                            <polyline points="6 9 12 15 18 9"></polyline>
-                                                                        </svg>
-                                                                    </div>
-                                                                </section>
-                                                            </div>
-                                                            <div id="defaultCity" class="collapse" aria-labelledby="headingCity"
-                                                                 wire:ignore.self
-                                                                 data-bs-parent="#toggleCity">
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        @foreach($Cities as $city)
-                                                                            <div class="col-md-6 mb-4">
-                                                                                <div
-                                                                                    class="form-check form-check-dark form-check-inline">
-                                                                                    <input class="form-check-input"
-                                                                                           wire:model.live="AdvanceSearch.city.{{$city->id}}"
-                                                                                           type="checkbox"
-                                                                                           id="form-check-dark">
-                                                                                    <label class="form-check-label"
-                                                                                           for="form-check-dark">
-                                                                                        {{$city->city_name}}
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @if(isset($AdvanceSearch) && isset($AdvanceSearch['city']) && count(array_filter($AdvanceSearch['city'])) == 1)
-                                                    <div class="form-group col-md-3 mb-4">
-                                                        <label for="Town">البلدة</label>
-                                                        <div id="toggleTown" class="Town">
-                                                            <div class="card">
-                                                                <div class="card-header" id="headingTown" wire:ignore.self>
-                                                                    <section class="mb-0 mt-0">
-                                                                        <div role="menu"
-                                                                             class="collapsed d-flex justify-content-between"
-                                                                             data-bs-toggle="collapse"
-                                                                             data-bs-target="#defaultTown" aria-expanded="false"
-                                                                             aria-controls="defaultTown">
-                                                                            <p class="p-0 m-0">اختر...</p>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                                 height="24"
-                                                                                 viewBox="0 0 24 24" fill="none"
-                                                                                 stroke="currentColor"
-                                                                                 stroke-width="2" stroke-linecap="round"
-                                                                                 stroke-linejoin="round"
-                                                                                 class="feather feather-chevron-down">
-                                                                                <polyline points="6 9 12 15 18 9"></polyline>
-                                                                            </svg>
-                                                                        </div>
-                                                                    </section>
-                                                                </div>
-                                                                <div id="defaultTown" class="collapse"
-                                                                     aria-labelledby="headingTown"
-                                                                     wire:ignore.self
-                                                                     data-bs-parent="#toggleTown">
-                                                                    <div class="card-body">
-                                                                        <div class="row">
-                                                                            <div class="col-md-12 mb-4">
-                                                                                <input class="form-control" type="text"
-                                                                                       placeholder="بحث عن بلدة"
-                                                                                       wire:model.live="town_search">
-                                                                            </div>
-                                                                            @foreach($Cities as $city)
-                                                                                @if(isset($this->AdvanceSearch['city']) && in_array($city->id, array_keys(array_filter($this->AdvanceSearch['city']))))
-                                                                                    <div class="col-md-12 mb-4">
-                                                                                        <h5>{{$city->city_name}}</h5>
-                                                                                    </div>
-                                                                                    @foreach($city->Town as $key => $town)
-                                                                                        <div class="col-md-6 mb-4">
-                                                                                            <div
-                                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                                <input class="form-check-input"
-                                                                                                       wire:model.live="AdvanceSearch.town.{{$town->id}}"
-                                                                                                       type="checkbox"
-                                                                                                       id="form-check-dark_{{$key}}">
-                                                                                                <label class="form-check-label"
-                                                                                                       for="form-check-dark_{{$key}}">
-                                                                                                    {{$town->town_name}}
-                                                                                                </label>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    @endforeach
-                                                                                @endif
-                                                                            @endforeach
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endif
-                                            <div class="form-group col-md-3 mb-4">
-                                                <label for="Belong">الإنتماء</label>
-                                                <div id="toggleBelong" class="Belong">
+                                            <div class="form-group col-xl-3 mb-4">
+                                                <label for="City">المحافظة</label>
+                                                <div id="toggleCity" class="City">
                                                     <div class="card">
-                                                        <div class="card-header" id="headingBelong" wire:ignore.self>
+                                                        <div class="card-header" id="headingCity" wire:ignore.self>
                                                             <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
                                                                      data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultBelong" aria-expanded="false"
-                                                                     aria-controls="defaultBelong">
+                                                                     data-bs-target="#defaultCity" aria-expanded="false"
+                                                                     aria-controls="defaultCity">
                                                                     <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
                                                                          stroke-width="2" stroke-linecap="round"
                                                                          stroke-linejoin="round"
                                                                          class="feather feather-chevron-down">
@@ -224,7 +115,153 @@
                                                                 </div>
                                                             </section>
                                                         </div>
-                                                        <div id="defaultBelong" class="collapse" aria-labelledby="headingBelong"
+                                                        <div id="defaultCity" class="collapse"
+                                                             aria-labelledby="headingCity"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleCity">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="AdvanceSearch.city"
+                                                                                   type="radio"
+                                                                                   name="city"
+                                                                                   value="not_found"
+                                                                                   id="city_not_found">
+                                                                            <label class="form-check-label"
+                                                                                   for="city_not_found">
+                                                                                غير محدد
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    @foreach($Cities as $city)
+                                                                        <div class="col-md-6 mb-4">
+                                                                            <div class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.city"
+                                                                                       type="radio"
+                                                                                       name="city"
+                                                                                       value="{{$city->id}}"
+                                                                                       id="city_{{$city->id}}">
+                                                                                <label class="form-check-label"
+                                                                                       for="city_{{$city->id}}">
+                                                                                    {{$city->city_name}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-md-3 mb-4">
+                                                <label for="Town">البلدة</label>
+                                                <div id="toggleTown" class="Town">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingTown" wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultTown" aria-expanded="false"
+                                                                     aria-controls="defaultTown">
+                                                                    <p class="p-0 m-0">اختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultTown" class="collapse"
+                                                             aria-labelledby="headingTown"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleTown">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <input class="form-control" type="text"
+                                                                               placeholder="بحث عن بلدة"
+                                                                               wire:model.live="town_search">
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="AdvanceSearch.town.not_found"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark_not_found">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark_not_found">
+                                                                                غير محدد
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    @foreach($Cities as $city)
+                                                                        @if(isset($this->AdvanceSearch['city']) && $city->id == $this->AdvanceSearch['city'])
+                                                                            <div class="col-md-12 mb-4">
+                                                                                <h5>{{$city->city_name}}</h5>
+                                                                            </div>
+                                                                            @foreach($city->Town as $key => $town)
+                                                                                <div class="col-md-6 mb-4">
+                                                                                    <div
+                                                                                        class="form-check form-check-dark form-check-inline">
+                                                                                        <input class="form-check-input"
+                                                                                               wire:model.live="AdvanceSearch.town.{{$town->id}}"
+                                                                                               type="checkbox"
+                                                                                               id="form-check-dark_{{$key}}">
+                                                                                        <label class="form-check-label"
+                                                                                               for="form-check-dark_{{$key}}">
+                                                                                            {{$town->town_name}}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-xl-6 mb-4">
+                                            </div>
+                                            <div class="form-group col-xl-3 mb-4">
+                                                <label for="Belong">الإنتماء</label>
+                                                <div id="toggleBelong" class="Belong">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingBelong" wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultBelong"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultBelong">
+                                                                    <p class="p-0 m-0">اختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultBelong" class="collapse"
+                                                             aria-labelledby="headingBelong"
                                                              wire:ignore.self
                                                              data-bs-parent="#toggleBelong">
                                                             <div class="card-body">
@@ -250,19 +287,24 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-3 mb-4">
-                                                <label for="PrisonerType">التصنيف</label>
+                                            <div class="form-group col-xl-3 mb-4">
+                                                <label for="PrisonerType">الحالات الخاصة والتصنيفات</label>
                                                 <div id="togglePrisonerType" class="PrisonerType">
                                                     <div class="card">
-                                                        <div class="card-header" id="headingPrisonerType" wire:ignore.self>
+                                                        <div class="card-header" id="headingPrisonerType"
+                                                             wire:ignore.self>
                                                             <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
                                                                      data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultPrisonerType" aria-expanded="false"
+                                                                     data-bs-target="#defaultPrisonerType"
+                                                                     aria-expanded="false"
                                                                      aria-controls="defaultPrisonerType">
                                                                     <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
                                                                          stroke-width="2" stroke-linecap="round"
                                                                          stroke-linejoin="round"
                                                                          class="feather feather-chevron-down">
@@ -277,154 +319,7 @@
                                                              data-bs-parent="#togglePrisonerType">
                                                             <div class="card-body">
                                                                 <div class="row">
-                                                                    @foreach($PrisonerTypes as $prisoner_type)
-                                                                        <div class="col-md-6 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="AdvanceSearch.prisoner_type.{{$prisoner_type->id}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$prisoner_type->prisoner_type_name}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-2 mb-4">
-                                                <label for="SocialType">الحالة الإجتماعية</label>
-                                                <div id="toggleSocialType" class="SocialType">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingSocialType" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultSocialType" aria-expanded="false"
-                                                                     aria-controls="defaultSocialType">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultSocialType" class="collapse"
-                                                             aria-labelledby="headingSocialType"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleSocialType">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach(\App\Enums\SocialType::cases() as $row)
-                                                                        <div class="col-md-6 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="AdvanceSearch.social_type.{{$row->value}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row->value}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-2 mb-4">
-                                                <label for="Gender">الجنس</label>
-                                                <div id="toggleGender" class="Gender">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingGender" wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultGender" aria-expanded="false"
-                                                                     aria-controls="defaultGender">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultGender" class="collapse" aria-labelledby="headingGender"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleGender">
-                                                            <div class="card-body">
-                                                                <div class="row">
-                                                                    @foreach(\App\Enums\Gender::cases() as $row)
-                                                                        <div class="col-md-12 mb-4">
-                                                                            <div
-                                                                                class="form-check form-check-dark form-check-inline">
-                                                                                <input class="form-check-input"
-                                                                                       wire:model.live="AdvanceSearch.gender.{{$row->value}}"
-                                                                                       type="checkbox"
-                                                                                       id="form-check-dark">
-                                                                                <label class="form-check-label"
-                                                                                       for="form-check-dark">
-                                                                                    {{$row->value}}
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group col-md-2 mb-4">
-                                                <label for="SpecialCase">الحالات الخاصة</label>
-                                                <div id="toggleSpecialCase" class="SpecialCase">
-                                                    <div class="card">
-                                                        <div class="card-header" id="headingSpecialCase"
-                                                             wire:ignore.self>
-                                                            <section class="mb-0 mt-0">
-                                                                <div role="menu"
-                                                                     class="collapsed d-flex justify-content-between"
-                                                                     data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultSpecialCase"
-                                                                     aria-expanded="false"
-                                                                     aria-controls="defaultSpecialCase">
-                                                                    <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24"
-                                                                         viewBox="0 0 24 24" fill="none"
-                                                                         stroke="currentColor"
-                                                                         stroke-width="2" stroke-linecap="round"
-                                                                         stroke-linejoin="round"
-                                                                         class="feather feather-chevron-down">
-                                                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                                                    </svg>
-                                                                </div>
-                                                            </section>
-                                                        </div>
-                                                        <div id="defaultSpecialCase" class="collapse"
-                                                             aria-labelledby="headingSpecialCase"
-                                                             wire:ignore.self
-                                                             data-bs-parent="#toggleSpecialCase">
-                                                            <div class="card-body">
-                                                                <div class="row">
+                                                                    <h4 class="mb-4">الحالات الخاصة</h4>
                                                                     @foreach(\App\Enums\SpecialCase::cases() as $key => $row)
                                                                         <div class="col-md-12 mb-4">
                                                                             <div
@@ -466,25 +361,153 @@
                                                                             </label>
                                                                         </div>
                                                                     </div>
+                                                                    <h4 class="mb-4">التصنيفات</h4>
+                                                                    @foreach($PrisonerTypes as $prisoner_type)
+                                                                        <div class="col-md-12 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.prisoner_type.{{$prisoner_type->id}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$prisoner_type->prisoner_type_name}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-2 mb-4">
+                                            <div class="form-group col-xl-6 mb-4">
+                                            </div>
+                                            <div class="form-group col-xl-2 mb-4">
+                                                <label for="SocialType">الحالة الإجتماعية</label>
+                                                <div id="toggleSocialType" class="SocialType">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingSocialType"
+                                                             wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultSocialType"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultSocialType">
+                                                                    <p class="p-0 m-0">اختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultSocialType" class="collapse"
+                                                             aria-labelledby="headingSocialType"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleSocialType">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    @foreach(\App\Enums\SocialType::cases() as $row)
+                                                                        <div class="col-md-12 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.social_type.{{$row->value}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$row->value}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-xl-2 mb-4">
+                                                <label for="Gender">الجنس</label>
+                                                <div id="toggleGender" class="Gender">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingGender" wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultGender"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultGender">
+                                                                    <p class="p-0 m-0">اختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultGender" class="collapse"
+                                                             aria-labelledby="headingGender"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleGender">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    @foreach(\App\Enums\Gender::cases() as $row)
+                                                                        <div class="col-md-12 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.gender.{{$row->value}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$row->value}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-xl-2 mb-4">
                                                 <label for="ArrestType">حالة الاعتقال</label>
                                                 <div id="toggleArrestType" class="ArrestType">
                                                     <div class="card">
-                                                        <div class="card-header" id="headingArrestType" wire:ignore.self>
+                                                        <div class="card-header" id="headingArrestType"
+                                                             wire:ignore.self>
                                                             <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
                                                                      data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultArrestType" aria-expanded="false"
+                                                                     data-bs-target="#defaultArrestType"
+                                                                     aria-expanded="false"
                                                                      aria-controls="defaultArrestType">
                                                                     <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
                                                                          stroke-width="2" stroke-linecap="round"
                                                                          stroke-linejoin="round"
                                                                          class="feather feather-chevron-down">
@@ -520,19 +543,26 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-2 mb-4">
+                                            <div class="form-group col-xl-6 mb-4">
+                                            </div>
+
+                                            <div class="form-group col-xl-2 mb-4">
                                                 <label for="Missing">النواقص</label>
                                                 <div id="toggleMissing" class="Missing">
                                                     <div class="card">
                                                         <div class="card-header" id="headingMissing" wire:ignore.self>
                                                             <section class="mb-0 mt-0">
-                                                                <div role="menu" class="collapsed d-flex justify-content-between"
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
                                                                      data-bs-toggle="collapse"
-                                                                     data-bs-target="#defaultMissing" aria-expanded="false"
+                                                                     data-bs-target="#defaultMissing"
+                                                                     aria-expanded="false"
                                                                      aria-controls="defaultMissing">
                                                                     <p class="p-0 m-0">اختر...</p>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
                                                                          stroke-width="2" stroke-linecap="round"
                                                                          stroke-linejoin="round"
                                                                          class="feather feather-chevron-down">
@@ -541,13 +571,15 @@
                                                                 </div>
                                                             </section>
                                                         </div>
-                                                        <div id="defaultMissing" class="collapse" aria-labelledby="headingMissing"
+                                                        <div id="defaultMissing" class="collapse"
+                                                             aria-labelledby="headingMissing"
                                                              wire:ignore.self
                                                              data-bs-parent="#toggleMissing">
                                                             <div class="card-body">
                                                                 <div class="row">
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.identification_number"
                                                                                    type="checkbox"
@@ -559,7 +591,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.dob"
                                                                                    type="checkbox"
@@ -571,7 +604,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.doa"
                                                                                    type="checkbox"
@@ -583,7 +617,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.belong"
                                                                                    type="checkbox"
@@ -595,7 +630,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.city"
                                                                                    type="checkbox"
@@ -607,7 +643,8 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-12 mb-4">
-                                                                        <div class="form-check form-check-dark form-check-inline">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.missing.town"
                                                                                    type="checkbox"
@@ -624,87 +661,108 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if(isset($AdvanceSearch) && (!isset($AdvanceSearch['city']) || (isset($AdvanceSearch['city']) && (count(array_filter($AdvanceSearch['city'])) > 1 || count(array_filter($AdvanceSearch['city'])) == 0)) ))
-                                                @if(\Illuminate\Support\Facades\Auth::user()->user_status == "مسؤول")
-                                                    <div class="form-group col-md-3 mb-4"></div>
-                                                @endif
-                                            @endif
-                                            @if(\Illuminate\Support\Facades\Auth::user()->user_status != "مسؤول")
-                                                <div class="form-group col-md-8 mb-4"></div>
-                                            @endif
-                                            <div class="form-group col-md-4 mb-4 text-center">
-                                                <h6>تاريخ الميلاد</h6>
+                                            <div class="form-group col-xl-10 mb-4">
+                                            </div>
+                                            <div class="form-group col-xl-6 mb-4">
                                                 <div class="row">
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="dob_from">من</label>
-                                                        <input wire:model.live="AdvanceSearch.dob_from" type="date"
+                                                    <div class="form-group col-md-2 mt-3">
+                                                        <h6 class="my-auto">تاريخ الميلاد</h6>
+                                                    </div>
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input wire:model.live="AdvanceSearch.dob_from"
+                                                               type="date"
                                                                class="form-control"
                                                                id="dob_from">
                                                     </div>
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="dob_to">إلى</label>
-                                                        <input wire:model.live="AdvanceSearch.dob_to" type="date"
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input wire:model.live="AdvanceSearch.dob_to"
+                                                               type="date"
                                                                class="form-control"
                                                                id="dob_to">
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    @if(isset($AdvanceSearch['dob_from']) || isset($AdvanceSearch['dob_to']))
-                                                        <div class="d-inline">
-                                                            <a class="btn btn-danger"
-                                                               wire:click="emptyField(['dob_from','dob_to'])">افراغ</a>
+                                                    <div class="form-group col-md-2 mb-4">
+                                                        <div style="text-align: start">
+                                                            <input wire:model.live="Cubs" id="19"
+                                                                   type="checkbox">
+                                                            <label for="19">اشبال</label>
                                                         </div>
-                                                    @endif
-                                                    <div class="d-inline">
-                                                        <label for="19">اشبال</label>
-                                                        <input wire:model.live="Cubs" id="19" type="checkbox">
+                                                        <div style="text-align: start">
+                                                            <input wire:model.live="Elderly" id="60"
+                                                                   type="checkbox">
+                                                            <label for="60">كبار سن</label>
+                                                        </div>
                                                     </div>
-                                                    <div class="d-inline">
-                                                        <label for="60">كبار سن</label>
-                                                        <input wire:model.live="Elderly" id="60" type="checkbox">
+                                                    <div class="form-group col-md-2 mb-4">
+                                                        <div>
+                                                            @if(isset($AdvanceSearch['dob_from']) || isset($AdvanceSearch['dob_to']))
+                                                                <a class="btn btn-danger"
+                                                                   wire:click="emptyField(['dob_from','dob_to'])">افراغ</a>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-4 mb-4 text-center">
-                                                <h6>تاريخ الاعتقال</h6>
+                                            <div class="form-group col-xl-6 mb-4"></div>
+                                            <div class="form-group col-xl-6 mb-4">
                                                 <div class="row">
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="doa_from">من</label>
-                                                        <input wire:model.live="AdvanceSearch.doa_from" type="date"
+                                                    <div class="form-group col-md-2 mt-3">
+                                                        <h6 class="my-auto">تاريخ الاعتقال</h6>
+                                                    </div>
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input wire:model.live="AdvanceSearch.doa_from"
+                                                               type="date"
                                                                class="form-control"
                                                                id="doa_from">
                                                     </div>
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="doa_to">إلى</label>
-                                                        <input wire:model.live="AdvanceSearch.doa_to" type="date"
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input wire:model.live="AdvanceSearch.doa_to"
+                                                               type="date"
                                                                class="form-control"
                                                                id="doa_to">
                                                     </div>
+                                                    <div class="form-group col-md-2 mb-4">
+                                                        <div>
+                                                            @if(isset($AdvanceSearch['doa_from']) || isset($AdvanceSearch['doa_to']))
+                                                                <a class="btn btn-danger"
+                                                                   wire:click="emptyField(['doa_from','doa_to'])">افراغ</a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                @if(isset($AdvanceSearch['doa_from']) || isset($AdvanceSearch['doa_to']))
-                                                    <a class="btn btn-danger" wire:click="emptyField(['doa_from','doa_to'])">افراغ</a>
-                                                @endif
                                             </div>
-                                            <div class="form-group col-md-4 mb-4 text-center">
-                                                <h6>الحكم سنوات</h6>
+                                            <div class="form-group col-xl-6 mb-4"></div>
+                                            <div class="form-group col-xl-6 mb-4">
                                                 <div class="row">
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="judgment_in_years_from">من</label>
-                                                        <input wire:model.live="AdvanceSearch.judgment_in_years_from" type="number"
-                                                               class="form-control"
-                                                               id="judgment_in_years_from">
+                                                    <div class="form-group col-md-2 mt-3">
+                                                        <h6 class="my-auto">الحكم سنوات</h6>
                                                     </div>
-                                                    <div class="form-group col-md-6 mb-4">
-                                                        <label for="judgment_in_years_to">إلى</label>
-                                                        <input wire:model.live="AdvanceSearch.judgment_in_years_to" type="number"
-                                                               class="form-control"
-                                                               id="judgment_in_years_to">
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input
+                                                            wire:model.live="AdvanceSearch.judgment_in_years_from"
+                                                            type="number"
+                                                            placeholder="من"
+                                                            min="0"
+                                                            class="form-control"
+                                                            id="judgment_in_years_from">
+                                                    </div>
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input
+                                                            wire:model.live="AdvanceSearch.judgment_in_years_to"
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="إلى"
+                                                            class="form-control"
+                                                            id="judgment_in_years_to">
+                                                    </div>
+                                                    <div class="form-group col-md-2 mb-4">
+                                                        <div>
+                                                            @if(isset($AdvanceSearch['judgment_in_years_from']) || isset($AdvanceSearch['judgment_in_years_to']))
+                                                                <a class="btn btn-danger"
+                                                                   wire:click="emptyField(['judgment_in_years_from','judgment_in_years_to'])">افراغ</a>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                @if(isset($AdvanceSearch['judgment_in_years_from']) || isset($AdvanceSearch['judgment_in_years_to']))
-                                                    <a class="btn btn-danger"
-                                                       wire:click="emptyField(['judgment_in_years_from','judgment_in_years_to'])">افراغ</a>
-                                                @endif
                                             </div>
                                         </div>
                                     </div>

@@ -76,7 +76,6 @@
                                     class="flaticon-gear-fill mr-1"></i>الاضافات</a>
                         </div>
                     </div>
-                    <a class="btn btn-primary mb-2 mx-2" wire:click="addNew">إضافة إقتراح</a>
                 </div>
             </div>
             <div class="table-responsive">

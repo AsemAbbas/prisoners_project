@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\Prisoner;
 use App\Models\PrisonerType;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -149,7 +150,7 @@ class FilteringAndExporting extends Component
     public function updatedElderly(): void
     {
         if ($this->Elderly) {
-            $this->AdvanceSearch['dob_from'] = date("1990-01-01");
+            $this->AdvanceSearch['dob_from'] = date("1900-01-01");
         } else {
             $this->AdvanceSearch['dob_from'] = null;
         }
@@ -184,15 +185,30 @@ class FilteringAndExporting extends Component
     {
         $Prisoners = $this->getPrisonersProperty()->paginate(10);
 
-        $Cities = City::query()->with(['Town' => function ($q) {
-            $q->when(isset($this->town_search), function ($q) {
-                $q->where('town_name', 'LIKE', '%' . $this->town_search . '%');
-            });
-            $q->when(!empty($this->AdvanceSearch['city']) || !empty($this->ExportData['city']), function ($q) {
-                $cities = isset($this->ExportData['city']) ? array_filter($this->ExportData['city']) : (isset($this->AdvanceSearch['city']) ? array_filter($this->AdvanceSearch['city']) : null);
-                $q->whereIn('city_id', array_keys($cities));
-            });
-        }])->get();
+        $CurrentUserCities = User::query()
+            ->where('id', Auth::user()->id)
+            ->with('City')->first()->toArray()['city'] ?? [];
+        $cityIdArray = [];
+        foreach ($CurrentUserCities as $subArray) {
+            if (isset($subArray['pivot']['city_id'])) {
+                $cityIdArray[] = $subArray['pivot']['city_id'];
+            }
+        }
+
+        $Cities = City::query()
+            ->where(function ($query) use ($cityIdArray) {
+                $query->whereIn('id', $cityIdArray);
+            })
+            ->with(['Town' => function ($q) {
+                $q->when(isset($this->town_search), function ($q) {
+                    $q->where('town_name', 'LIKE', '%' . $this->town_search . '%');
+                });
+                $q->when(!empty($this->AdvanceSearch['city']), function ($q) {
+                    $cities = $this->AdvanceSearch['city'] ?? null;
+                    $q->where('city_id', $cities);
+                });
+            }])
+            ->get();
         $Belongs = Belong::all();
         $PrisonerTypes = PrisonerType::all();
 
@@ -229,15 +245,25 @@ class FilteringAndExporting extends Component
             ->where(function ($q) {
                 $q->when(isset($this->AdvanceSearch), function ($query) {
                     $query->when(!empty($this->AdvanceSearch['city']), function ($subQuery) {
-                        $filteredCity = array_filter($this->AdvanceSearch['city']);
+                        $filteredCity = $this->AdvanceSearch['city'];
                         if (!empty($filteredCity)) {
-                            $subQuery->whereIn('city_id', array_keys($filteredCity));
+                            $subQuery->where(function ($q) use ($filteredCity) {
+                                $q->where('city_id', $filteredCity)
+                                    ->when($filteredCity == "not_found", function ($q) {
+                                        $q->orWhereNull('city_id');
+                                    });
+                            });
                         }
                     });
                     $query->when(!empty($this->AdvanceSearch['town']), function ($subQuery) {
                         $filteredTown = array_filter($this->AdvanceSearch['town']);
                         if (!empty($filteredTown)) {
-                            $subQuery->whereIn('town_id', array_keys($filteredTown));
+                            $subQuery->where(function ($q) use ($filteredTown) {
+                                $q->whereIn('town_id', array_keys($filteredTown))
+                                    ->when(array_key_exists("not_found", $filteredTown), function ($q) {
+                                        $q->orWhereNull('town_id');
+                                    });
+                            });
                         }
                     });
                     $query->when(isset($this->AdvanceSearch['belong']), function ($subQuery) {
@@ -329,13 +355,19 @@ class FilteringAndExporting extends Component
                     });
                     $query->when(isset($this->AdvanceSearch['judgment_in_years_from']) && isset($this->AdvanceSearch['judgment_in_years_to']), function ($subQuery) {
                         $subQuery->whereHas('Arrest', function ($q) {
-                            $q->whereRaw(
-                                "CAST(judgment_in_years AS UNSIGNED) BETWEEN ? AND ?",
-                                [
-                                    (int)$this->AdvanceSearch['judgment_in_years_from'],
-                                    (int)$this->AdvanceSearch['judgment_in_years_to']
-                                ]
-                            );
+                            $q->where('arrest_type', "محكوم")
+                                ->where(function ($query) {
+                                    $query->whereNull('judgment_in_lifetime')
+                                        ->orWhere('judgment_in_lifetime', '=', 0);
+                                })
+                                ->whereRaw(
+                                    "(CAST(COALESCE(judgment_in_years, 0) AS UNSIGNED) +
+                                        CAST(COALESCE(judgment_in_months, 0) AS UNSIGNED) / 12) BETWEEN ? AND ?",
+                                    [
+                                        (int)$this->AdvanceSearch['judgment_in_years_from'],
+                                        (int)$this->AdvanceSearch['judgment_in_years_to']
+                                    ]
+                                );
                         });
                     });
                     $query->when(!empty($this->AdvanceSearch['missing']), function ($subQuery) {
@@ -368,6 +400,12 @@ class FilteringAndExporting extends Component
                                 }
                             });
                         }
+                    });
+                });
+                $check = array_filter($this->AdvanceSearch);
+                $q->when((!empty($check) && !isset($check['is_released'])) || empty($check), function ($query) {
+                    $query->whereHas('Arrest', function ($query) {
+                        $query->where('is_released', false);
                     });
                 });
             })
@@ -473,7 +511,8 @@ class FilteringAndExporting extends Component
             $selectedColumns = $selectArrest;
         else $selectedColumns = null;
 
-        $Export = Excel::download(new PrisonerExport($Prisoner, $selectedColumns), 'Prisoner.xlsx');
+        $name = Carbon::parse(now())->format('Y-m-d H-i') . ' Records.xlsx';
+        $Export = Excel::download(new PrisonerExport($Prisoner, $selectedColumns), $name);
 
         $this->ExportData = [];
         $this->SelectAllPrisoner = false;
@@ -495,9 +534,7 @@ class FilteringAndExporting extends Component
                 "second_name" => true,
                 "third_name" => true,
                 "last_name" => true,
-                "full_name" => true,
                 "date_of_birth" => true,
-                "age" => true,
                 "gender" => true,
                 "city_id" => true,
                 "town_id" => true,
@@ -511,6 +548,9 @@ class FilteringAndExporting extends Component
                 "arrest_start_date" => true,
                 "arrest_type" => true,
                 "belong_id" => true,
+                "judgment_in_lifetime" => true,
+                "judgment_in_years" => true,
+                "judgment_in_months" => true,
             ];
             if (isset($this->ExportData['selectArrest'])) {
                 $selectArrest = array_filter(array_keys($this->ExportData['selectArrest'])) ?? null;
@@ -556,8 +596,8 @@ class FilteringAndExporting extends Component
         elseif (!empty($selectArrest))
             $selectedColumns = $selectArrest;
         else $selectedColumns = null;
-
-        $Export = Excel::download(new PrisonerExport($Prisoner, $selectedColumns), 'Prisoner.xlsx');
+        $name = Carbon::parse(now())->format('Y-m-d H-i') . ' Records.xlsx';
+        $Export = Excel::download(new PrisonerExport($Prisoner, $selectedColumns), $name);
 
         $this->ExportData = [];
         $this->SelectAllPrisoner = false;

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard\Auth;
 
+use App\Models\UserLog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -59,8 +60,16 @@ class Login extends Component
 
             if (Auth::check()) {
                 if (Auth::user()->user_status === "محرر أخبار"){
+                    UserLog::query()->create([
+                        'user_id' => Auth::id(),
+                    ]);
                     return redirect()->intended('/dashboard/news');
-                }else return redirect()->intended('/dashboard/prisoners');
+                }else{
+                    UserLog::query()->create([
+                        'user_id' => Auth::id(),
+                    ]);
+                    return redirect()->intended('/dashboard/prisoners');
+                }
             }
         } else {
             $attempts++;

@@ -60,7 +60,8 @@
                     </a>
                 </div>
                 <div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search" placeholder="البحث...">
+                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
+                           placeholder="البحث...">
                 </div>
             </div>
             <div class="table-responsive">
@@ -82,6 +83,17 @@
                             <td>{{$row->email ?? 'لا يوجد'}}</td>
                             <td>{{$row->user_status ?? 'لا يوجد'}}</td>
                             <td>
+                                <a wire:click="logShow({{$row->id}})" class="btn btn-outline-light"
+                                   title="Log">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-clock-fill text-dark" viewBox="0 0 16 16">
+                                        <path
+                                            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                                    </svg>
+                                    <span>
+                                        {{count($row->UserLog)}}
+                                    </span>
+                                </a>
                                 <a wire:click="edit({{$row}})" class="btn btn-warning"
                                    title="Edit">
                                     تعديل
@@ -240,6 +252,43 @@
             </div>
         </div>
     </div>
+
+    <!-- Log Modal -->
+    <div class="modal modal-md fade" id="log" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content bg-white">
+                <div class="modal-header bg-info" style="margin: 5px;">
+                    <h1 class="modal-title fs-5 text-white"
+                        id="staticBackdropLabel">سجل المستخدم</h1>
+                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                       @forelse($UserLogs as $log)
+                           <div class="col-md-12">
+                               <h6 class="text-dark text-center mt-3">
+                                   تم تسجيل الدخول
+                                   {{\Carbon\Carbon::parse($log->created_at)->diffForHumans()}}
+                               </h6>
+                           </div>
+                        @empty
+                            <div class="col-md-12">
+                                <h6 class="text-dark text-center mt-3">
+                                   لا يوجد سجل
+                                </h6>
+                            </div>
+                       @endforelse
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-start align-items-start">
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Modal -->
     <div class="modal modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true" wire:ignore.self>
@@ -306,6 +355,10 @@
 
             });
         });
+
+        window.addEventListener('show_log', event => {
+            $('#log').modal('show');
+        })
 
         window.addEventListener('showForm', event => {
             $('#form').modal('show');

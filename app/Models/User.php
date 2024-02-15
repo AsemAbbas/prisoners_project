@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(City::class,'user_city');
     }
+
+    public function UserLog(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UserLog::class);
+    }
 }

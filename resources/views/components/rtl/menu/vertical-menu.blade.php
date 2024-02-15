@@ -99,7 +99,9 @@
                             <li class="{{ Route::getCurrentRoute()->getName() == 'dashboard.suggestions' ? 'active' : '' }}">
                                 @auth
                                     @php
-                                        $CurrentUserCities = \App\Models\User::query()->where('id', \Illuminate\Support\Facades\Auth::user()->id)->with('City')->first()->toArray()['city'] ?? [];
+                                        $CurrentUserCities = \App\Models\User::query()
+                                        ->where('id', \Illuminate\Support\Facades\Auth::user()->id)
+                                        ->with('City')->first()->toArray()['city'] ?? [];
 
                                         $cityIdArray = [];
                                         foreach ($CurrentUserCities as $subArray) {
@@ -109,7 +111,6 @@
                                         }
 
                                         $count = \App\Models\PrisonerSuggestion::query()
-                                            ->with(['City', 'Relationship'])
                                             ->where(function ($query) use ($cityIdArray) {
                                                 $query->whereIn('city_id', $cityIdArray)
                                                     ->orWhereNull('city_id');
