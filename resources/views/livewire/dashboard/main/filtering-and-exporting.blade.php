@@ -11,24 +11,6 @@
 
     @vite(['resources/rtl/scss/light/assets/elements/alert.scss'])
     @vite(['resources/rtl/scss/dark/assets/elements/alert.scss'])
-
-    <style>
-        input[type=search] {
-            box-sizing: border-box;
-            font-size: 16px;
-            background-size: 35px;
-            background-position: 3px 5px;
-            background-repeat: no-repeat;
-            -webkit-transition: width 0.4s ease-in-out;
-            transition: width 0.4s ease-in-out;
-            width: 275px;
-            padding: 10px 20px 5px 40px;
-            margin-left: 10px;
-            background-color: white;
-            border: 1px solid grey;
-            border-radius: 7px;
-        }
-    </style>
 @endsection
 <div class="p-4">
     <div wire:loading.delay.longest>
@@ -91,7 +73,7 @@
                                      data-bs-parent="#toggleFilter">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="form-group col-xl-3 mb-4">
+                                            <div class="form-group col-xl-2 mb-4">
                                                 <label for="City">المحافظة</label>
                                                 <div id="toggleCity" class="City">
                                                     <div class="card">
@@ -121,7 +103,7 @@
                                                              data-bs-parent="#toggleCity">
                                                             <div class="card-body">
                                                                 <div class="row">
-                                                                    <div class="col-md-6 mb-4">
+                                                                    <div class="col-md-12 mb-2">
                                                                         <div class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
                                                                                    wire:model.live="AdvanceSearch.city"
@@ -131,12 +113,12 @@
                                                                                    id="city_not_found">
                                                                             <label class="form-check-label"
                                                                                    for="city_not_found">
-                                                                                غير محدد
+                                                                                لا يوجد
                                                                             </label>
                                                                         </div>
                                                                     </div>
                                                                     @foreach($Cities as $city)
-                                                                        <div class="col-md-6 mb-4">
+                                                                        <div class="col-md-12 mb-2">
                                                                             <div class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="AdvanceSearch.city"
@@ -157,7 +139,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-md-3 mb-4">
+                                            <div class="form-group col-md-4 mb-4">
                                                 <label for="Town">البلدة</label>
                                                 <div id="toggleTown" class="Town">
                                                     <div class="card">
@@ -192,7 +174,7 @@
                                                                                placeholder="بحث عن بلدة"
                                                                                wire:model.live="town_search">
                                                                     </div>
-                                                                    <div class="col-md-6 mb-4">
+                                                                    <div class="col-md-6 mb-2">
                                                                         <div
                                                                             class="form-check form-check-dark form-check-inline">
                                                                             <input class="form-check-input"
@@ -201,17 +183,17 @@
                                                                                    id="form-check-dark_not_found">
                                                                             <label class="form-check-label"
                                                                                    for="form-check-dark_not_found">
-                                                                                غير محدد
+                                                                                لا يوجد
                                                                             </label>
                                                                         </div>
                                                                     </div>
                                                                     @foreach($Cities as $city)
                                                                         @if(isset($this->AdvanceSearch['city']) && $city->id == $this->AdvanceSearch['city'])
-                                                                            <div class="col-md-12 mb-4">
+                                                                            <div class="col-md-12 mb-2">
                                                                                 <h5>{{$city->city_name}}</h5>
                                                                             </div>
                                                                             @foreach($city->Town as $key => $town)
-                                                                                <div class="col-md-6 mb-4">
+                                                                                <div class="col-md-6 mb-2">
                                                                                     <div
                                                                                         class="form-check form-check-dark form-check-inline">
                                                                                         <input class="form-check-input"
@@ -545,7 +527,6 @@
                                             </div>
                                             <div class="form-group col-xl-6 mb-4">
                                             </div>
-
                                             <div class="form-group col-xl-2 mb-4">
                                                 <label for="Missing">النواقص</label>
                                                 <div id="toggleMissing" class="Missing">
@@ -663,7 +644,7 @@
                                             </div>
                                             <div class="form-group col-xl-10 mb-4">
                                             </div>
-                                            <div class="form-group col-xl-6 mb-4">
+                                            <div class="form-group col-xl-9 mb-4">
                                                 <div class="row">
                                                     <div class="form-group col-md-2 mt-3">
                                                         <h6 class="my-auto">تاريخ الميلاد</h6>
@@ -702,8 +683,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-6 mb-4"></div>
-                                            <div class="form-group col-xl-6 mb-4">
+                                            <div class="form-group col-xl-3 mb-4"></div>
+                                            <div class="form-group col-xl-9 mb-4">
                                                 <div class="row">
                                                     <div class="form-group col-md-2 mt-3">
                                                         <h6 class="my-auto">تاريخ الاعتقال</h6>
@@ -730,8 +711,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-6 mb-4"></div>
-                                            <div class="form-group col-xl-6 mb-4">
+                                            <div class="form-group col-xl-3 mb-4"></div>
+                                            <div class="form-group col-xl-9 mb-4">
                                                 <div class="row">
                                                     <div class="form-group col-md-2 mt-3">
                                                         <h6 class="my-auto">الحكم سنوات</h6>
@@ -775,12 +756,33 @@
         </div>
         <div class="col-md-12 mt-3">
             <div class="table-responsive">
-                <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
-                       placeholder="البحث في القائمة...">
+                <div class="row m-2">
+                    <div class="col-md-2">
+                        <label for="Search">البحث</label>
+                        <input wire:model.live="Search" class="form-control" type="search" id="Search"
+                               placeholder="البحث في القائمة...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="sortBy_">فرز حسب</label>
+                        <select id="sortBy_" wire:model.live="sortBy_" class="form-select">
+                            <option value="id">الرقم التسلسلي</option>
+                            <option value="first_name">الاسم الاول</option>
+                            <option value="date_of_birth">تاريخ الميلاد</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="direction_">نوع الترتيب</label>
+                        <select id="direction_" wire:model.live="direction_" class="form-select">
+                            <option value="asc">تصاعدي</option>
+                            <option value="desc">تنازلي</option>
+                        </select>
+                    </div>
+                </div>
                 <table class="table table-striped table-bordered text-center">
                     <thead>
                     <tr>
                         <th>#</th>
+                        <th>الرقم الأساسي</th>
                         <th>اسم الأسير</th>
                         <th>رقم الهوية</th>
                         <th>تاريخ الميلاد</th>
@@ -796,6 +798,7 @@
                     @foreach($Prisoners as $key => $row)
                         <tr>
                             <td>{{$Prisoners->firstItem() + $key}}</td>
+                            <td>{{$row->id}}</td>
                             <td>{{$row->full_name ?? 'لا يوجد'}}</td>
                             <td>{{$row->identification_number ?? 'لا يوجد'}}</td>
                             <td>{{$row->date_of_birth . ' (' . \Carbon\Carbon::parse($row->date_of_birth)->diffInYears() .' سنة)'  ?? 'لا يوجد'}}</td>
@@ -837,8 +840,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="form-group col-md-12 mb-4 text-center">
-                                <h3>الأعمدة</h3>
+                            <div class="form-group col-md-12 mb-4">
+                                <h3 class="text-center mx-auto">الأعمدة</h3>
                             </div>
                             <div class="form-group col-md-12 mb-4">
                                 <label for="PrisonerData">بيانات الأسير</label>

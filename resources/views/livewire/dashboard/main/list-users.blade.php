@@ -266,6 +266,9 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        @if(isset($UserLogs))
+                            <h4 class="text-center">آخر 10 تسجيلات</h4>
+                        @endif
                        @forelse($UserLogs as $log)
                            <div class="col-md-12">
                                <h6 class="text-dark text-center mt-3">

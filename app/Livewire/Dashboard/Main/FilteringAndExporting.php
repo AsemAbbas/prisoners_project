@@ -23,6 +23,8 @@ class FilteringAndExporting extends Component
     use WithPagination, WithFileUploads;
 
     public ?string $Search = null;
+    public string $sortBy_ = 'id';
+    public string $direction_ = 'asc';
     public ?string $town_search = null;
     public bool $Cubs = false;
     public bool $Elderly = false;
@@ -445,7 +447,7 @@ class FilteringAndExporting extends Component
                         });
                 });
             })
-            ->orderBy('id', 'ASC');
+            ->orderBy($this->sortBy_, $this->direction_ == 'asc' ? 'asc' : 'desc');
     }
 
     public function showAdminExport(): void
@@ -455,6 +457,7 @@ class FilteringAndExporting extends Component
 
     public function ExportFile_(): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
+
         $this->validate([
             'ExportData' => 'required'
         ]);
@@ -470,7 +473,10 @@ class FilteringAndExporting extends Component
                 $selectArrest = array_filter(array_keys($this->ExportData['selectArrest'])) ?? null;
             }
         }
-        $Prisoner = $this->getPrisonersProperty()->get()
+
+
+        $Prisoner = $this->getPrisonersProperty()
+            ->get()
             ->map(function ($prisoner) use ($selectPrisoner, $selectArrest) {
                 $mappedData = [];
                 if (isset($selectPrisoner))
@@ -502,7 +508,6 @@ class FilteringAndExporting extends Component
 
                 return $mappedData;
             });
-
         if (!empty($selectPrisoner) && !empty($selectArrest))
             $selectedColumns = array_merge($selectPrisoner, $selectArrest);
         elseif (!empty($selectPrisoner))

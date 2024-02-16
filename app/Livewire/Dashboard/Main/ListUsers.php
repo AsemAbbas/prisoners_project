@@ -153,12 +153,14 @@ class ListUsers extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $Users = $this->getUsersProperty()->paginate(10);
+        $Users = $this->getUsersProperty()
+            ->orderByDesc('user_status')
+            ->paginate(15);
 
         $UserLogs = UserLog::query()
             ->when(isset($this->user_id), function ($q) {
                 $q->where('user_id', $this->user_id);
-            })->get();
+            })->latest()->limit(10)->get();
 
         $Cities = City::all();
 
