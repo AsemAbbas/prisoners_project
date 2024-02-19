@@ -754,12 +754,14 @@
                                         <h6>تاريخ الإفراج المتوقع:</h6>
                                         @php
                                             $arrest_start_date = $Prisoners_->Arrest->arrest_start_date;
-                                            $judgment_in_lifetime = $Prisoners_->Arrest->judgment_in_lifetime;
-                                            $judgment_in_years = $Prisoners_->Arrest->judgment_in_years;
-                                            $judgment_in_months = $Prisoners_->Arrest->judgment_in_months;
+                                            $judgment_in_lifetime = intval($Prisoners_->Arrest->judgment_in_lifetime);
+                                            $judgment_in_years = intval($Prisoners_->Arrest->judgment_in_years);
+                                            $judgment_in_months = intval($Prisoners_->Arrest->judgment_in_months);
 
-                                            $data = \Illuminate\Support\Carbon::parse($arrest_start_date)->addYears(($judgment_in_lifetime * 99) + $judgment_in_years)->addMonths($judgment_in_months)->format('Y-m-d');
-                                        @endphp
+                                            $data = \Illuminate\Support\Carbon::parse($arrest_start_date)
+                                                ->addYears(($judgment_in_lifetime * 99) + $judgment_in_years)
+                                                ->addMonths($judgment_in_months)
+                                                ->format('Y-m-d');                                        @endphp
                                         <h4>
                                             @if($Prisoners_->ArrestJudgment())
                                                 {{$data ?? null}}

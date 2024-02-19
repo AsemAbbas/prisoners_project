@@ -4,6 +4,7 @@
 namespace App\Livewire\Dashboard\Main;
 
 use App\Exports\PrisonerExport;
+use App\Models\Arrest;
 use App\Models\Belong;
 use App\Models\City;
 use App\Models\Prisoner;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -305,10 +307,10 @@ class FilteringAndExporting extends Component
                     $query->when(isset($this->AdvanceSearch['special_case']), function ($subQuery) {
                         $filteredSpecialCase = array_filter($this->AdvanceSearch['special_case']);
                         if (!empty($filteredSpecialCase)) {
-                            $subQuery->where(function ($query) use ($filteredSpecialCase) {
-                                foreach ($filteredSpecialCase as $key => $case) {
-                                    $query->orWhereHas('Arrest', function ($query) use ($key) {
-                                        $query->where('special_case', 'LIKE', '%' . $key . '%');
+                            $subQuery->whereHas('Arrest',function ($subQuery) use ($filteredSpecialCase) {
+                                foreach ($filteredSpecialCase as $key => $term) {
+                                    $subQuery->where(function ($SubQuery) use ($key) {
+                                        $SubQuery->where('special_case', 'LIKE', '%' . $key . '%');
                                     });
                                 }
                             });
@@ -325,7 +327,6 @@ class FilteringAndExporting extends Component
                         }
                     });
                     $query->when(isset($this->AdvanceSearch['judgment_in_lifetime']), function ($subQuery) {
-
                         $filtered_judgment_in_lifetime = $this->AdvanceSearch['judgment_in_lifetime'];
                         if (!empty($filtered_judgment_in_lifetime)) {
                             $subQuery->where(function ($query) {
@@ -343,6 +344,55 @@ class FilteringAndExporting extends Component
                             });
                         }
                     });
+
+
+                    $query->when(isset($this->AdvanceSearch['not_special_case']), function ($subQuery) {
+                        $filteredNotSpecialCase = array_filter($this->AdvanceSearch['not_special_case']);
+                        if (!empty($filteredNotSpecialCase)) {
+                            $subQuery->whereDoesntHave('Arrest',function ($subQuery) use ($filteredNotSpecialCase) {
+                                foreach ($filteredNotSpecialCase as $key => $term) {
+                                    $subQuery->where(function ($SubQuery) use ($key) {
+                                        $SubQuery->where('special_case', 'LIKE', '%' . $key . '%');
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    $query->when(isset($this->AdvanceSearch['not_is_released']), function ($subQuery) {
+                        $filteredNot_is_released = $this->AdvanceSearch['not_is_released'];
+                        if (!empty($filteredNot_is_released)) {
+                            $subQuery->where(function ($query) {
+                                $query->whereDoesntHave('Arrest', function ($query) {
+                                    $query->where('is_released', true);
+                                });
+                            });
+                        }
+                    });
+                    $query->when(isset($this->AdvanceSearch['not_judgment_in_lifetime']), function ($subQuery) {
+                        $filteredNot_judgment_in_lifetime = $this->AdvanceSearch['not_judgment_in_lifetime'];
+                        if (!empty($filteredNot_judgment_in_lifetime)) {
+                            $subQuery->where(function ($query) {
+                                $query->whereDoesntHave('Arrest', function ($query) {
+                                    $query->whereNotNull('judgment_in_lifetime');
+                                });
+                            });
+                        }
+                    });
+                    $query->when(!empty($this->AdvanceSearch['not_prisoner_type']), function ($subQuery) {
+                        $filteredNotPrisonerType = array_filter($this->AdvanceSearch['not_prisoner_type']);
+                        if (!empty($filteredNotPrisonerType)) {
+                            $subQuery->where(function ($query) use ($filteredNotPrisonerType) {
+                                foreach ($filteredNotPrisonerType as $key => $case) {
+                                    $query->whereDoesntHave('PrisonerType', function ($query) use ($key) {
+                                        $query->where('prisoner_type_id', $key);
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+
+
                     $query->when(isset($this->AdvanceSearch['dob_from']) && isset($this->AdvanceSearch['dob_to']), function ($subQuery) {
                         $subQuery->whereBetween('date_of_birth', [$this->AdvanceSearch['dob_from'], $this->AdvanceSearch['dob_to']]);
                     });
@@ -353,6 +403,24 @@ class FilteringAndExporting extends Component
                                 $this->AdvanceSearch['doa_from'],
                                 $this->AdvanceSearch['doa_to']
                             ]);
+                        });
+                    });
+                    $query->when(isset($this->AdvanceSearch['dor']), function ($subQuery) {
+                        $subQuery->whereHas('Arrest', function ($q) {
+                            $q->where('arrest_type', 'محكوم')
+                                ->whereRaw('
+                                    DATE_ADD(
+                                        DATE_ADD(
+                                            DATE_ADD(
+                                                arrest_start_date,
+                                                INTERVAL COALESCE(judgment_in_lifetime, 0) * 99 YEAR
+                                            ),
+                                            INTERVAL COALESCE(judgment_in_years, 0) YEAR
+                                        ),
+                                        INTERVAL COALESCE(judgment_in_months, 0) MONTH
+                                    ) >= ?',
+                                    [$this->AdvanceSearch['dor']]
+                                );
                         });
                     });
                     $query->when(isset($this->AdvanceSearch['judgment_in_years_from']) && isset($this->AdvanceSearch['judgment_in_years_to']), function ($subQuery) {
@@ -425,6 +493,13 @@ class FilteringAndExporting extends Component
                             });
                         }
                     })
+                        ->orWhereHas('Arrest',function ($subQuery) use ($searchTerms) {
+                            foreach ($searchTerms as $term) {
+                                $subQuery->where(function ($SubQuery) use ($term) {
+                                    $SubQuery->where('special_case', 'LIKE', '%' . $term . '%');
+                                });
+                            }
+                        })
                         ->orWhere('identification_number', 'LIKE', $this->Search)
                         ->orWhere('id', 'LIKE', $this->Search)
                         ->orWhere('gender', 'LIKE', '%' . $this->Search . '%')
@@ -447,7 +522,16 @@ class FilteringAndExporting extends Component
                         });
                 });
             })
-            ->orderBy($this->sortBy_, $this->direction_ == 'asc' ? 'asc' : 'desc');
+            ->when(isset($this->sortBy_) && isset($this->direction_),function ($q){
+                if ($this->sortBy_ === 'arrest_start_date') {
+                    $q->orderBy(Arrest::query()->select('arrest_start_date')
+                        ->whereColumn('prisoner_id', 'prisoners.id')
+                        ->orderBy('arrest_start_date', $this->direction_)
+                        ->limit(1), $this->direction_ == 'asc' ? 'asc' : 'desc');
+                }else{
+                    $q->orderBy($this->sortBy_, $this->direction_ == 'asc' ? 'asc' : 'desc');
+                }
+            });
     }
 
     public function showAdminExport(): void

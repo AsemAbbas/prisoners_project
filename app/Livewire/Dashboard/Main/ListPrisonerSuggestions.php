@@ -797,26 +797,31 @@ class ListPrisonerSuggestions extends Component
         if (!empty($this->prisoner_search) || !empty($this->Suggestions_)) {
             $PrisonerSearch = Prisoner::query()
                 ->where(function ($q) {
-                    if (isset($this->prisoner_search)) {
+                    if (!empty($this->prisoner_search)) {
                         $q->where(function ($q) {
-                            $searchTerms = explode(' ', $this->prisoner_search);
-                            $q->where('identification_number', $this->prisoner_search)
-                                ->orWhere(function ($subQuery) use ($searchTerms) {
-                                    foreach ($searchTerms as $term) {
-                                        $subQuery->where(function ($nameSubQuery) use ($term) {
-                                            $nameSubQuery->where('first_name', 'LIKE', $term)
-                                                ->orWhere('second_name', 'LIKE', $term)
-                                                ->orWhere('third_name', 'LIKE', $term)
-                                                ->orWhere('last_name', 'LIKE', $term);
-                                        });
-                                    }
-                                });
+                            $q->where(function ($q) {
+                                $q->whereNotNull('identification_number')
+                                    ->where('identification_number', $this->prisoner_search);
+                            })->orWhere(function ($subQuery) {
+                                $searchTerms = explode(' ', $this->prisoner_search);
+                                foreach ($searchTerms as $term) {
+                                    $subQuery->where(function ($nameSubQuery) use ($term) {
+                                        $nameSubQuery->where('first_name', 'LIKE', $term)
+                                            ->orWhere('second_name', 'LIKE', $term)
+                                            ->orWhere('third_name', 'LIKE', $term)
+                                            ->orWhere('last_name', 'LIKE', $term);
+                                    });
+                                }
+                            });
                         });
                     }
                     if (isset($this->Suggestions_)) {
                         $q->orWhere(function ($q) {
                             $searchTerms_ = explode(' ', $this->Suggestions_->full_name);
-                            $q->where('identification_number', $this->Suggestions_->identification_number)
+                            $q->where(function ($q){
+                                $q->whereNotNull('identification_number')
+                                    ->where('identification_number', $this->Suggestions_->identification_number);
+                            })
                                 ->orWhere(function ($subQuery) use ($searchTerms_) {
                                     foreach ($searchTerms_ as $term) {
                                         $subQuery->where(function ($nameSubQuery) use ($term) {
@@ -873,23 +878,13 @@ class ListPrisonerSuggestions extends Component
             ->get();
 
         $Towns = Town::query()
-            ->when(!empty($this->state['city_id']) , function ($q) {
+            ->when(!empty($this->state['city_id']), function ($q) {
                 $q->where('city_id', $this->state['city_id']);
             })
             ->orderBy('town_name')
             ->get();
 
         return view('livewire.dashboard.main.list-prisoner-suggestions', compact('Belongs', 'Cities', 'Towns', 'Relationships', 'Suggestions', 'PrisonerSearch', 'ASOAStatus', 'APOAStatus'));
-    }
-
-    public function addNewTown($city_id): void
-    {
-        if (!empty($this->new_town_name)) {
-            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
-            $town = Town::query()->create(['city_id' => $city_id, 'town_name' => $this->new_town_name]);
-            $this->state['town_id'] = (string)$town->id;
-            $this->new_town_name = null;
-        }
     }
 
     public function getSuggestionsProperty(): \Illuminate\Database\Eloquent\Builder
@@ -979,6 +974,16 @@ class ListPrisonerSuggestions extends Component
         $this->resetPage();
         $this->Search = null;
         $this->sortBy = $sort;
+    }
+
+    public function addNewTown($city_id): void
+    {
+        if (!empty($this->new_town_name)) {
+            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
+            $town = Town::query()->create(['city_id' => $city_id, 'town_name' => $this->new_town_name]);
+            $this->state['town_id'] = (string)$town->id;
+            $this->new_town_name = null;
+        }
     }
 
     /**
@@ -1418,7 +1423,7 @@ class ListPrisonerSuggestions extends Component
             'town_id' => "required|in:" . $this->subTables()['Town'],
             'notes' => "nullable",
             //Arrest
-            "arrest_start_date" => 'required',
+            "arrest_start_date" => 'nullable',
             "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
             "judgment_in_lifetime" => $judgment_in_lifetime_rule,
             "judgment_in_years" => $judgment_in_years_rule,
@@ -1438,8 +1443,8 @@ class ListPrisonerSuggestions extends Component
             'social_type' => "nullable|in:" . $this->subTables()['SocialType'],
             'wife_type' => "nullable|in:" . $this->subTables()['WifeType'],
             'number_of_children' => "nullable|integer",
-            'first_phone_owner' => "required",
-            'first_phone_number' => "required",
+            'first_phone_owner' => "nullable",
+            'first_phone_number' => "nullable",
             'second_phone_owner' => "nullable",
             'second_phone_number' => "nullable",
             'is_released' => "nullable|in:0,1",

@@ -276,31 +276,35 @@ class CreateUpdateSuggestions extends Component
             $judgment_in_months_rule = ["nullable", "integer"];
         }
         if (Auth::user() && in_array(Auth::user()->user_status, ['مراجع منطقة', 'مسؤول'])) {
-            if ($this->showEdit)
-            $validation_array = [
-                'identification_number' => 'nullable',
-                'first_name' => 'nullable',
-                'last_name' => 'required',
-                'date_of_birth' => "nullable",
-                'gender' => "nullable|in:" . $this->subTables()['Gender'],
-                'city_id' => "nullable|in:" . $this->subTables()['City'],
-                'town_id' => "nullable|in:" . $this->subTables()['Town'],
-                "arrest_start_date" => 'nullable',
-                "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
-                'is_released' => "nullable|in:0,1",
-            ];
-            else $validation_array = [
-                'identification_number' => $rule,
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'date_of_birth' => "required",
-                'gender' => "required|in:" . $this->subTables()['Gender'],
-                'city_id' => "required|in:" . $this->subTables()['City'],
-                'town_id' => "required|in:" . $this->subTables()['Town'],
-                "arrest_start_date" => 'required',
-                "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
-                'is_released' => "required|in:0,1",
-            ];
+
+            if ($this->showEdit) {
+                $validation_array = [
+                    'identification_number' => 'nullable',
+                    'first_name' => 'nullable',
+                    'last_name' => 'nullable',
+                    'date_of_birth' => "nullable",
+                    'gender' => "nullable|in:" . $this->subTables()['Gender'],
+                    'city_id' => "nullable|in:" . $this->subTables()['City'],
+                    'town_id' => "nullable|in:" . $this->subTables()['Town'],
+                    "arrest_start_date" => 'nullable',
+                    "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+                    'is_released' => "nullable|in:0,1",
+                ];
+            } else {
+                $validation_array = [
+                    'identification_number' => 'nullable',
+                    'first_name' => 'nullable',
+                    'last_name' => 'nullable',
+                    'date_of_birth' => "nullable",
+                    'gender' => "nullable|in:" . $this->subTables()['Gender'],
+                    'city_id' => "nullable|in:" . $this->subTables()['City'],
+                    'town_id' => "nullable|in:" . $this->subTables()['Town'],
+                    "arrest_start_date" => 'nullable',
+                    "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+                    'is_released' => "nullable|in:0,1",
+                ];
+            }
+
             $validation = Validator::make($this->state, [
                 //Suggester
                 'suggester_name' => "nullable",

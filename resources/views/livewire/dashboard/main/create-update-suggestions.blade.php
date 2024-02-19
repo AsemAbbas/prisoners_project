@@ -1375,6 +1375,7 @@
                     behavior: 'smooth'
                 });
             });
+
             document.addEventListener('DOMContentLoaded', function () {
                 document.body.addEventListener('create_massage', function () {
                     Swal.fire(
@@ -1385,7 +1386,11 @@
                             confirmButtonText: 'تم',
                         }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = '/';
+                            if (['مسؤول', 'مراجع منطقة'].includes('{{ \Illuminate\Support\Facades\Auth::user() && \Illuminate\Support\Facades\Auth::user()->user_status }}')) {
+                                window.close();
+                            } else {
+                                window.location.href = '/';
+                            }
                         }
                     });
                 });
@@ -1400,7 +1405,11 @@
                             confirmButtonText: 'تم',
                         }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = '/';
+                            if (['مسؤول', 'مراجع منطقة'].includes('{{ \Illuminate\Support\Facades\Auth::user() && \Illuminate\Support\Facades\Auth::user()->user_status }}')) {
+                                window.close();
+                            } else {
+                                window.location.href = '/';
+                            }
                         }
                     });
                 });

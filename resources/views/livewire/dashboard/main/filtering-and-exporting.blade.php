@@ -75,6 +75,9 @@
                                         <div class="row">
                                             <div class="form-group col-xl-2 mb-4">
                                                 <label for="City">المحافظة</label>
+                                                @if(isset($AdvanceSearch) && isset($AdvanceSearch['city']))
+                                                    <a class="btn btn-danger" wire:click="emptyField(['city'])">افراغ</a>
+                                                @endif
                                                 <div id="toggleCity" class="City">
                                                     <div class="card">
                                                         <div class="card-header" id="headingCity" wire:ignore.self>
@@ -269,6 +272,8 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group col-xl-9 mb-4">
+                                            </div>
                                             <div class="form-group col-xl-3 mb-4">
                                                 <label for="PrisonerType">الحالات الخاصة والتصنيفات</label>
                                                 <div id="togglePrisonerType" class="PrisonerType">
@@ -350,6 +355,102 @@
                                                                                 class="form-check form-check-dark form-check-inline">
                                                                                 <input class="form-check-input"
                                                                                        wire:model.live="AdvanceSearch.prisoner_type.{{$prisoner_type->id}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark">
+                                                                                    {{$prisoner_type->prisoner_type_name}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-xl-3 mb-4">
+                                                <label for="NotPrisonerType">الإستثناء</label>
+                                                <div id="toggleNotPrisonerType" class="NotPrisonerType">
+                                                    <div class="card">
+                                                        <div class="card-header" id="headingNotPrisonerType"
+                                                             wire:ignore.self>
+                                                            <section class="mb-0 mt-0">
+                                                                <div role="menu"
+                                                                     class="collapsed d-flex justify-content-between"
+                                                                     data-bs-toggle="collapse"
+                                                                     data-bs-target="#defaultNotPrisonerType"
+                                                                     aria-expanded="false"
+                                                                     aria-controls="defaultNotPrisonerType">
+                                                                    <p class="p-0 m-0">اختر...</p>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24" fill="none"
+                                                                         stroke="currentColor"
+                                                                         stroke-width="2" stroke-linecap="round"
+                                                                         stroke-linejoin="round"
+                                                                         class="feather feather-chevron-down">
+                                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                                    </svg>
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div id="defaultNotPrisonerType" class="collapse"
+                                                             aria-labelledby="headingNotPrisonerType"
+                                                             wire:ignore.self
+                                                             data-bs-parent="#toggleNotPrisonerType">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <h4 class="mb-4">الحالات الخاصة</h4>
+                                                                    @foreach(\App\Enums\SpecialCase::cases() as $key => $row)
+                                                                        <div class="col-md-12 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.not_special_case.{{$row->value}}"
+                                                                                       type="checkbox"
+                                                                                       id="form-check-dark_{{$key}}">
+                                                                                <label class="form-check-label"
+                                                                                       for="form-check-dark_{{$key}}">
+                                                                                    {{$row->value}}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="AdvanceSearch.not_is_released"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark_is_released">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark_is_released">
+                                                                                مفرج عنه حالياً
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-12 mb-4">
+                                                                        <div
+                                                                            class="form-check form-check-dark form-check-inline">
+                                                                            <input class="form-check-input"
+                                                                                   wire:model.live="AdvanceSearch.not_judgment_in_lifetime"
+                                                                                   type="checkbox"
+                                                                                   id="form-check-dark_is_released">
+                                                                            <label class="form-check-label"
+                                                                                   for="form-check-dark_is_released">
+                                                                                المؤبدات
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <h4 class="mb-4">التصنيفات</h4>
+                                                                    @foreach($PrisonerTypes as $prisoner_type)
+                                                                        <div class="col-md-12 mb-4">
+                                                                            <div
+                                                                                class="form-check form-check-dark form-check-inline">
+                                                                                <input class="form-check-input"
+                                                                                       wire:model.live="AdvanceSearch.not_prisoner_type.{{$prisoner_type->id}}"
                                                                                        type="checkbox"
                                                                                        id="form-check-dark">
                                                                                 <label class="form-check-label"
@@ -683,7 +784,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-3 mb-4"></div>
+                                            <div class="form-group col-xl-3 mb-4">
+                                            </div>
                                             <div class="form-group col-xl-9 mb-4">
                                                 <div class="row">
                                                     <div class="form-group col-md-2 mt-3">
@@ -711,7 +813,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group col-xl-3 mb-4"></div>
+                                            <div class="form-group col-xl-3 mb-4">
+                                            </div>
                                             <div class="form-group col-xl-9 mb-4">
                                                 <div class="row">
                                                     <div class="form-group col-md-2 mt-3">
@@ -745,6 +848,30 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group col-xl-3 mb-4">
+                                            </div>
+                                            <div class="form-group col-xl-9 mb-4">
+                                                <div class="row">
+                                                    <div class="form-group col-md-2 mt-3">
+                                                        <h6 class="my-auto">تاريخ الافراج المتوقع</h6>
+                                                    </div>
+                                                    <div class="form-group col-md-3 mb-4">
+                                                        <input wire:model.live="AdvanceSearch.dor"
+                                                               type="date"
+                                                               class="form-control"
+                                                               id="dor">
+                                                    </div>
+                                                    <div class="form-group col-md-2 mb-4">
+                                                        <div>
+                                                            @if(isset($AdvanceSearch['dor']))
+                                                                <a class="btn btn-danger"
+                                                                   wire:click="emptyField(['dor'])">افراغ</a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -768,6 +895,7 @@
                             <option value="id">الرقم التسلسلي</option>
                             <option value="first_name">الاسم الاول</option>
                             <option value="date_of_birth">تاريخ الميلاد</option>
+                            <option value="arrest_start_date">تاريخ الاعتقال</option>
                         </select>
                     </div>
                     <div class="col-md-2">

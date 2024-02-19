@@ -49,7 +49,7 @@ class PrisonerExport implements FromCollection, WithHeadings, WithStyles
             'prisoner_type' => 'تصنيف الأسير',
             'notes' => 'الملاحظات',
 
-            'arrest_start_date' => 'بداية الاعتقال',
+            'arrest_start_date' => 'تاريخ الاعتقال',
             'arrest_type' => 'نوع الاعتقال',
             'judgment_in_lifetime' => 'الحكم مؤبدات',
             'judgment_in_years' => 'الحكم سنوات',
