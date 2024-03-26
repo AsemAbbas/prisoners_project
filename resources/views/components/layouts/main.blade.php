@@ -12,6 +12,16 @@
     <meta property="og:title" content="@yield('title')">
     <meta property="og:description" content="منصة إعلامية فلسطينية، لمراجعة وتعديل بيانات الأسرى في سجون الاحتلال.">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8K0LHR4QR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-Q8K0LHR4QR');
+    </script>
+
     <!-- Dark mode -->
     <script>
         const storedTheme = localStorage.getItem('theme')

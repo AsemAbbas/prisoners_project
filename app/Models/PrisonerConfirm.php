@@ -48,6 +48,11 @@ class PrisonerConfirm extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function Prisoner(): BelongsTo
+    {
+        return $this->belongsTo(Prisoner::class);
+    }
+
     public function Town(): BelongsTo
     {
         return $this->belongsTo(Town::class);

@@ -56,33 +56,56 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
-                    <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
-                           placeholder="البحث...">
-                    <div class="btn-group mb-2 mx-2" role="group">
-                        <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round" class="feather feather-chevron-down">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="btndefault">
-                            <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>الكل</a>
-                            <a wire:click="SortBy('الاضافات')" class="btn dropdown-item"><i
-                                    class="flaticon-home-fill-1 mr-1"></i>الاضافات</a>
-                            <a wire:click="SortBy('التعديلات')" class="btn dropdown-item"><i
-                                    class="flaticon-gear-fill mr-1"></i>التعديلات</a>
-                        </div>
-                    </div>
-                    <div class="mb-2 mx-2">
-                        <span class="text-success">مجموع الاقتراحات التي تم قبولها:</span>
+                    <div class="mx-2">
+                        <span class="text-primary">مجموع الاقتراحات المؤكدة:</span>
                         <span class="text-dark" style="font-size: 18px">
-                            {{$accepted_count}}
+                            {{$count['AllPrisonerConfirm']}}
+                             اقتراح
+                        </span>
+                        <br>
+                        <span class="text-success">مجموع الاقتراحات المؤكدة التي تم قبولها:</span>
+                        <span class="text-dark" style="font-size: 18px">
+                            {{$count['AcceptedPrisonerConfirm']}}
                              اقتراح
                         </span>
                     </div>
+                    <hr>
+                    <div class="mx-2">
+                        <span class="text-primary">مجموع الاقتراحات:</span>
+                        <span class="text-dark" style="font-size: 18px">
+                            {{$count['AllPrisonerSuggestion']}}
+                             اقتراح
+                        </span>
+                        <br>
+                        <span class="text-success">مجموع الاقتراحات التي تم قبولها:</span>
+                        <span class="text-dark" style="font-size: 18px">
+                            {{$count['AcceptedPrisonerSuggestion']}}
+                             اقتراح
+                        </span>
+                    </div>
+                    <div class="my-2">
+                        <input wire:model.live="Search" class="form-input m-2" type="search" id="Search"
+                               placeholder="البحث...">
+                        <div class="btn-group mb-2 mx-2" role="group">
+                            <button id="btndefault" type="button" class="btn btn-outline-dark dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">فرز حسب
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" class="feather feather-chevron-down">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="btndefault">
+                                <a wire:click="SortBy('الكل')" class="btn dropdown-item"><i
+                                        class="flaticon-home-fill-1 mr-1"></i>الكل</a>
+                                <a wire:click="SortBy('الاضافات')" class="btn dropdown-item"><i
+                                        class="flaticon-home-fill-1 mr-1"></i>الاضافات</a>
+                                <a wire:click="SortBy('التعديلات')" class="btn dropdown-item"><i
+                                        class="flaticon-gear-fill mr-1"></i>التعديلات</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="table-responsive">

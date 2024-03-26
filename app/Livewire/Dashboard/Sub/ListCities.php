@@ -19,6 +19,7 @@ class ListCities extends Component
     public object $Towns;
     public ?object $EditTown;
     public bool $showEditTown = false;
+    public bool $showCreateTown = false;
     public int $city_id;
     public ?string $townKey = null;
     public ?string $newTownName = null;
@@ -93,7 +94,9 @@ class ListCities extends Component
             ->where('city_id', $id)
             ->when(isset($this->TownSearch), function ($q) {
                 $q->where('town_name', 'LIKE', '%' . $this->TownSearch . '%');
-            })->get();
+            })
+            ->orderBy('town_name')
+            ->get();
         $this->Towns = $Towns;
 
         $this->dispatch('showTowns');
@@ -143,13 +146,28 @@ class ListCities extends Component
         $this->newTownName = $this->EditTown->town_name;
     }
 
+    public function newTown(): void
+    {
+        $this->showCreateTown = true;
+        $this->newTownName = null;
+    }
+
     public function updateTown(): void
     {
-        $this->validate(['newTownName' => 'unique:towns,town_name'], ['newTownName.unique' => 'هذه البلدة موجودة مسبقاً']);
+        $this->validate(['newTownName' => 'unique:towns,town_name,NULL,id,deleted_at,NULL'], ['newTownName.unique' => 'هذه البلدة موجودة مسبقاً']);
         $this->EditTown->update(['town_name' => $this->newTownName]);
         $this->Towns = Town::query()->where('city_id', $this->EditTown->city_id)->get();
         $this->newTownName = null;
         $this->EditTown = null;
         $this->showEditTown = false;
+    }
+
+    public function createTown(): void
+    {
+        $this->validate(['newTownName' => 'required|string|unique:towns,town_name,NULL,id,deleted_at,NULL'], ['newTownName.required' => 'حقل اسم البلدة مطلوب','newTownName.unique' => 'هذه البلدة موجودة مسبقاً']);
+        Town::query()->create(['town_name' => $this->newTownName, 'city_id' => $this->city_id]);
+        $this->Towns = Town::query()->where('city_id', $this->city_id)->get();
+        $this->newTownName = null;
+        $this->showCreateTown = false;
     }
 }

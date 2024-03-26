@@ -20,6 +20,7 @@ class PrisonerTypesSeeder extends Seeder
             ['prisoner_type_name' => 'مرضى أولوية'],
             ['prisoner_type_name' => 'وفاء الأحرار - معاد اعتقاله'],
             ['prisoner_type_name' => 'مفرج عنه ضمن صفقات طوفان الأقصى'],
+            ['prisoner_type_name' => 'مفرج عنه ضمن صفقات طوفان الأقصى'],
         ];
         DB::table('prisoner_types')->insert($belongs);
     }

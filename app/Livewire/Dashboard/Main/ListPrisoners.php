@@ -68,6 +68,7 @@ class ListPrisoners extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
+
         $Prisoners = $this->getPrisonersProperty()->paginate(10);
 
         $Cities = City::all();

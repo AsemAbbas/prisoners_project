@@ -20,6 +20,7 @@ use App\Models\OldArrest;
 use App\Models\OldArrestConfirm;
 use App\Models\Prisoner;
 use App\Models\PrisonerConfirm;
+use App\Models\PrisonerSuggestion;
 use App\Models\PrisonerType;
 use App\Models\Relationship;
 use App\Models\Town;
@@ -477,7 +478,7 @@ class ListPrisonerConfirms extends Component
 
 
         $validation = Validator::make($ConfirmsArray, [
-            'identification_number' => ["nullable",new PalestineIdValidationRule],
+            'identification_number' => ["nullable", new PalestineIdValidationRule],
             'first_name' => "nullable",
             'second_name' => "nullable",
             'third_name' => "nullable",
@@ -570,7 +571,7 @@ class ListPrisonerConfirms extends Component
                     "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                     "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                     "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                    "is_released" =>  $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
+                    "is_released" => $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                     "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
                 ]);
             else Arrest::query()->create([
@@ -599,7 +600,7 @@ class ListPrisonerConfirms extends Component
                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                "is_released" =>  $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
+                "is_released" => $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
             ]);
         } else {
@@ -643,7 +644,7 @@ class ListPrisonerConfirms extends Component
                 "first_phone_number" => $finalArrestData["first_phone_number"] ?? $Arrest["first_phone_number"] ?? null,
                 "second_phone_owner" => $finalArrestData["second_phone_owner"] ?? $Arrest["second_phone_owner"] ?? null,
                 "second_phone_number" => $finalArrestData["second_phone_number"] ?? $Arrest["second_phone_number"] ?? null,
-                "is_released" =>  $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
+                "is_released" => $finalArrestData["is_released"] ?? $Arrest["is_released"] ?? null,
                 "email" => $finalArrestData["email"] ?? $Arrest["email"] ?? null,
             ]);
         }
@@ -768,7 +769,6 @@ class ListPrisonerConfirms extends Component
 
     public function render(): View|\Illuminate\Foundation\Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-
         $CurrentUserCities = User::query()
             ->where('id', Auth::user()->id)
             ->with('City')->first()->toArray()['city'] ?? [];
@@ -785,26 +785,37 @@ class ListPrisonerConfirms extends Component
                     ->orWhereNull('city_id');
             })
             ->when(isset($this->sortBy), function ($q) {
-            if ($this->sortBy == "الاضافات")
-                $q->whereNull('prisoner_id');
-            elseif ($this->sortBy == "التعديلات")
-                $q->whereNotNull('prisoner_id');
-            else   $q->whereNotNull('prisoner_id')->orWhereNull('prisoner_id')->where('confirm_status','يحتاج مراجعة');
-        })
+                if ($this->sortBy == "الاضافات")
+                    $q->whereNull('prisoner_id');
+                elseif ($this->sortBy == "التعديلات")
+                    $q->whereNotNull('prisoner_id');
+                else   $q->whereNotNull('prisoner_id')->orWhereNull('prisoner_id')->where('confirm_status', 'يحتاج مراجعة');
+            })
             ->orderBy('confirm_status')
             ->paginate(10);
 
-        $accepted_count = PrisonerConfirm::query()->where('confirm_status' , 'تم القبول')->count();
 
-        return view('livewire.dashboard.main.list-prisoner-confirms', compact('Confirms','accepted_count'));
+        $AllPrisonerConfirm = PrisonerConfirm::withTrashed()->count();
+        $AcceptedPrisonerConfirm = PrisonerConfirm::query()->where('confirm_status', 'تم القبول')->count();
+        $AllPrisonerSuggestion = PrisonerSuggestion::withTrashed()->count();
+        $AcceptedPrisonerSuggestion = PrisonerSuggestion::query()->where('suggestion_status', 'تم القبول')->count();
+
+        $count = [
+            'AllPrisonerConfirm' => $AllPrisonerConfirm,
+            'AcceptedPrisonerConfirm' => $AcceptedPrisonerConfirm,
+            'AllPrisonerSuggestion' => $AllPrisonerSuggestion,
+            'AcceptedPrisonerSuggestion' => $AcceptedPrisonerSuggestion,
+        ];
+
+        return view('livewire.dashboard.main.list-prisoner-confirms', compact('Confirms', 'count'));
     }
 
     public function getConfirmsProperty(): \Illuminate\Database\Eloquent\Builder
     {
         return PrisonerConfirm::query()
             ->with(['City', 'Relationship'])
-            ->where('confirm_status','يحتاج مراجعة')
-            ->where(function ($q){
+            ->where('confirm_status', 'يحتاج مراجعة')
+            ->where(function ($q) {
                 $q->when(isset($this->Search), function ($query) {
                     $searchTerms = explode(' ', $this->Search);
                     $query->where(function ($subQuery) use ($searchTerms) {

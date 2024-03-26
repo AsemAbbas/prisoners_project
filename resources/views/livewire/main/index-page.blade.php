@@ -3,23 +3,6 @@
 @endsection
 @section('style')
     <style>
-        /* Add this CSS to your stylesheet */
-        .card-bg-scale {
-            overflow: hidden;
-            position: relative;
-        }
-
-        .bg-gif {
-            {{--background-image:url('{{asset('main/images/palestine_flag.gif')}}'), url('{{asset('main/images/palestine_flag_2.gif')}}');--}}
-                                             background-color: #022d4f;
-            background-size: contain;
-            background-position: -100px -150px, 800px -150px; /* Adjust positions for each image */
-            background-repeat: no-repeat, no-repeat;
-            z-index: 2;
-            /*border-left: 8px solid black;*/
-            /*border-right: 8px solid black;*/
-        }
-
         .text-input::placeholder {
             font-weight: bold !important;
             opacity: 0.7;
@@ -101,7 +84,7 @@
                                         </a>
                                     </div>
                                 </form>
-{{--                                <h4 class="text-danger" style="font-family: 'Changa', sans-serif !important;font-size: 30px">تم إيقاف الاستعلام بشكل مؤقت</h4>--}}
+{{--                                <h4 class="text-danger" style="font-family: 'Changa', sans-serif !important;font-size: 30px">تم إيقاف الاستعلام بشكل مؤقت للصيانة</h4>--}}
                             </div>
                         </div>
                     </div>
@@ -390,7 +373,6 @@
                                                             </div>
                                                             <div class="table-responsive border-0">
                                                                 <table class="table align-middle p-4 mb-0 table-hover table-shrink">
-                                                                    <!-- Table head -->
                                                                     <thead class="table-primary">
                                                                     <tr class="text-center">
                                                                         <th style="width: 180px;" scope="col"
@@ -407,9 +389,7 @@
                                                                         </th>
                                                                     </tr>
                                                                     </thead>
-                                                                    <!-- Table body START -->
                                                                     <tbody class="border-top-0">
-                                                                    <!-- Table item -->
                                                                     <tr class="text-center">
                                                                         <td style="font-size: 18px!important;font-weight: bold;">
                                                                             {{$prisoner->Arrest->judgment ?? 'لا يوجد'}}
@@ -422,16 +402,11 @@
                                                                             @endif
                                                                         </td>
                                                                     </tr>
-
                                                                     </tbody>
-                                                                    <!-- Table body END -->
                                                                 </table>
                                                             </div>
-
-                                                            <!-- Blog list table END -->
                                                         </div>
                                                     </div>
-                                                    <!-- Blog list table END -->
                                                 </div>
                                             </div>
                                         </div>

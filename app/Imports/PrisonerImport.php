@@ -10,6 +10,7 @@ use App\Models\Prisoner;
 use App\Models\PrisonersPrisonerTypes;
 use App\Models\PrisonerType;
 use App\Models\Town;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
@@ -30,6 +31,21 @@ class PrisonerImport implements
 
     public function model(array $row): void
     {
+        $date_of_birth = null;
+        $arrest_start_date = null;
+        $arrest_end_date = null;
+
+        if (!empty($row['date_of_birth']) && is_numeric($row['date_of_birth'])) {
+            $date_of_birth = Carbon::instance(Date::excelToDateTimeObject($row['date_of_birth']));
+        }
+        if (!empty($row['arrest_start_date']) && is_numeric($row['arrest_start_date'])) {
+            $arrest_start_date = Carbon::instance(Date::excelToDateTimeObject($row['arrest_start_date']));
+        }
+        if (!empty($row['arrest_end_date']) && is_numeric($row['arrest_end_date'])) {
+            $arrest_end_date = Carbon::instance(Date::excelToDateTimeObject($row['arrest_end_date']));
+        }
+
+
         $father_arrested = isset($row['father_arrested']) ? !empty($row['father_arrested']) : null;
         $mother_arrested = isset($row['mother_arrested']) ? !empty($row['mother_arrested']) : null;
         $husband_arrested = isset($row['husband_arrested']) ? !empty($row['husband_arrested']) : null;
@@ -41,7 +57,12 @@ class PrisonerImport implements
         $daughter_arrested = !empty($row['daughter_arrested']) ? count(explode(',', $row['daughter_arrested'])) : null;
 
         $City = City::query()->where('city_name', $row['city_id'])->pluck('id')->first() ?? null;
-        $Town = Town::query()->where('town_name', $row['town_id'])->pluck('id')->first() ?? null;
+        if (isset($City)) {
+            $Town = Town::query()
+                ->where('town_name', $row['town_id'])
+                ->where('city_id', $City)
+                ->pluck('id')->first() ?? null;
+        } else $Town = null;
         $Belong = Belong::query()->where('belong_name', $row['belong_id'])->pluck('id')->first() ?? null;
 
         $Prisoner = Prisoner::query()->create([
@@ -53,7 +74,7 @@ class PrisonerImport implements
             'last_name' => $row['last_name'] ?? null,
             'mother_name' => $row['mother_name'] ?? null,
             'nick_name' => $row['nick_name'] ?? null,
-            'date_of_birth' => !empty($row['date_of_birth']) ? Date::excelToDateTimeObject($row['date_of_birth']) : null,
+            'date_of_birth' => $date_of_birth,
             'gender' => $row['gender'] ?? null,
             'city_id' => $City ?? null,
             'town_id' => $Town ?? null,
@@ -62,8 +83,8 @@ class PrisonerImport implements
 
         $Arrest = Arrest::query()->create([
             'prisoner_id' => $Prisoner->id ?? null,
-            'arrest_start_date' => !empty($row['arrest_start_date']) ? Date::excelToDateTimeObject($row['arrest_start_date']) : null,
-            'arrest_end_date' => !empty($row['arrest_end_date']) ? Date::excelToDateTimeObject($row['arrest_end_date']) : null,
+            'arrest_start_date' => $arrest_start_date,
+            'arrest_end_date' => $arrest_end_date,
             'arrest_type' => $row['arrest_type'] ?? null,
             'judgment_in_lifetime' => $row['judgment_in_lifetime'] ?? null,
             'judgment_in_years' => $row['judgment_in_years'] ?? null,

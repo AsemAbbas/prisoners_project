@@ -405,7 +405,7 @@ class CreateUpdatePrisoners extends Component
     public function addNewTown($city_id): void
     {
         if (!empty($this->new_town_name)) {
-            $this->validate(['new_town_name' => 'unique:towns,town_name'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
+            $this->validate(['new_town_name' => 'unique:towns,town_name,NULL,id,deleted_at,NULL'], ['new_town_name.unique' => 'هذه البلدة موجودة مسبقاً']);
             $town = Town::query()->create(['city_id' => $city_id, 'town_name' => $this->new_town_name]);
             $this->state['town_id'] = (string)$town->id;
             $this->new_town_name = null;
