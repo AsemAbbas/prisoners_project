@@ -248,7 +248,7 @@ class FilteringAndExporting extends Component
             }
         }
         return Prisoner::query()
-            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber'])
+            ->with(['City', 'PrisonerType', 'Arrest', 'RelativesPrisoner', 'FamilyIDNumber','OldArrest'])
             ->where(function ($query) use ($cityIdArray) {
                 $query->whereIn('city_id', $cityIdArray)
                     ->orWhereNull('city_id');
@@ -355,6 +355,9 @@ class FilteringAndExporting extends Component
                     });
                     $query->when(isset($this->AdvanceSearch['dob_from']) && isset($this->AdvanceSearch['dob_to']), function ($subQuery) {
                         $subQuery->whereBetween('date_of_birth', [$this->AdvanceSearch['dob_from'], $this->AdvanceSearch['dob_to']]);
+                    });
+                    $query->when(isset($this->AdvanceSearch['updated_from']) && isset($this->AdvanceSearch['updated_to']), function ($subQuery) {
+                        $subQuery->whereBetween('updated_at', [$this->AdvanceSearch['updated_from'], $this->AdvanceSearch['updated_to']]);
                     });
                     $query->when(isset($this->AdvanceSearch['doa_from']) && isset($this->AdvanceSearch['doa_to']), function ($subQuery) {
 

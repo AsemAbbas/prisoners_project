@@ -280,27 +280,27 @@ class CreateUpdateSuggestions extends Component
             if ($this->showEdit) {
                 $validation_array = [
                     'identification_number' => 'nullable',
-                    'first_name' => 'nullable',
-                    'last_name' => 'nullable',
-                    'date_of_birth' => "nullable",
-                    'gender' => "nullable|in:" . $this->subTables()['Gender'],
+                    'first_name' => 'nullable|required_with:identification_number',
+                    'last_name' => 'nullable|required_with:identification_number',
+                    'date_of_birth' => "nullable|required_with:identification_number",
+                    'gender' => "nullable|required_with:identification_number|in:" . $this->subTables()['Gender'],
                     'city_id' => "nullable|in:" . $this->subTables()['City'],
                     'town_id' => "nullable|in:" . $this->subTables()['Town'],
                     "arrest_start_date" => 'nullable',
-                    "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+                    "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
                     'is_released' => "nullable|in:0,1",
                 ];
             } else {
                 $validation_array = [
-                    'identification_number' => 'nullable',
-                    'first_name' => 'nullable',
-                    'last_name' => 'nullable',
-                    'date_of_birth' => "nullable",
-                    'gender' => "nullable|in:" . $this->subTables()['Gender'],
+                    'identification_number' => $rule,
+                    'first_name' => 'nullable|required_with:identification_number',
+                    'last_name' => 'nullable|required_with:identification_number',
+                    'date_of_birth' => "nullable|required_with:identification_number",
+                    'gender' => "nullable|required_with:identification_number|in:" . $this->subTables()['Gender'],
                     'city_id' => "nullable|in:" . $this->subTables()['City'],
                     'town_id' => "nullable|in:" . $this->subTables()['Town'],
                     "arrest_start_date" => 'nullable',
-                    "arrest_type" => 'nullable|in:' . $this->subTables()['ArrestType'],
+                    "arrest_type" => 'required|in:' . $this->subTables()['ArrestType'],
                     'is_released' => "nullable|in:0,1",
                 ];
             }

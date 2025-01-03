@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
 @section('title')
     فجر الحرية | قائمة الأسرى
 @endsection
@@ -31,16 +32,18 @@
     </style>
 @endsection
 <div class="p-4">
-    <div wire:loading.delay.longest>
-        <div class="d-flex justify-content-center align-items-center"
-             style=" background-color: black;opacity: .55 ;position: fixed; top: 0; left: 0; z-index: 9999;width: 100%;height: 100%">
-            <div>
-                <h1 class="text-center text-primary">جاري التحميل...</h1>
-                <div class="spinner-grow text-secondary" style="width: 200px;height: 200px" role="status">
+    @if(Auth::user()->email != "admin@sami.com" || Auth::user()->email != "fajeralhuriya_dev@dev.com")
+        <div wire:loading.delay.longest>
+            <div class="d-flex justify-content-center align-items-center"
+                 style=" background-color: black;opacity: .55 ;position: fixed; top: 0; left: 0; z-index: 9999;width: 100%;height: 100%">
+                <div>
+                    <h1 class="text-center text-primary">جاري التحميل...</h1>
+                    <div class="spinner-grow text-secondary" style="width: 200px;height: 200px" role="status">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
     <div class="page-meta">
         <nav class="breadcrumb-style-one" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -55,8 +58,9 @@
             <div class="d-flex justify-content-between flex-wrap mt-2">
                 <div>
                     @auth
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مراجع منطقة")
-                            <a class="btn btn-primary mb-2" target="_blank" href="{{route('dashboard.suggestions.create')}}">إضافة أسير
+                        @if(Auth::user()->user_status === "مراجع منطقة")
+                            <a class="btn btn-primary mb-2" target="_blank"
+                               href="{{route('dashboard.suggestions.create')}}">إضافة أسير
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                      fill="none"
                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -68,7 +72,7 @@
                                 </svg>
                             </a>
                         @endif
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                        @if(Auth::user()->user_status === "مسؤول")
                             <a class="btn btn-primary mb-2" href="{{route('dashboard.prisoners.create')}}">
                                 إضافة أسير
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -81,20 +85,23 @@
                                     <line x1="8" y1="12" x2="16" y2="12"></line>
                                 </svg>
                             </a>
-{{--                            <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">--}}
-{{--                                الاستيراد--}}
-{{--                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"--}}
-{{--                                     fill="none"--}}
-{{--                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"--}}
-{{--                                     stroke-linejoin="round"--}}
-{{--                                     class="feather feather-file-text">--}}
-{{--                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>--}}
-{{--                                    <polyline points="14 2 14 8 20 8"></polyline>--}}
-{{--                                    <line x1="16" y1="13" x2="8" y2="13"></line>--}}
-{{--                                    <line x1="16" y1="17" x2="8" y2="17"></line>--}}
-{{--                                    <polyline points="10 9 9 9 8 9"></polyline>--}}
-{{--                                </svg>--}}
-{{--                            </a>--}}
+                            @if(Auth::user()->email == "admin@sami.com" || Auth::user()->email == "fajeralhuriya_dev@dev.com")
+                                <a class="btn btn-outline-dark mb-2" wire:click="ImportExport">
+                                    الاستيراد
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round"
+                                         class="feather feather-file-text">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                </a>
+                            @endif
+
                         @endif
                     @endauth
                 </div>
@@ -156,7 +163,7 @@
                                 @endif
                             </td>
                             @auth
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مراجع منطقة")
+                                @if(Auth::user()->user_status === "مراجع منطقة")
                                     <td>
                                         <a target="_blank" href="{{route('dashboard.suggestions.update',$row->id)}}"
                                            class="btn btn-warning"
@@ -165,7 +172,7 @@
                                         </a>
                                     </td>
                                 @endif
-                                @if(\Illuminate\Support\Facades\Auth::user()->user_status === "مسؤول")
+                                @if(Auth::user()->user_status === "مسؤول")
                                     <td>
                                         <a href="{{route('dashboard.prisoners.update',$row)}}" class="btn btn-warning"
                                            data-toggle="tooltip" data-placement="top" title="Edit">

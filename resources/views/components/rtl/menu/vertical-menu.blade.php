@@ -185,7 +185,7 @@
                         </a>
                         <ul class="collapse submenu list-unstyled {{ in_array(Route::getCurrentRoute()->getName(),$sub) ? "show" : "" }}"
                             id="dashboardSub" data-bs-parent="#accordionSub">
-                            @if(\Illuminate\Support\Facades\Auth::user()->user_status === "محرر أخبار")
+                            @if(in_array(\Illuminate\Support\Facades\Auth::user()->user_status,["محرر أخبار","مسؤول"]))
                                 <li class="{{ Route::getCurrentRoute()->getName()== 'dashboard.news_types' ? 'active' : '' }}">
                                     <a href="{{route('dashboard.news_types')}}">قائمة تصنيفات الأخبار</a>
                                 </li>

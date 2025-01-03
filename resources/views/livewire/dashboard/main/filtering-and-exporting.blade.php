@@ -771,6 +771,33 @@
                                                         <div class="form-group col-xl-12 mb-4">
                                                             <div class="row">
                                                                 <div class="form-group col-xl-2 col-md-12 mb-4 mt-3">
+                                                                    <h6 class="my-auto">تاريخ التحديث</h6>
+                                                                </div>
+                                                                <div class="form-group col-xl-3 col-md-12 mb-4">
+                                                                    <input wire:model.live="AdvanceSearch.updated_from"
+                                                                           type="date"
+                                                                           class="form-control"
+                                                                           id="updated_from">
+                                                                </div>
+                                                                <div class="form-group col-xl-3 col-md-12 mb-4">
+                                                                    <input wire:model.live="AdvanceSearch.updated_to"
+                                                                           type="date"
+                                                                           class="form-control"
+                                                                           id="updated_to">
+                                                                </div>
+                                                                <div class="form-group col-xl-2 col-md-12 mb-4">
+                                                                    <div>
+                                                                        @if(isset($AdvanceSearch['updated_from']) || isset($AdvanceSearch['updated_to']))
+                                                                            <a class="btn btn-danger"
+                                                                               wire:click="emptyField(['updated_from','updated_to'])">افراغ</a>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group col-xl-12 mb-4">
+                                                            <div class="row">
+                                                                <div class="form-group col-xl-2 col-md-12 mb-4 mt-3">
                                                                     <h6 class="my-auto">الحكم سنوات</h6>
                                                                 </div>
                                                                 <div class="form-group col-xl-3 col-md-12 mb-4">

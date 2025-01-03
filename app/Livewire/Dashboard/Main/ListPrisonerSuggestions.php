@@ -1807,16 +1807,14 @@ class ListPrisonerSuggestions extends Component
         $this->dispatch('hide_create_update_modal');
     }
 
-    public
-    function SearchFor($search): void
+    public function SearchFor($search): void
     {
         $this->resetPage();
         $this->sortBy = null;
         $this->Search = $search;
     }
 
-    private
-    function removeAndMoveToFamilyIDNumberSuggestionDeletedList($id): void
+    private function removeAndMoveToFamilyIDNumberSuggestionDeletedList($id): void
     {
         $this->moveItem($this->familyIDNumberColumns['prisoner'], $this->familyIDNumberColumns['prisoner_deleted'], $id);
     }

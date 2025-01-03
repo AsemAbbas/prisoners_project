@@ -1237,7 +1237,7 @@
                         </span>
                         </div>
                         <div class="modal-footer d-flex justify-content-start align-items-start">
-                            <button type="submit" wire:click="ConfirmMassage"
+                            <button type="submit" wire:click="ConfirmMassage" wire:loading.class="disabled"
                                     class="btn {{$showEdit ? 'bg-warning' : 'bg-success'}}">
                                 تأكيد
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
